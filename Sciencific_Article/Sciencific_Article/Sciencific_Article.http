@@ -1,0 +1,6 @@
+@Sciencific_Article_HostAddress = http://localhost:5255
+
+GET {{Sciencific_Article_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

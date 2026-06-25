@@ -1,0 +1,6 @@
+<Solution>
+  <Project Path="Sciencific_Article.Application/Sciencific_Article.Application.csproj" />
+  <Project Path="Sciencific_Article.Domain/Sciencific_Article.Domain.csproj" />
+  <Project Path="Sciencific_Article.Infastructure/Sciencific_Article.Infastructure.csproj" />
+  <Project Path="Sciencific_Article/Sciencific_Article.csproj" />
+</Solution>

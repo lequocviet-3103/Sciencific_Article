@@ -1,0 +1,11 @@
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\bin\Debug\net8.0\Sciencific_Article.Domain.deps.json
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\bin\Debug\net8.0\Sciencific_Article.Domain.dll
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\bin\Debug\net8.0\Sciencific_Article.Domain.pdb
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.GeneratedMSBuildEditorConfig.editorconfig
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.AssemblyInfoInputs.cache
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.AssemblyInfo.cs
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.csproj.CoreCompileInputs.cache
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.dll
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\refint\Sciencific_Article.Domain.dll
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.pdb
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\ref\Sciencific_Article.Domain.dll

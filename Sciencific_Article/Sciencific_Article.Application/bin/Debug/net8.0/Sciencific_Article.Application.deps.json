@@ -1,0 +1,39 @@
+{
+  "runtimeTarget": {
+    "name": ".NETCoreApp,Version=v8.0",
+    "signature": ""
+  },
+  "compilationOptions": {},
+  "targets": {
+    ".NETCoreApp,Version=v8.0": {
+      "Sciencific_Article.Application/1.0.0": {
+        "dependencies": {
+          "Sciencific_Article.Domain": "1.0.0"
+        },
+        "runtime": {
+          "Sciencific_Article.Application.dll": {}
+        }
+      },
+      "Sciencific_Article.Domain/1.0.0": {
+        "runtime": {
+          "Sciencific_Article.Domain.dll": {
+            "assemblyVersion": "1.0.0.0",
+            "fileVersion": "1.0.0.0"
+          }
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Sciencific_Article.Application/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    },
+    "Sciencific_Article.Domain/1.0.0": {
+      "type": "project",
+      "serviceable": false,
+      "sha512": ""
+    }
+  }
+}
