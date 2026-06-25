@@ -1,0 +1,102 @@
+{
+  "version": 3,
+  "targets": {
+    "net8.0": {
+      "Sciencific_Article.Domain/1.0.0": {
+        "type": "project",
+        "framework": ".NETCoreApp,Version=v8.0",
+        "compile": {
+          "bin/placeholder/Sciencific_Article.Domain.dll": {}
+        },
+        "runtime": {
+          "bin/placeholder/Sciencific_Article.Domain.dll": {}
+        }
+      }
+    }
+  },
+  "libraries": {
+    "Sciencific_Article.Domain/1.0.0": {
+      "type": "project",
+      "path": "../Sciencific_Article.Domain/Sciencific_Article.Domain.csproj",
+      "msbuildProject": "../Sciencific_Article.Domain/Sciencific_Article.Domain.csproj"
+    }
+  },
+  "projectFileDependencyGroups": {
+    "net8.0": [
+      "Sciencific_Article.Domain >= 1.0.0"
+    ]
+  },
+  "packageFolders": {
+    "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\": {},
+    "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages": {}
+  },
+  "project": {
+    "version": "1.0.0",
+    "restore": {
+      "projectUniqueName": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
+      "projectName": "Sciencific_Article.Application",
+      "projectPath": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
+      "packagesPath": "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\",
+      "outputPath": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\obj\\",
+      "projectStyle": "PackageReference",
+      "fallbackFolders": [
+        "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
+      ],
+      "configFilePaths": [
+        "C:\\Users\\Le Quoc Viet\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
+        "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
+      ],
+      "originalTargetFrameworks": [
+        "net8.0"
+      ],
+      "sources": {
+        "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
+        "https://api.nuget.org/v3/index.json": {}
+      },
+      "frameworks": {
+        "net8.0": {
+          "targetAlias": "net8.0",
+          "projectReferences": {
+            "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj": {
+              "projectPath": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj"
+            }
+          }
+        }
+      },
+      "warningProperties": {
+        "warnAsError": [
+          "NU1605"
+        ]
+      },
+      "restoreAuditProperties": {
+        "enableAudit": "true",
+        "auditLevel": "low",
+        "auditMode": "direct"
+      },
+      "SdkAnalysisLevel": "10.0.200"
+    },
+    "frameworks": {
+      "net8.0": {
+        "targetAlias": "net8.0",
+        "imports": [
+          "net461",
+          "net462",
+          "net47",
+          "net471",
+          "net472",
+          "net48",
+          "net481"
+        ],
+        "assetTargetFallback": true,
+        "warn": true,
+        "frameworkReferences": {
+          "Microsoft.NETCore.App": {
+            "privateAssets": "all"
+          }
+        },
+        "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
+      }
+    }
+  }
+}
