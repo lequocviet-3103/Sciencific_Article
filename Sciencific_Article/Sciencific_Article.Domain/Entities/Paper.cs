@@ -32,4 +32,6 @@ public partial class Paper
     public virtual ICollection<Author> Authors { get; set; } = new List<Author>();
 
     public virtual ICollection<Keyword> Keywords { get; set; } = new List<Keyword>();
+
+    public virtual ICollection<ResearchTopic> Topics { get; set; } = new List<ResearchTopic>();
 }

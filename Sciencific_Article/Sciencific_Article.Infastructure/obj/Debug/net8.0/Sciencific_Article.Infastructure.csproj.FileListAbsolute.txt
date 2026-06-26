@@ -17,3 +17,4 @@ D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Infastruct
 D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Application.pdb
 D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Domain.pdb
 D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencif.C2822603.Up2Date
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.sourcelink.json

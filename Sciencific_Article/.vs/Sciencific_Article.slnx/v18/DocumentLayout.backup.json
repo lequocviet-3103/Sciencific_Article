@@ -3,64 +3,220 @@
   "WorkspaceRootPath": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{F86DFE8F-0C1D-4EDF-9D23-E2081AE7ED61}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F86DFE8F-0C1D-4EDF-9D23-E2081AE7ED61}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\data\\appdbcontext.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\repositories\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\repositories\\unitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\synclog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\synclog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\services\\openalexsyncservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\services\\openalexsyncservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\paperkeyword.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\paperkeyword.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\interfaces\\repositories\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\interfaces\\repositories\\iunitofwork.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\paper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\paper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\user.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\synclog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\synclog.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\keyword.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\keyword.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\role.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\journal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\journal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\researchtopic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\researchtopic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\followtopic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\followtopic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\report.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\bookmark.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\bookmark.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\publicationtrend.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\publicationtrend.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\author.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{B8AC0B88-3FE1-4D1A-8DE1-3D08DD2ACCE1}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\author.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\paper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\paper.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{0D39653E-B11A-4BE3-BA8A-FB9E8E889FDD}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{0D39653E-B11A-4BE3-BA8A-FB9E8E889FDD}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\notification.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{F86DFE8F-0C1D-4EDF-9D23-E2081AE7ED61}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{F86DFE8F-0C1D-4EDF-9D23-E2081AE7ED61}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\keyword.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\keyword.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{06711DBE-71F2-4669-A662-4C1DA5E69DF5}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
-      "RelativeMoniker": "D:0:0:{06711DBE-71F2-4669-A662-4C1DA5E69DF5}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\journal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\journal.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\followtopic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\followtopic.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\bookmark.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\bookmark.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.domain\\entities\\author.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{A007D542-5491-85BB-623A-813EA40F1E98}|Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj|solutionrelative:sciencific_article.domain\\entities\\author.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\repositories\\paperrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\repositories\\paperrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\interfaces\\services\\iopenalexclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\interfaces\\services\\iopenalexclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\services\\openalexclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\services\\openalexclient.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\services\\syncbackgroundservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\services\\syncbackgroundservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\services\\authservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\interfaces\\services\\iopenalexsyncservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\interfaces\\services\\iopenalexsyncservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\controllers\\synccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\controllers\\synccontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\services\\firebasestorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\services\\firebasestorageservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\services\\firebasenotificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\services\\firebasenotificationservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\services\\firebaseauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\services\\firebaseauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\repositories\\authorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\repositories\\authorrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\controllers\\authorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\controllers\\authorscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\controllers\\authcontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\repositories\\userrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\repositories\\topicrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\repositories\\topicrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\repositories\\reportrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\repositories\\reportrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\repositories\\notificationrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\repositories\\notificationrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\repositories\\followtopicrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\repositories\\followtopicrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\repositories\\bookmarkrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\repositories\\bookmarkrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\appsettings.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\program.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\controllers\\reportscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\interfaces\\services\\ifirebaseauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\interfaces\\services\\ifirebaseauthservice.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\sciencific_article.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\sciencific_article.application.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\controllers\\trendscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\controllers\\trendscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\controllers\\topicscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\controllers\\topicscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\interfaces\\repositories\\itopicrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\interfaces\\repositories\\itopicrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\controllers\\keywordscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\controllers\\keywordscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article\\controllers\\journalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{9A5C81DD-23E9-B9B6-63FB-80DADF367145}|Sciencific_Article\\Sciencific_Article.csproj|solutionrelative:sciencific_article\\controllers\\journalscontroller.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\interfaces\\repositories\\ireportrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\interfaces\\repositories\\ireportrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\interfaces\\repositories\\inotificationrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\interfaces\\repositories\\inotificationrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\interfaces\\repositories\\ifollowtopicrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\interfaces\\repositories\\ifollowtopicrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\interfaces\\repositories\\ibookmarkrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\interfaces\\repositories\\ibookmarkrepository.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\sciencific_article.infastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\sciencific_article.infastructure.csproj||{FA3CD31E-987B-443A-9B81-186104E8DAC1}|"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.infastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{E65DA819-0F28-37C5-BE0A-E22811E6DB22}|Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj|solutionrelative:sciencific_article.infastructure\\dependencyinjection.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|d:\\prm392\\prm393_lab2_bigupdate\\sciencific_article\\sciencific_article.application\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{F69EB208-18AB-A036-8681-CE4406DA3B03}|Sciencific_Article.Application\\Sciencific_Article.Application.csproj|solutionrelative:sciencific_article.application\\class1.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
     }
   ],
   "DocumentGroupContainers": [
@@ -70,8 +226,22 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 213,
+          "SelectedChildIndex": 210,
           "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 2,
+              "Title": "OpenAlexSyncService.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Services\\OpenAlexSyncService.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Services\\OpenAlexSyncService.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Services\\OpenAlexSyncService.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Services\\OpenAlexSyncService.cs",
+              "ViewState": "AgIAAIoAAAAAAAAAAADwv5kAAAAZAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T15:01:00.675Z",
+              "IsPinned": true,
+              "EditorCaption": ""
+            },
             {
               "$type": "Bookmark",
               "Name": "ST:138:0:{1fc202d4-d401-403c-9834-5b218574bb67}"
@@ -894,106 +1064,54 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "User.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\User.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\User.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\User.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\User.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAuAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:41.058Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
-              "Title": "SyncLog.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\SyncLog.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\SyncLog.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\SyncLog.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\SyncLog.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:38.318Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "Role.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Role.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Role.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Role.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Role.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:35.488Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 4,
-              "Title": "Report.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Report.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Report.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Report.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Report.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Title": "IUnitOfWork.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\IUnitOfWork.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Interfaces\\Repositories\\IUnitOfWork.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\IUnitOfWork.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Interfaces\\Repositories\\IUnitOfWork.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAAABQAAAAYAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:32.836Z",
+              "WhenOpened": "2026-06-26T14:54:33.591Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 5,
-              "Title": "Paper.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Paper.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Paper.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Paper.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Paper.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Title": "User.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\User.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\User.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\User.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\User.cs",
+              "ViewState": "AgIAAAcAAAAAAAAAAAAzwAwAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:30.159Z",
+              "WhenOpened": "2026-06-26T14:54:13.295Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 6,
-              "Title": "Notification.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Notification.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Notification.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Notification.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Notification.cs*",
+              "Title": "SyncLog.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\SyncLog.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\SyncLog.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\SyncLog.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\SyncLog.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:27.448Z",
+              "WhenOpened": "2026-06-26T14:54:10.502Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 7,
-              "Title": "Keyword.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Keyword.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Keyword.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Keyword.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Keyword.cs*",
+              "Title": "Role.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Role.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Role.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Role.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Role.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:24.031Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "Journal.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Journal.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Journal.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Journal.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Journal.cs*",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:21.226Z",
+              "WhenOpened": "2026-06-26T14:54:07.511Z",
               "EditorCaption": ""
             },
             {
@@ -1004,53 +1122,405 @@
               "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Data\\AppDbContext.cs",
               "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Data\\AppDbContext.cs",
               "RelativeToolTip": "Sciencific_Article.Infastructure\\Data\\AppDbContext.cs",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABIAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAPMBAAAAAAAAAAAAwP4BAAAiAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
               "WhenOpened": "2026-06-25T04:33:53.145Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "FollowTopic.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\FollowTopic.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\FollowTopic.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\FollowTopic.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\FollowTopic.cs*",
+              "DocumentIndex": 3,
+              "Title": "PaperKeyword.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\PaperKeyword.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\PaperKeyword.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\PaperKeyword.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\PaperKeyword.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABEAAAABAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T15:00:13.41Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "UnitOfWork.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\UnitOfWork.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Repositories\\UnitOfWork.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\UnitOfWork.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Repositories\\UnitOfWork.cs",
+              "ViewState": "AgIAABYAAAAAAAAAAAAAAB4AAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T15:02:45.111Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 8,
+              "Title": "ResearchTopic.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\ResearchTopic.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\ResearchTopic.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\ResearchTopic.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\ResearchTopic.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:18.523Z",
+              "WhenOpened": "2026-06-26T14:54:03.618Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 9,
+              "Title": "Report.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Report.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Report.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Report.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Report.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T14:54:00.194Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 10,
-              "Title": "Bookmark.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Bookmark.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Bookmark.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Bookmark.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Bookmark.cs*",
+              "Title": "PublicationTrend.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\PublicationTrend.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\PublicationTrend.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\PublicationTrend.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\PublicationTrend.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:36:15.641Z",
+              "WhenOpened": "2026-06-26T14:53:56.852Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 11,
-              "Title": "Author.cs",
-              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Author.cs",
-              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Author.cs",
-              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Author.cs*",
-              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Author.cs*",
+              "Title": "Paper.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Paper.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Paper.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Paper.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Paper.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:35:55.76Z",
+              "WhenOpened": "2026-06-26T14:53:53.855Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
               "DocumentIndex": 12,
+              "Title": "Notification.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Notification.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Notification.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Notification.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Notification.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T14:53:51.35Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 13,
+              "Title": "Keyword.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Keyword.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Keyword.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Keyword.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Keyword.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T14:53:48.138Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 14,
+              "Title": "Journal.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Journal.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Journal.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Journal.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Journal.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T14:53:45.504Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 15,
+              "Title": "FollowTopic.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\FollowTopic.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\FollowTopic.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\FollowTopic.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\FollowTopic.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T14:53:42.748Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 16,
+              "Title": "Bookmark.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Bookmark.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Bookmark.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Bookmark.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Bookmark.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T14:53:40.291Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 17,
+              "Title": "Author.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Author.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Domain\\Entities\\Author.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Domain\\Entities\\Author.cs",
+              "RelativeToolTip": "Sciencific_Article.Domain\\Entities\\Author.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T14:53:13.075Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 23,
+              "Title": "IOpenAlexSyncService.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Services\\IOpenAlexSyncService.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Interfaces\\Services\\IOpenAlexSyncService.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Services\\IOpenAlexSyncService.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Interfaces\\Services\\IOpenAlexSyncService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAQAAAARAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T10:14:37.393Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 19,
+              "Title": "IOpenAlexClient.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Services\\IOpenAlexClient.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Interfaces\\Services\\IOpenAlexClient.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Services\\IOpenAlexClient.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Interfaces\\Services\\IOpenAlexClient.cs",
+              "ViewState": "AgIAABMAAAAAAAAAAIA9wB4AAAAeAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:20:24.165Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 21,
+              "Title": "SyncBackgroundService.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Services\\SyncBackgroundService.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Services\\SyncBackgroundService.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Services\\SyncBackgroundService.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Services\\SyncBackgroundService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAgAAAALAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:20:54.034Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 20,
+              "Title": "OpenAlexClient.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Services\\OpenAlexClient.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Services\\OpenAlexClient.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Services\\OpenAlexClient.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Services\\OpenAlexClient.cs",
+              "ViewState": "AgIAAEcAAAAAAAAAAAAewFYAAAAaAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:20:36.101Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 22,
+              "Title": "AuthService.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Services\\AuthService.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Services\\AuthService.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Services\\AuthService.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Services\\AuthService.cs",
+              "ViewState": "AgIAADAAAAAAAAAAAAAYwCkAAAAlAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:20:30.912Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 18,
+              "Title": "PaperRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\PaperRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Repositories\\PaperRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\PaperRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Repositories\\PaperRepository.cs",
+              "ViewState": "AgIAABsAAAAAAAAAAAAAABsAAABDAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:24:27.129Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 26,
+              "Title": "FirebaseNotificationService.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Services\\FirebaseNotificationService.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Services\\FirebaseNotificationService.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Services\\FirebaseNotificationService.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Services\\FirebaseNotificationService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAoAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:25:52.446Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 24,
+              "Title": "SyncController.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\SyncController.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article\\Controllers\\SyncController.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\SyncController.cs",
+              "RelativeToolTip": "Sciencific_Article\\Controllers\\SyncController.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABMAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T10:14:29.707Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 27,
+              "Title": "FirebaseAuthService.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Services\\FirebaseAuthService.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Services\\FirebaseAuthService.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Services\\FirebaseAuthService.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Services\\FirebaseAuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABAAAAAjAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:25:19.824Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 28,
+              "Title": "AuthorRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\AuthorRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Repositories\\AuthorRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\AuthorRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Repositories\\AuthorRepository.cs",
+              "ViewState": "AgIAAAMAAAAAAAAAAAAAABQAAAAfAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T01:35:15.369Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 25,
+              "Title": "FirebaseStorageService.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Services\\FirebaseStorageService.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Services\\FirebaseStorageService.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Services\\FirebaseStorageService.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Services\\FirebaseStorageService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAA4AAABNAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:24:44.521Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 30,
+              "Title": "AuthController.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\AuthController.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article\\Controllers\\AuthController.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\AuthController.cs",
+              "RelativeToolTip": "Sciencific_Article\\Controllers\\AuthController.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwCMAAAAuAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:54:49.842Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 29,
+              "Title": "AuthorsController.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\AuthorsController.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article\\Controllers\\AuthorsController.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\AuthorsController.cs",
+              "RelativeToolTip": "Sciencific_Article\\Controllers\\AuthorsController.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAkwBYAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:27:34.219Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 31,
+              "Title": "UserRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\UserRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Repositories\\UserRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\UserRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Repositories\\UserRepository.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T10:40:56.779Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 32,
+              "Title": "TopicRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\TopicRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Repositories\\TopicRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\TopicRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Repositories\\TopicRepository.cs",
+              "ViewState": "AgIAAB4AAAAAAAAAAAAowBQAAABLAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:46:55.185Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 33,
+              "Title": "ReportRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\ReportRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Repositories\\ReportRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\ReportRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Repositories\\ReportRepository.cs",
+              "ViewState": "AgIAAAwAAAAAAAAAAAAowBEAAAAWAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:24:39.425Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 34,
+              "Title": "NotificationRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\NotificationRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Repositories\\NotificationRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\NotificationRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Repositories\\NotificationRepository.cs",
+              "ViewState": "AgIAABUAAAAAAAAAAAAtwCkAAAAFAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:24:12.946Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 35,
+              "Title": "FollowTopicRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\FollowTopicRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Repositories\\FollowTopicRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\FollowTopicRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Repositories\\FollowTopicRepository.cs",
+              "ViewState": "AgIAAAsAAAAAAAAAAAAAwAAAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-26T01:27:23.897Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 36,
+              "Title": "BookmarkRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\BookmarkRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Repositories\\BookmarkRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Repositories\\BookmarkRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Repositories\\BookmarkRepository.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAAAgAAAAiAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:23:57.253Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 37,
               "Title": "appsettings.json",
               "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\appsettings.json",
               "RelativeDocumentMoniker": "Sciencific_Article\\appsettings.json",
@@ -1058,12 +1528,179 @@
               "RelativeToolTip": "Sciencific_Article\\appsettings.json",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAACZAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2026-06-25T04:34:32.687Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-25T04:34:32.687Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 13,
+              "DocumentIndex": 39,
+              "Title": "ReportsController.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\ReportsController.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article\\Controllers\\ReportsController.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\ReportsController.cs",
+              "RelativeToolTip": "Sciencific_Article\\Controllers\\ReportsController.cs",
+              "ViewState": "AgIAAFUAAAAAAAAAAAAAAFoAAAAnAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T12:34:06.51Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 38,
+              "Title": "Program.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Program.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article\\Program.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Program.cs",
+              "RelativeToolTip": "Sciencific_Article\\Program.cs",
+              "ViewState": "AgIAAEYAAAAAAAAAAADwv1UAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T12:35:37.441Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 40,
+              "Title": "IFirebaseAuthService.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Services\\IFirebaseAuthService.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Interfaces\\Services\\IFirebaseAuthService.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Services\\IFirebaseAuthService.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Interfaces\\Services\\IFirebaseAuthService.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAQAAAAYAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:20:14.941Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 41,
+              "Title": "Sciencific_Article.Application.csproj",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
+              "RelativeToolTip": "Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABcAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-25T08:08:32.702Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 43,
+              "Title": "TopicsController.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\TopicsController.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article\\Controllers\\TopicsController.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\TopicsController.cs",
+              "RelativeToolTip": "Sciencific_Article\\Controllers\\TopicsController.cs",
+              "ViewState": "AgIAAA4AAAAAAAAAAAAvwBsAAAAbAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T07:10:18.399Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 44,
+              "Title": "ITopicRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\ITopicRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Interfaces\\Repositories\\ITopicRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\ITopicRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Interfaces\\Repositories\\ITopicRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:46:29.145Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 42,
+              "Title": "TrendsController.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\TrendsController.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article\\Controllers\\TrendsController.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\TrendsController.cs",
+              "RelativeToolTip": "Sciencific_Article\\Controllers\\TrendsController.cs",
+              "ViewState": "AgIAAAIAAAAAAAAAAAAEwBIAAAAvAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T07:10:28.995Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 45,
+              "Title": "KeywordsController.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\KeywordsController.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article\\Controllers\\KeywordsController.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\KeywordsController.cs",
+              "RelativeToolTip": "Sciencific_Article\\Controllers\\KeywordsController.cs",
+              "ViewState": "AgIAAAUAAAAAAAAAAAAkwBYAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:27:53.452Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 46,
+              "Title": "JournalsController.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\JournalsController.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article\\Controllers\\JournalsController.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article\\Controllers\\JournalsController.cs",
+              "RelativeToolTip": "Sciencific_Article\\Controllers\\JournalsController.cs",
+              "ViewState": "AgIAAAYAAAAAAAAAAAAAABYAAAAHAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:27:42.792Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 47,
+              "Title": "IReportRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\IReportRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Interfaces\\Repositories\\IReportRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\IReportRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Interfaces\\Repositories\\IReportRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAuwAcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:20:09.106Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 48,
+              "Title": "INotificationRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\INotificationRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Interfaces\\Repositories\\INotificationRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\INotificationRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Interfaces\\Repositories\\INotificationRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:20:05.178Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 49,
+              "Title": "IFollowTopicRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\IFollowTopicRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Interfaces\\Repositories\\IFollowTopicRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\IFollowTopicRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Interfaces\\Repositories\\IFollowTopicRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:20:00.886Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 50,
+              "Title": "IBookmarkRepository.cs",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\IBookmarkRepository.cs",
+              "RelativeDocumentMoniker": "Sciencific_Article.Application\\Interfaces\\Repositories\\IBookmarkRepository.cs",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Interfaces\\Repositories\\IBookmarkRepository.cs",
+              "RelativeToolTip": "Sciencific_Article.Application\\Interfaces\\Repositories\\IBookmarkRepository.cs",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAcAAAAJAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-06-25T06:19:54.411Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 51,
+              "Title": "Sciencific_Article.Infastructure.csproj",
+              "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj",
+              "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj",
+              "ToolTip": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj",
+              "RelativeToolTip": "Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAB8AAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000758|",
+              "WhenOpened": "2026-06-25T05:40:02.953Z"
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 52,
               "Title": "DependencyInjection.cs",
               "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Infastructure\\DependencyInjection.cs",
               "RelativeDocumentMoniker": "Sciencific_Article.Infastructure\\DependencyInjection.cs",
@@ -1071,12 +1708,11 @@
               "RelativeToolTip": "Sciencific_Article.Infastructure\\DependencyInjection.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAUAAAAFAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:24:29.947Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-25T04:24:29.947Z"
             },
             {
               "$type": "Document",
-              "DocumentIndex": 14,
+              "DocumentIndex": 53,
               "Title": "Class1.cs",
               "DocumentMoniker": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Class1.cs",
               "RelativeDocumentMoniker": "Sciencific_Article.Application\\Class1.cs",
@@ -1084,8 +1720,7 @@
               "RelativeToolTip": "Sciencific_Article.Application\\Class1.cs",
               "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
-              "WhenOpened": "2026-06-25T04:23:50.009Z",
-              "EditorCaption": ""
+              "WhenOpened": "2026-06-25T04:23:50.009Z"
             }
           ]
         },
@@ -1170,10 +1805,6 @@
             {
               "$type": "Bookmark",
               "Name": "ST:0:0:{260978c3-582c-487d-ab12-c1fdde07c578}"
-            },
-            {
-              "$type": "Bookmark",
-              "Name": "ST:36:0:{e8034f19-ab72-4f06-83fd-f6832b41aa63}"
             },
             {
               "$type": "Bookmark",

@@ -9,3 +9,4 @@ D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj
 D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\refint\Sciencific_Article.Domain.dll
 D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.pdb
 D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\ref\Sciencific_Article.Domain.dll
+D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.sourcelink.json

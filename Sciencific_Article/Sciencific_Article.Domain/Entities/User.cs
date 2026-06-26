@@ -19,6 +19,10 @@ public partial class User
 
     public DateTime? UpdatedAt { get; set; }
 
+    public string? FirebaseUid { get; set; }
+
+    public string? AvatarUrl { get; set; }
+
     public virtual ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
 
     public virtual ICollection<FollowTopic> FollowTopics { get; set; } = new List<FollowTopic>();

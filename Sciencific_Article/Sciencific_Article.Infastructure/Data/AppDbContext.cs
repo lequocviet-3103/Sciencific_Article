@@ -1,4 +1,4 @@
-﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Sciencific_Article.Domain.Entities;
 using System;
@@ -31,13 +31,19 @@ public partial class AppDbContext : DbContext
 
     public virtual DbSet<Paper> Papers { get; set; }
 
+    public virtual DbSet<PublicationTrend> PublicationTrends { get; set; }
+
     public virtual DbSet<Report> Reports { get; set; }
+
+    public virtual DbSet<ResearchTopic> ResearchTopics { get; set; }
 
     public virtual DbSet<Role> Roles { get; set; }
 
     public virtual DbSet<SyncLog> SyncLogs { get; set; }
 
     public virtual DbSet<User> Users { get; set; }
+    public virtual DbSet<PaperAuthor> PaperAuthors { get; set; }
+    public virtual DbSet<PaperKeyword> PaperKeywords { get; set; }
 
     private string GetConnectionString()
     {
@@ -51,7 +57,6 @@ public partial class AppDbContext : DbContext
     {
         optionsBuilder.UseNpgsql(GetConnectionString());
     }
-
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         modelBuilder
@@ -140,6 +145,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.KeywordId)
                 .HasMaxLength(40)
                 .HasColumnName("keyword_id");
+            entity.Property(e => e.TopicId)
+                .HasMaxLength(50)
+                .HasColumnName("topic_id");
             entity.Property(e => e.UserId)
                 .HasMaxLength(40)
                 .HasColumnName("user_id");
@@ -148,6 +156,10 @@ public partial class AppDbContext : DbContext
                 .HasForeignKey(d => d.KeywordId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("follow_topics_keyword_id_fkey");
+
+            entity.HasOne(d => d.Topic).WithMany(p => p.FollowTopics)
+                .HasForeignKey(d => d.TopicId)
+                .HasConstraintName("fk_flollow_topic");
 
             entity.HasOne(d => d.User).WithMany(p => p.FollowTopics)
                 .HasForeignKey(d => d.UserId)
@@ -266,46 +278,93 @@ public partial class AppDbContext : DbContext
                 .HasConstraintName("fk_paper_journal");
 
             entity.HasMany(d => d.Authors).WithMany(p => p.Papers)
-                .UsingEntity<Dictionary<string, object>>(
-                    "PaperAuthor",
-                    r => r.HasOne<Author>().WithMany()
-                        .HasForeignKey("AuthorId")
+                .UsingEntity<PaperAuthor>(
+                    r => r.HasOne(pa => pa.Author).WithMany()
+                        .HasForeignKey(pa => pa.AuthorId)
                         .HasConstraintName("paper_authors_author_id_fkey"),
-                    l => l.HasOne<Paper>().WithMany()
-                        .HasForeignKey("PaperId")
+                    l => l.HasOne(pa => pa.Paper).WithMany()
+                        .HasForeignKey(pa => pa.PaperId)
                         .HasConstraintName("paper_authors_paper_id_fkey"),
                     j =>
                     {
-                        j.HasKey("PaperId", "AuthorId").HasName("paper_authors_pkey");
+                        j.HasKey(pa => new { pa.PaperId, pa.AuthorId }).HasName("paper_authors_pkey");
                         j.ToTable("paper_authors");
-                        j.IndexerProperty<string>("PaperId")
+                        j.Property(pa => pa.PaperId)
                             .HasMaxLength(40)
                             .HasColumnName("paper_id");
-                        j.IndexerProperty<string>("AuthorId")
+                        j.Property(pa => pa.AuthorId)
                             .HasMaxLength(40)
                             .HasColumnName("author_id");
                     });
 
             entity.HasMany(d => d.Keywords).WithMany(p => p.Papers)
-                .UsingEntity<Dictionary<string, object>>(
-                    "PaperKeyword",
-                    r => r.HasOne<Keyword>().WithMany()
-                        .HasForeignKey("KeywordId")
+                .UsingEntity<PaperKeyword>(
+                    r => r.HasOne(pk => pk.Keyword).WithMany()
+                        .HasForeignKey(pk => pk.KeywordId)
                         .HasConstraintName("paper_keywords_keyword_id_fkey"),
-                    l => l.HasOne<Paper>().WithMany()
-                        .HasForeignKey("PaperId")
+                    l => l.HasOne(pk => pk.Paper).WithMany()
+                        .HasForeignKey(pk => pk.PaperId)
                         .HasConstraintName("paper_keywords_paper_id_fkey"),
                     j =>
                     {
-                        j.HasKey("PaperId", "KeywordId").HasName("paper_keywords_pkey");
+                        j.HasKey(pk => new { pk.PaperId, pk.KeywordId }).HasName("paper_keywords_pkey");
                         j.ToTable("paper_keywords");
-                        j.IndexerProperty<string>("PaperId")
+                        j.Property(pk => pk.PaperId)
                             .HasMaxLength(40)
                             .HasColumnName("paper_id");
-                        j.IndexerProperty<string>("KeywordId")
+                        j.Property(pk => pk.KeywordId)
                             .HasMaxLength(40)
                             .HasColumnName("keyword_id");
                     });
+
+            entity.HasMany(d => d.Topics).WithMany(p => p.Papers)
+                .UsingEntity<Dictionary<string, object>>(
+                    "PaperTopic",
+                    r => r.HasOne<ResearchTopic>().WithMany()
+                        .HasForeignKey("TopicId")
+                        .HasConstraintName("paper_topics_topic_id_fkey"),
+                    l => l.HasOne<Paper>().WithMany()
+                        .HasForeignKey("PaperId")
+                        .HasConstraintName("paper_topics_paper_id_fkey"),
+                    j =>
+                    {
+                        j.HasKey("PaperId", "TopicId").HasName("paper_topics_pkey");
+                        j.ToTable("paper_topics");
+                        j.IndexerProperty<string>("PaperId")
+                            .HasMaxLength(40)
+                            .HasColumnName("paper_id");
+                        j.IndexerProperty<string>("TopicId")
+                            .HasMaxLength(40)
+                            .HasColumnName("topic_id");
+                    });
+        });
+
+        modelBuilder.Entity<PublicationTrend>(entity =>
+        {
+            entity.HasKey(e => e.TrendId).HasName("publication_trends_pkey");
+
+            entity.ToTable("publication_trends");
+
+            entity.Property(e => e.TrendId)
+                .HasMaxLength(40)
+                .HasColumnName("trend_id");
+            entity.Property(e => e.CitationAverage).HasColumnName("citation_average");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.PublicationCount)
+                .HasDefaultValue(0)
+                .HasColumnName("publication_count");
+            entity.Property(e => e.TopicId)
+                .HasMaxLength(40)
+                .HasColumnName("topic_id");
+            entity.Property(e => e.Year).HasColumnName("year");
+
+            entity.HasOne(d => d.Topic).WithMany(p => p.PublicationTrends)
+                .HasForeignKey(d => d.TopicId)
+                .OnDelete(DeleteBehavior.Cascade)
+                .HasConstraintName("publication_trends_topic_id_fkey");
         });
 
         modelBuilder.Entity<Report>(entity =>
@@ -325,14 +384,60 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.ReportType)
                 .HasMaxLength(100)
                 .HasColumnName("report_type");
+            entity.Property(e => e.TopicId)
+                .HasMaxLength(50)
+                .HasColumnName("topic_id");
             entity.Property(e => e.UserId)
                 .HasMaxLength(40)
                 .HasColumnName("user_id");
+
+            entity.HasOne(d => d.Topic).WithMany(p => p.Reports)
+                .HasForeignKey(d => d.TopicId)
+                .HasConstraintName("fk_report_topic");
 
             entity.HasOne(d => d.User).WithMany(p => p.Reports)
                 .HasForeignKey(d => d.UserId)
                 .OnDelete(DeleteBehavior.Cascade)
                 .HasConstraintName("reports_user_id_fkey");
+        });
+
+        modelBuilder.Entity<ResearchTopic>(entity =>
+        {
+            entity.HasKey(e => e.TopicId).HasName("research_topics_pkey");
+
+            entity.ToTable("research_topics");
+
+            entity.HasIndex(e => e.Name, "research_topics_name_key").IsUnique();
+
+            entity.Property(e => e.TopicId)
+                .HasMaxLength(40)
+                .HasColumnName("topic_id");
+            entity.Property(e => e.CreatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("created_at");
+            entity.Property(e => e.Domain)
+                .HasMaxLength(255)
+                .HasColumnName("domain");
+            entity.Property(e => e.Field)
+                .HasMaxLength(255)
+                .HasColumnName("field");
+            entity.Property(e => e.Name)
+                .HasMaxLength(255)
+                .HasColumnName("name");
+            entity.Property(e => e.OpenAlexId)
+                .HasMaxLength(255)
+                .HasColumnName("open_alex_id");
+            entity.Property(e => e.Subfield)
+                .HasMaxLength(255)
+                .HasColumnName("subfield");
+            entity.Property(e => e.UpdatedAt)
+                .HasDefaultValueSql("CURRENT_TIMESTAMP")
+                .HasColumnType("timestamp without time zone")
+                .HasColumnName("updated_at");
+            entity.Property(e => e.WorksCount)
+                .HasDefaultValue(0)
+                .HasColumnName("works_count");
         });
 
         modelBuilder.Entity<Role>(entity =>
@@ -394,6 +499,7 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.UserId)
                 .HasMaxLength(40)
                 .HasColumnName("user_id");
+            entity.Property(e => e.AvatarUrl).HasColumnName("avatar_url");
             entity.Property(e => e.CreatedAt)
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
@@ -401,6 +507,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.Email)
                 .HasMaxLength(150)
                 .HasColumnName("email");
+            entity.Property(e => e.FirebaseUid)
+                .HasMaxLength(255)
+                .HasColumnName("firebase_uid");
             entity.Property(e => e.FullName)
                 .HasMaxLength(100)
                 .HasColumnName("full_name");
@@ -418,7 +527,7 @@ public partial class AppDbContext : DbContext
                 .OnDelete(DeleteBehavior.ClientSetNull)
                 .HasConstraintName("fk_users_role");
         });
-
+        // Redundant model builder configs removed as they are mapped in UsingEntity
         OnModelCreatingPartial(modelBuilder);
     }
 
