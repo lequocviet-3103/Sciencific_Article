@@ -1,0 +1,101 @@
+############################
+# Visual Studio
+############################
+.vs/
+.vscode/
+.idea/
+
+############################
+# Build output
+############################
+**/bin/
+**/obj/
+Debug/
+Release/
+
+############################
+# .NET
+############################
+*.user
+*.suo
+*.userosscache
+*.sln.docstates
+
+*.cache
+*.pdb
+*.dll
+*.exe
+
+TestResults/
+
+############################
+# NuGet
+############################
+packages/
+*.nupkg
+*.snupkg
+
+############################
+# Logs
+############################
+*.log
+logs/
+
+############################
+# Temp
+############################
+*.tmp
+*.temp
+
+############################
+# OS files
+############################
+.DS_Store
+Thumbs.db
+
+############################
+# ASP.NET Core Secrets
+############################
+appsettings.Development.json
+secrets.json
+
+############################
+# Firebase / Google Credentials
+############################
+serviceAccountKey.json
+service-account.json
+firebase-adminsdk*.json
+google-credentials.json
+google-services.json
+GoogleService-Info.plist
+
+############################
+# Environment
+############################
+.env
+.env.*
+!.env.example
+
+############################
+# Flutter
+############################
+.dart_tool/
+.flutter-plugins
+.flutter-plugins-dependencies
+.packages
+
+build/
+
+ios/Pods/
+ios/.symlinks/
+ios/Flutter/Flutter.framework
+ios/Flutter/Flutter.podspec
+
+android/.gradle/
+android/local.properties
+android/key.properties
+
+############################
+# Generated
+############################
+*.generated.cs

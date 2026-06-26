@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  api:
+    build:
+      context: ./Sciencific_Article
+      dockerfile: Dockerfile
+    container_name: scientific_article_api
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - ConnectionStrings__DefaultConnection=Host=postgres;Database=scientific_article;Username=postgres;Password=postgres
+      - Firebase__project_id=scientific-article-b73bc
+      - Firebase__type=service_account
+      - Firebase__project_id_1=scientific-article-b73bc
+      - Firebase__private_key_id=${FIREBASE_PRIVATE_KEY_ID}
+      - Firebase__private_key=${FIREBASE_PRIVATE_KEY}
+      - Firebase__client_email=${FIREBASE_CLIENT_EMAIL}
+      - Firebase__client_id=${FIREBASE_CLIENT_ID}
+      - Firebase__auth_uri=https://accounts.google.com/o/oauth2/auth
+      - Firebase__token_uri=https://oauth2.googleapis.com/token
+      - Firebase__auth_provider_x509_cert_url=https://www.googleapis.com/oauth2/v1/certs
+      - Firebase__client_x509_cert_url=${FIREBASE_CLIENT_X509_CERT_URL}
+    ports:
+      - "5255:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+
+  postgres:
+    image: postgres:16-alpine
+    container_name: scientific_article_db
+    environment:
+      - POSTGRES_DB=scientific_article
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    restart: unless-stopped
+
+  pgadmin:
+    image: dpage/pgadmin4:latest
+    container_name: scientific_article_pgadmin
+    environment:
+      - PGADMIN_DEFAULT_EMAIL=admin@researchhub.com
+      - PGADMIN_DEFAULT_PASSWORD=admin123
+    ports:
+      - "5050:80"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    restart: unless-stopped
+    profiles:
+      - tools
+
+volumes:
+  postgres_data:
