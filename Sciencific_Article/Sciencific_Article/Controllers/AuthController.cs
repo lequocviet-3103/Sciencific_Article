@@ -30,6 +30,25 @@ public class AuthController : ControllerBase
         return Ok(new UserDto());
     }
 
+    [HttpPost("assign-role")]
+    public async Task<ActionResult<VerifyTokenResponse>> AssignRole([FromBody] AssignRoleRequest request, CancellationToken cancellationToken)
+    {
+        if (string.IsNullOrWhiteSpace(request.UserId) || string.IsNullOrWhiteSpace(request.RoleId))
+        {
+            return BadRequest(new VerifyTokenResponse { Success = false, Message = "UserId and RoleId are required" });
+        }
+
+        var result = await _authService.AssignPrivilegedRoleAsync(request.UserId, request.RoleId, cancellationToken);
+        return result.Success ? Ok(result) : BadRequest(result);
+    }
+
+    [HttpGet("users")]
+    public async Task<ActionResult<IReadOnlyList<UserDto>>> GetUsers(CancellationToken cancellationToken)
+    {
+        var users = await _authService.GetAllUsersAsync(cancellationToken);
+        return Ok(users);
+    }
+
     [HttpGet("roles")]
     public async Task<ActionResult<IReadOnlyList<RoleDto>>> GetRoles(CancellationToken cancellationToken)
     {

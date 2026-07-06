@@ -10,12 +10,41 @@ namespace Sciencific_Article.Controllers;
 public class ReportsController : ControllerBase
 {
     private readonly AppDbContext _context;
-    private readonly IFirebaseStorageService _storageService;
+    private readonly IReportGeneratorService _reportGenerator;
 
-    public ReportsController(AppDbContext context, IFirebaseStorageService storageService)
+    public ReportsController(
+        AppDbContext context,
+        IReportGeneratorService reportGenerator)
     {
         _context = context;
-        _storageService = storageService;
+        _reportGenerator = reportGenerator;
+    }
+
+    /// User searches a topic → backend computes the publication trend, top
+    /// authors and top journals for the matching papers, renders a PDF,
+    /// uploads it to Firebase Storage and saves the resulting report row.
+    [HttpPost("generate")]
+    public async Task<IActionResult> GenerateReport(
+        [FromBody] GenerateReportRequest request,
+        CancellationToken cancellationToken = default)
+    {
+        if (string.IsNullOrWhiteSpace(request.UserId))
+            return BadRequest(new { message = "UserId is required" });
+
+        var report = await _reportGenerator.GenerateDashboardReportAsync(
+            request.UserId,
+            request.Query,
+            request.TopicId,
+            cancellationToken);
+
+        return Ok(new
+        {
+            reportId = report.ReportId,
+            fileUrl = report.FileUrl,
+            reportType = report.ReportType,
+            topicId = report.TopicId,
+            createdAt = report.CreatedAt?.ToString("o"),
+        });
     }
 
     [HttpGet]
@@ -42,63 +71,11 @@ public class ReportsController : ControllerBase
         }));
     }
 
-    [HttpPost]
-    public async Task<IActionResult> CreateReport(
-        [FromBody] CreateReportRequest request,
-        CancellationToken cancellationToken = default)
-    {
-        if (string.IsNullOrWhiteSpace(request.UserId))
-            return BadRequest(new { message = "UserId is required" });
-
-        var reportId = Guid.NewGuid().ToString();
-        string? fileUrl = null;
-
-        if (!string.IsNullOrWhiteSpace(request.PdfBase64))
-        {
-            try
-            {
-                var bytes = Convert.FromBase64String(request.PdfBase64);
-                using var stream = new MemoryStream(bytes);
-                var fileName = $"reports/{reportId}.pdf";
-                fileUrl = await _storageService.UploadAsync(
-                    string.Empty,
-                    fileName,
-                    stream,
-                    "application/pdf",
-                    cancellationToken);
-            }
-            catch
-            {
-                fileUrl = null;
-            }
-        }
-
-        var report = new Domain.Entities.Report
-        {
-            ReportId = reportId,
-            UserId = request.UserId,
-            TopicId = request.TopicId,
-            ReportType = request.ReportType ?? "Trend Report",
-            FileUrl = fileUrl,
-            CreatedAt = DateTime.Now
-        };
-
-        _context.Reports.Add(report);
-        await _context.SaveChangesAsync(cancellationToken);
-
-        return Ok(new
-        {
-            reportId = report.ReportId,
-            fileUrl = report.FileUrl,
-            createdAt = report.CreatedAt?.ToString("o")
-        });
-    }
 }
 
-public class CreateReportRequest
+public class GenerateReportRequest
 {
     public string UserId { get; set; } = string.Empty;
+    public string? Query { get; set; }
     public string? TopicId { get; set; }
-    public string? ReportType { get; set; }
-    public string? PdfBase64 { get; set; }
 }

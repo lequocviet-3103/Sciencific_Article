@@ -43,8 +43,11 @@ public class TopicRepository : ITopicRepository
             return await _context.ResearchTopics.OrderByDescending(x => x.WorksCount).Take(take).ToListAsync(cancellationToken);
         }
 
+        // Postgres LIKE is case-sensitive (unlike SQL Server), so a plain
+        // .Contains() would miss "Quantum..." when the user types "quantum".
         return await _context.ResearchTopics
-            .Where(x => x.Name.Contains(query) || (x.Field != null && x.Field.Contains(query)))
+            .Where(x => EF.Functions.ILike(x.Name, $"%{query}%")
+                || (x.Field != null && EF.Functions.ILike(x.Field, $"%{query}%")))
             .OrderByDescending(x => x.WorksCount)
             .Take(take)
             .ToListAsync(cancellationToken);

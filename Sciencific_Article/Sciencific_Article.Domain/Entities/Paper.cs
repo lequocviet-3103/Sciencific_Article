@@ -23,6 +23,8 @@ public partial class Paper
 
     public string? SourceApi { get; set; }
 
+    public string? DocType { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public virtual ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();

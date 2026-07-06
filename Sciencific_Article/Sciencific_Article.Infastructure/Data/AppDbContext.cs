@@ -271,6 +271,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.SourceApi)
                 .HasMaxLength(100)
                 .HasColumnName("source_api");
+            entity.Property(e => e.DocType)
+                .HasMaxLength(50)
+                .HasColumnName("doc_type");
             entity.Property(e => e.Title).HasColumnName("title");
 
             entity.HasOne(d => d.Journal).WithMany(p => p.Papers)
@@ -521,6 +524,9 @@ public partial class AppDbContext : DbContext
                 .HasDefaultValueSql("CURRENT_TIMESTAMP")
                 .HasColumnType("timestamp without time zone")
                 .HasColumnName("updated_at");
+            entity.Property(e => e.IsBanned)
+                .HasDefaultValue(false)
+                .HasColumnName("is_banned");
 
             entity.HasOne(d => d.Role).WithMany(p => p.Users)
                 .HasForeignKey(d => d.RoleId)

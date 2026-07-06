@@ -11,4 +11,11 @@ public interface IAuthService
         CancellationToken cancellationToken = default);
 
     Task<IReadOnlyList<Role>> GetAvailableRolesAsync(CancellationToken cancellationToken = default);
+
+    Task<VerifyTokenResponse> AssignPrivilegedRoleAsync(
+        string userId,
+        string roleId,
+        CancellationToken cancellationToken = default);
+
+    Task<IReadOnlyList<UserDto>> GetAllUsersAsync(CancellationToken cancellationToken = default);
 }

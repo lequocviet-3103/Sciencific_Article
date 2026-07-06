@@ -1,5 +1,7 @@
+using System.Text;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Sciencific_Article.Application.Interfaces.Services;
 using Sciencific_Article.Infastructure.Data;
 
 namespace Sciencific_Article.Controllers;
@@ -9,17 +11,28 @@ namespace Sciencific_Article.Controllers;
 public class PapersController : ControllerBase
 {
     private readonly AppDbContext _context;
+    private readonly IOpenAlexSyncService _syncService;
 
-    public PapersController(AppDbContext context)
+    public PapersController(AppDbContext context, IOpenAlexSyncService syncService)
     {
         _context = context;
+        _syncService = syncService;
     }
 
     [HttpGet]
     public async Task<IActionResult> Search(
         [FromQuery] string? q,
         [FromQuery] string? topicId,
+        [FromQuery] string? authorId,
+        [FromQuery] string? authorName,
+        [FromQuery] string? journalId,
+        [FromQuery] string? journalName,
         [FromQuery] int? year,
+        [FromQuery] int? fromYear,
+        [FromQuery] int? toYear,
+        [FromQuery] int? minCitations,
+        [FromQuery] string? docType,
+        [FromQuery] string? sort,
         [FromQuery] int page = 1,
         [FromQuery] int pageSize = 20,
         CancellationToken cancellationToken = default)
@@ -27,6 +40,18 @@ public class PapersController : ControllerBase
         if (page < 1) page = 1;
         if (pageSize < 1) pageSize = 20;
         if (pageSize > 100) pageSize = 100;
+
+        if (!string.IsNullOrWhiteSpace(q))
+        {
+            try
+            {
+                await _syncService.EnsureWorksSyncedForQueryAsync(q, cancellationToken: cancellationToken);
+            }
+            catch
+            {
+                // Sync failed — continue with existing DB results rather than returning 500
+            }
+        }
 
         var query = _context.Papers
             .Include(p => p.Journal)
@@ -39,14 +64,52 @@ public class PapersController : ControllerBase
                 (p.Abstract != null && EF.Functions.ILike(p.Abstract, $"%{q}%")));
         }
 
-        if (year.HasValue)
+        if (!string.IsNullOrWhiteSpace(authorId))
         {
-            query = query.Where(p => p.PublicationYear == year.Value);
+            query = query.Where(p => p.Authors.Any(a => a.AuthorId == authorId));
+        }
+        else if (!string.IsNullOrWhiteSpace(authorName))
+        {
+            query = query.Where(p => p.Authors.Any(a =>
+                EF.Functions.ILike(a.Name, $"%{authorName}%")));
         }
 
-        var total = query.Count();
+        if (!string.IsNullOrWhiteSpace(journalId))
+        {
+            query = query.Where(p => p.JournalId == journalId);
+        }
+        else if (!string.IsNullOrWhiteSpace(journalName))
+        {
+            query = query.Where(p =>
+                p.Journal != null && EF.Functions.ILike(p.Journal.Name, $"%{journalName}%"));
+        }
+
+        var effectiveFromYear = fromYear ?? year;
+        var effectiveToYear = toYear ?? year;
+        if (effectiveFromYear.HasValue)
+            query = query.Where(p => p.PublicationYear >= effectiveFromYear.Value);
+        if (effectiveToYear.HasValue)
+            query = query.Where(p => p.PublicationYear <= effectiveToYear.Value);
+
+        if (minCitations.HasValue && minCitations.Value > 0)
+            query = query.Where(p => p.CitationCount >= minCitations.Value);
+
+        if (!string.IsNullOrWhiteSpace(docType))
+            query = query.Where(p => p.DocType == docType);
+
+        if (!string.IsNullOrWhiteSpace(topicId))
+            query = query.Where(p => p.Topics.Any(t => t.TopicId == topicId));
+
+        query = sort switch
+        {
+            "cited_by_count:asc" => query.OrderBy(p => p.CitationCount),
+            "publication_year:asc" => query.OrderBy(p => p.PublicationYear),
+            "publication_year:desc" => query.OrderByDescending(p => p.PublicationYear),
+            _ => query.OrderByDescending(p => p.CitationCount),
+        };
+
+        var total = await query.CountAsync(cancellationToken);
         var items = await query
-            .OrderByDescending(p => p.PublicationYear)
             .Skip((page - 1) * pageSize)
             .Take(pageSize)
             .Select(p => new
@@ -57,7 +120,9 @@ public class PapersController : ControllerBase
                 p.Doi,
                 p.PublicationYear,
                 p.CitationCount,
-                Journal = p.Journal != null ? new { p.Journal.JournalId, p.Journal.Name } : null
+                p.DocType,
+                Journal = p.Journal != null ? new { p.Journal.JournalId, p.Journal.Name } : null,
+                Authors = p.Authors.Take(5).Select(a => new { a.AuthorId, a.Name }).ToList()
             })
             .ToListAsync(cancellationToken);
 
@@ -71,11 +136,135 @@ public class PapersController : ControllerBase
         });
     }
 
+    [HttpGet("latest")]
+    public async Task<IActionResult> GetLatest(
+        [FromQuery] int take = 20,
+        CancellationToken cancellationToken = default)
+    {
+        var items = await _context.Papers
+            .Include(p => p.Journal)
+            .Where(p => p.PublicationYear.HasValue)
+            .OrderByDescending(p => p.PublicationYear)
+            .ThenByDescending(p => p.CitationCount)
+            .Take(take)
+            .Select(p => new
+            {
+                p.PaperId, p.Title, p.PublicationYear, p.CitationCount, p.DocType,
+                Journal = p.Journal != null ? new { p.Journal.JournalId, p.Journal.Name } : null
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(items);
+    }
+
+    [HttpGet("trending")]
+    public async Task<IActionResult> GetTrending(
+        [FromQuery] int take = 20,
+        CancellationToken cancellationToken = default)
+    {
+        var currentYear = DateTime.UtcNow.Year;
+        var items = await _context.Papers
+            .Include(p => p.Journal)
+            .Where(p => p.PublicationYear >= currentYear - 3 && p.CitationCount > 0)
+            .OrderByDescending(p => p.CitationCount)
+            .Take(take)
+            .Select(p => new
+            {
+                p.PaperId, p.Title, p.PublicationYear, p.CitationCount, p.DocType,
+                Journal = p.Journal != null ? new { p.Journal.JournalId, p.Journal.Name } : null
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(items);
+    }
+
+    [HttpGet("popular")]
+    public async Task<IActionResult> GetPopular(
+        [FromQuery] int take = 20,
+        CancellationToken cancellationToken = default)
+    {
+        var items = await _context.Papers
+            .Include(p => p.Journal)
+            .OrderByDescending(p => p.CitationCount)
+            .Take(take)
+            .Select(p => new
+            {
+                p.PaperId, p.Title, p.PublicationYear, p.CitationCount, p.DocType,
+                Journal = p.Journal != null ? new { p.Journal.JournalId, p.Journal.Name } : null
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(items);
+    }
+
+    [HttpGet("export")]
+    public async Task<IActionResult> ExportCsv(
+        [FromQuery] string? q,
+        [FromQuery] string? topicId,
+        [FromQuery] string? authorId,
+        [FromQuery] string? journalId,
+        [FromQuery] int? fromYear,
+        [FromQuery] int? toYear,
+        [FromQuery] int? minCitations,
+        [FromQuery] string? docType,
+        CancellationToken cancellationToken = default)
+    {
+        var query = _context.Papers
+            .Include(p => p.Journal)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(q))
+            query = query.Where(p =>
+                (p.Title != null && EF.Functions.ILike(p.Title, $"%{q}%")) ||
+                (p.Abstract != null && EF.Functions.ILike(p.Abstract, $"%{q}%")));
+
+        if (!string.IsNullOrWhiteSpace(authorId))
+            query = query.Where(p => p.Authors.Any(a => a.AuthorId == authorId));
+
+        if (!string.IsNullOrWhiteSpace(journalId))
+            query = query.Where(p => p.JournalId == journalId);
+
+        if (!string.IsNullOrWhiteSpace(topicId))
+            query = query.Where(p => p.Topics.Any(t => t.TopicId == topicId));
+
+        if (fromYear.HasValue)
+            query = query.Where(p => p.PublicationYear >= fromYear.Value);
+        if (toYear.HasValue)
+            query = query.Where(p => p.PublicationYear <= toYear.Value);
+        if (minCitations.HasValue)
+            query = query.Where(p => p.CitationCount >= minCitations.Value);
+        if (!string.IsNullOrWhiteSpace(docType))
+            query = query.Where(p => p.DocType == docType);
+
+        var papers = await query
+            .OrderByDescending(p => p.CitationCount)
+            .Take(500)
+            .Select(p => new
+            {
+                p.PaperId, p.Title, p.Doi, p.PublicationYear, p.CitationCount, p.DocType,
+                JournalName = p.Journal != null ? p.Journal.Name : ""
+            })
+            .ToListAsync(cancellationToken);
+
+        var sb = new StringBuilder();
+        sb.AppendLine("PaperId,Title,DOI,Year,Citations,DocType,Journal");
+        foreach (var p in papers)
+        {
+            sb.AppendLine(
+                $"{CsvEscape(p.PaperId)},{CsvEscape(p.Title ?? "")},{CsvEscape(p.Doi ?? "")}," +
+                $"{p.PublicationYear},{p.CitationCount},{CsvEscape(p.DocType ?? "")},{CsvEscape(p.JournalName)}");
+        }
+
+        var bytes = Encoding.UTF8.GetBytes(sb.ToString());
+        return File(bytes, "text/csv", "papers.csv");
+    }
+
     [HttpGet("{paperId}")]
     public async Task<IActionResult> GetById(string paperId, CancellationToken cancellationToken)
     {
         var paper = await _context.Papers
             .Include(p => p.Journal)
+            .Include(p => p.Topics)
             .FirstOrDefaultAsync(p => p.PaperId == paperId, cancellationToken);
 
         if (paper == null) return NotFound(new { message = "Paper not found" });
@@ -100,6 +289,7 @@ public class PapersController : ControllerBase
             paper.Doi,
             paper.PublicationYear,
             paper.CitationCount,
+            paper.DocType,
             Journal = paper.Journal != null ? new
             {
                 paper.Journal.JournalId,
@@ -108,7 +298,15 @@ public class PapersController : ControllerBase
                 paper.Journal.Issn
             } : null,
             Authors = authors,
-            Keywords = keywords
+            Keywords = keywords,
+            Topics = paper.Topics.Select(t => new { t.TopicId, t.Name, t.Field, t.Domain }),
         });
+    }
+
+    private static string CsvEscape(string value)
+    {
+        if (value.Contains(',') || value.Contains('"') || value.Contains('\n'))
+            return $"\"{value.Replace("\"", "\"\"")}\"";
+        return value;
     }
 }

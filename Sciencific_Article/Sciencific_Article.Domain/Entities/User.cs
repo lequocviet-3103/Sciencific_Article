@@ -23,6 +23,8 @@ public partial class User
 
     public string? AvatarUrl { get; set; }
 
+    public bool? IsBanned { get; set; }
+
     public virtual ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
 
     public virtual ICollection<FollowTopic> FollowTopics { get; set; } = new List<FollowTopic>();

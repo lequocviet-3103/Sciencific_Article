@@ -90,19 +90,51 @@ public class AuthServiceTests
     }
 
     [Fact]
-    public async Task VerifyIdToken_NoRoleId_DefaultsToResearcher()
+    public async Task VerifyIdToken_NewUser_AlwaysDefaultsToCustomerRegardlessOfRequestedRole()
     {
         // Arrange
         var token = new FirebaseToken { Uid = "uid123", Claims = new Dictionary<string, object> { ["email"] = "test@example.com" } };
         _mockFirebaseAuth.Setup(x => x.VerifyIdTokenAsync(It.IsAny<string>(), It.IsAny<CancellationToken>())).ReturnsAsync(token);
         _mockUserRepo.Setup(x => x.GetByFirebaseUidAsync("uid123", It.IsAny<CancellationToken>())).ReturnsAsync((User?)null);
-        _mockUserRepo.Setup(x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+        User? addedUser = null;
+        _mockUserRepo.Setup(x => x.AddAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()))
+            .Callback<User, CancellationToken>((u, _) => addedUser = u)
+            .ReturnsAsync((User u, CancellationToken _) => u);
 
-        // Act
-        var result = await CreateService().VerifyIdTokenAsync("valid-id-token");
+        // Act: even when a privileged roleId is requested, public verify-token must ignore it.
+        var result = await CreateService().VerifyIdTokenAsync("valid-id-token", AuthService.AdminRoleId);
 
         // Assert
         Assert.True(result.Success);
         Assert.NotNull(result.User);
+        Assert.NotNull(addedUser);
+        Assert.Equal(AuthService.CustomerRoleId, addedUser!.RoleId);
+    }
+
+    [Fact]
+    public async Task AssignPrivilegedRole_ValidRole_UpdatesUser()
+    {
+        // Arrange
+        var existingUser = new User { UserId = "user1", FirebaseUid = "uid123", RoleId = AuthService.CustomerRoleId };
+        _mockUserRepo.Setup(x => x.GetByIdAsync("user1", It.IsAny<CancellationToken>())).ReturnsAsync(existingUser);
+        _mockUserRepo.Setup(x => x.UpdateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>())).Returns(Task.CompletedTask);
+
+        // Act
+        var result = await CreateService().AssignPrivilegedRoleAsync("user1", AuthService.ResearcherRoleId);
+
+        // Assert
+        Assert.True(result.Success);
+        Assert.Equal(AuthService.ResearcherRoleId, existingUser.RoleId);
+    }
+
+    [Fact]
+    public async Task AssignPrivilegedRole_RejectsCustomerRole()
+    {
+        // Act
+        var result = await CreateService().AssignPrivilegedRoleAsync("user1", AuthService.CustomerRoleId);
+
+        // Assert
+        Assert.False(result.Success);
+        _mockUserRepo.Verify(x => x.UpdateAsync(It.IsAny<User>(), It.IsAny<CancellationToken>()), Times.Never);
     }
 }

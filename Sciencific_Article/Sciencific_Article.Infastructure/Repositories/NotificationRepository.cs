@@ -38,11 +38,6 @@ public class NotificationRepository : INotificationRepository
         await _context.SaveChangesAsync(cancellationToken);
     }
 
-    public Task<int> CountUnreadAsync(string userId, CancellationToken cancellationToken = default)
-    {
-        throw new NotImplementedException();
-    }
-
-    /*public async Task<int> CountUnreadAsync(string userId, CancellationToken cancellationToken = default)
-        => await _context.Notifications.CountAsync(x => x.UserId == userId && !x.IsRead, cancellationToken);*/
+    public async Task<int> CountUnreadAsync(string userId, CancellationToken cancellationToken = default)
+        => await _context.Notifications.CountAsync(x => x.UserId == userId && x.IsRead != true, cancellationToken);
 }

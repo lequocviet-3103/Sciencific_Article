@@ -65,6 +65,10 @@
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",
               "version": "[8.0.0, )"
+            },
+            "QuestPDF": {
+              "target": "Package",
+              "version": "[2026.6.1, )"
             }
           },
           "imports": [
@@ -208,6 +212,10 @@
             "FirebaseAdmin": {
               "target": "Package",
               "version": "[3.5.0, )"
+            },
+            "Google.Cloud.Storage.V1": {
+              "target": "Package",
+              "version": "[4.15.0, )"
             },
             "Microsoft.EntityFrameworkCore": {
               "target": "Package",

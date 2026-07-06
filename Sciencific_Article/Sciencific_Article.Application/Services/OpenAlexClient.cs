@@ -13,6 +13,15 @@ public class OpenAlexClient : IOpenAlexClient
         _httpClient = httpClient;
     }
 
+    public async Task<(int StatusCode, string Body)> GetRawJsonAsync(
+        string relativePathAndQuery,
+        CancellationToken cancellationToken = default)
+    {
+        var response = await _httpClient.GetAsync(relativePathAndQuery, cancellationToken);
+        var body = await response.Content.ReadAsStringAsync(cancellationToken);
+        return ((int)response.StatusCode, body);
+    }
+
     public async Task<OpenAlexResponse<OpenAlexWork>> GetWorksAsync(
         string? search = null,
         string? cursor = null,
@@ -120,10 +129,30 @@ public class OpenAlexClient : IOpenAlexClient
                 DisplayName = src.TryGetProperty("display_name", out var sdn) ? sdn.GetString() : null,
                 HostPublisher = src.TryGetProperty("host_publisher", out var hp) ? hp.GetString() : null,
                 HostOrganizationName = src.TryGetProperty("host_organization_name", out var hon) ? hon.GetString() : null,
-                Issn = src.TryGetProperty("issn", out var issn) ? issn.GetString() : null
+                Issn = src.TryGetProperty("issn", out var issn) ? ParseIssn(issn) : null
             };
         }
         return loc;
+    }
+
+    // OpenAlex returns `source.issn` as either a JSON array of strings
+    // (most sources, since a journal can have multiple ISSNs) or, rarely,
+    // a single string — handle both rather than assuming one shape.
+    private static string? ParseIssn(System.Text.Json.JsonElement e)
+    {
+        if (e.ValueKind == System.Text.Json.JsonValueKind.Array)
+        {
+            foreach (var item in e.EnumerateArray())
+            {
+                return item.ValueKind == System.Text.Json.JsonValueKind.String ? item.GetString() : null;
+            }
+            return null;
+        }
+        if (e.ValueKind == System.Text.Json.JsonValueKind.String)
+        {
+            return e.GetString();
+        }
+        return null;
     }
 
     private static OpenAlexAuthorship ParseAuthorship(System.Text.Json.JsonElement e)

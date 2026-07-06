@@ -20,14 +20,31 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddCors(options =>
 {
     options.AddDefaultPolicy(policy =>
-        policy.WithOrigins(
-                "http://localhost:5255",
-                "http://10.0.2.2:5255",
-                "http://localhost:8080",
-                "http://localhost:52710")
-              .AllowAnyHeader()
-              .AllowAnyMethod()
-              .AllowCredentials());
+    {
+        if (builder.Environment.IsDevelopment())
+        {
+            // flutter run -d chrome/edge picks a random localhost port each
+            // run, so allow any localhost/127.0.0.1 origin in dev instead of
+            // hardcoding one.
+            policy.SetIsOriginAllowed(origin =>
+                    Uri.TryCreate(origin, UriKind.Absolute, out var uri) &&
+                    (uri.Host == "localhost" || uri.Host == "127.0.0.1" || uri.Host == "10.0.2.2"))
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+        else
+        {
+            policy.WithOrigins(
+                    "http://localhost:5255",
+                    "http://10.0.2.2:5255",
+                    "http://localhost:8080",
+                    "http://localhost:52710")
+                  .AllowAnyHeader()
+                  .AllowAnyMethod()
+                  .AllowCredentials();
+        }
+    });
 });
 
 builder.Services.AddDbContext<AppDbContext>(options =>
@@ -46,11 +63,18 @@ if (string.IsNullOrWhiteSpace(serviceAccountPath))
     serviceAccountPath = tempPath;
 }
 
+var firebaseCredential = GoogleCredential.FromFile(serviceAccountPath);
+
 FirebaseApp.Create(new AppOptions
 {
-    Credential = GoogleCredential.FromFile(serviceAccountPath),
+    Credential = firebaseCredential,
     ProjectId = firebaseProjectId
 });
+
+QuestPDF.Settings.License = QuestPDF.Infrastructure.LicenseType.Community;
+
+builder.Services.AddSingleton(firebaseCredential);
+builder.Services.AddSingleton(new FirebaseStorageOptions($"{firebaseProjectId}.appspot.com"));
 
 builder.Services.AddAutoMapper(typeof(MappingProfile));
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
@@ -71,6 +95,7 @@ builder.Services.AddScoped<IFirebaseNotificationService, FirebaseNotificationSer
 builder.Services.AddScoped<IFirebaseStorageService, FirebaseStorageService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 builder.Services.AddScoped<IOpenAlexSyncService, OpenAlexSyncService>();
+builder.Services.AddScoped<IReportGeneratorService, ReportGeneratorService>();
 builder.Services.AddHostedService<Sciencific_Article.Services.SyncBackgroundService>();
 
 builder.Services.AddHttpClient<IOpenAlexClient, OpenAlexClient>(client =>
@@ -82,15 +107,16 @@ builder.Services.AddHttpClient<IOpenAlexClient, OpenAlexClient>(client =>
 
 var app = builder.Build();
 
-
-
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
 
-app.UseHttpsRedirection();
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
 app.UseCors();
 app.UseAuthorization();
 app.MapControllers();

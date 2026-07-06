@@ -1,6 +1,6 @@
 {
   "version": 2,
-  "dgSpecHash": "taGDX3tuV1c=",
+  "dgSpecHash": "SbKBSl414Ko=",
   "success": true,
   "projectFilePath": "D:\\PRM392\\PRM393_Lab2_BigUpdate\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
   "expectedPackageFiles": [
@@ -17,7 +17,8 @@
     "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\microsoft.extensions.logging\\8.0.0\\microsoft.extensions.logging.8.0.0.nupkg.sha512",
     "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\microsoft.extensions.logging.abstractions\\8.0.0\\microsoft.extensions.logging.abstractions.8.0.0.nupkg.sha512",
     "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\microsoft.extensions.options\\8.0.0\\microsoft.extensions.options.8.0.0.nupkg.sha512",
-    "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512"
+    "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\microsoft.extensions.primitives\\8.0.0\\microsoft.extensions.primitives.8.0.0.nupkg.sha512",
+    "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\questpdf\\2026.6.1\\questpdf.2026.6.1.nupkg.sha512"
   ],
   "logs": [
     {

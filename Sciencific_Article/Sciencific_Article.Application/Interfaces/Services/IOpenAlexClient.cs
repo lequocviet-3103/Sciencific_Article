@@ -7,6 +7,14 @@ public interface IOpenAlexClient
         string? cursor = null,
         int perPage = 25,
         CancellationToken cancellationToken = default);
+
+    /// Forwards a path+query (relative to the OpenAlex base URL, e.g.
+    /// "works?search=ai&page=1") and returns the raw JSON response
+    /// untouched, so callers can pass OpenAlex's response straight through
+    /// to a client that already knows how to parse OpenAlex's JSON shape.
+    Task<(int StatusCode, string Body)> GetRawJsonAsync(
+        string relativePathAndQuery,
+        CancellationToken cancellationToken = default);
 }
 
 // ── Shared DTOs (same namespace so the interface can reference them) ──
