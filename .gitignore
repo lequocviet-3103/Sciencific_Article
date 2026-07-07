@@ -37,7 +37,7 @@ google-credentials.json
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
-pubspec.lock
+# pubspec.lock phải được commit trong Flutter app để đảm bảo build nhất quán
 
 # Flutter build output
 Journal_Trend_Analysis/build/
