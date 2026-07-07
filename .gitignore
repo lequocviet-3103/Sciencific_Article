@@ -1,101 +1,103 @@
-############################
-# Visual Studio
-############################
-.vs/
-.vscode/
-.idea/
-
-############################
-# Build output
-############################
+# ============================================================
+# .NET / ASP.NET Core
+# ============================================================
 **/bin/
 **/obj/
-Debug/
-Release/
-
-############################
-# .NET
-############################
 *.user
 *.suo
 *.userosscache
 *.sln.docstates
-
 *.cache
 *.pdb
-*.dll
-*.exe
-
 TestResults/
 
-############################
 # NuGet
-############################
 packages/
 *.nupkg
 *.snupkg
 
-############################
-# Logs
-############################
-*.log
-logs/
-
-############################
-# Temp
-############################
-*.tmp
-*.temp
-
-############################
-# OS files
-############################
-.DS_Store
-Thumbs.db
-
-############################
-# ASP.NET Core Secrets
-############################
-appsettings.Development.json
+# ============================================================
+# SECRETS — never commit these
+# ============================================================
+appsettings.json
+appsettings.*.json
+!appsettings.example.json
 secrets.json
-
-############################
-# Firebase / Google Credentials
-############################
 serviceAccountKey.json
 service-account.json
 firebase-adminsdk*.json
 google-credentials.json
-google-services.json
-GoogleService-Info.plist
+*.pfx
+*.p12
 
-############################
-# Environment
-############################
-.env
-.env.*
-!.env.example
-
-############################
-# Flutter
-############################
+# ============================================================
+# Flutter / Dart
+# ============================================================
 .dart_tool/
 .flutter-plugins
 .flutter-plugins-dependencies
 .packages
+pubspec.lock
 
-build/
+# Flutter build output
+Journal_Trend_Analysis/build/
 
-ios/Pods/
-ios/.symlinks/
-ios/Flutter/Flutter.framework
-ios/Flutter/Flutter.podspec
+# Android
+Journal_Trend_Analysis/android/.gradle/
+Journal_Trend_Analysis/android/local.properties
+Journal_Trend_Analysis/android/key.properties
+Journal_Trend_Analysis/android/app/google-services.json
 
-android/.gradle/
-android/local.properties
-android/key.properties
+# iOS
+Journal_Trend_Analysis/ios/Pods/
+Journal_Trend_Analysis/ios/.symlinks/
+Journal_Trend_Analysis/ios/Flutter/Flutter.framework
+Journal_Trend_Analysis/ios/Flutter/Flutter.podspec
+Journal_Trend_Analysis/ios/Runner/GoogleService-Info.plist
 
-############################
-# Generated
-############################
+# macOS / Linux / Windows Flutter runners
+Journal_Trend_Analysis/linux/flutter/ephemeral/
+Journal_Trend_Analysis/windows/flutter/ephemeral/
+Journal_Trend_Analysis/macos/Flutter/ephemeral/
+Journal_Trend_Analysis/macos/Pods/
+
+# ============================================================
+# IDE / Editor
+# ============================================================
+.vs/
+.vscode/
+.idea/
+*.iml
+*.ipr
+*.iws
+
+# ============================================================
+# OS generated
+# ============================================================
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
+Desktop.ini
+
+# ============================================================
+# Logs & temp
+# ============================================================
+*.log
+logs/
+*.tmp
+*.temp
+
+# ============================================================
+# Docker
+# ============================================================
+.dockerignore
+
+# ============================================================
+# Misc generated
+# ============================================================
 *.generated.cs
+coverage/
