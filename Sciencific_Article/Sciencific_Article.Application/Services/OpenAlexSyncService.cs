@@ -26,8 +26,47 @@ public class OpenAlexSyncService : IOpenAlexSyncService
 
     public async Task<string> SyncWorksAsync(CancellationToken cancellationToken = default)
     {
-        var inserted = await IngestWorksAsync(search: null, maxPages: 2, cancellationToken);
-        return $"Synced {inserted} papers from OpenAlex";
+        // Fallback seed topics used when the DB is empty or has no
+        // high-WorksCount topics yet. Without this, the very first sync
+        // after a fresh DB produces "Synced X papers (per-topic: ;
+        // baseline: ...)" and the featured/topics pages stay empty.
+        var seedTopics = new[]
+        {
+            "Quantum mechanics", "Marine biology", "Astrophysics",
+            "Computer science", "Genetics", "Neuroscience",
+            "Climate change", "Materials science", "Chemistry",
+            "Medicine"
+        };
+
+        // Pull topic names from the DB so any topic that already exists
+        // (manually added or synced in a previous run) ends up with papers
+        // linked to it.
+        var dbTopics = await _unitOfWork.ResearchTopics
+            .OrderByDescending(t => t.WorksCount)
+            .Take(10)
+            .Select(t => t.Name)
+            .ToListAsync(cancellationToken);
+
+        // Combine DB topics + seeds, dedupe case-insensitively, cap at 10.
+        var topTopics = dbTopics
+            .Concat(seedTopics.Where(s => !dbTopics.Any(d => d.Equals(s, StringComparison.OrdinalIgnoreCase))))
+            .Take(10)
+            .ToList();
+
+        var totalInserted = 0;
+        var topicReports = new List<string>();
+        foreach (var topicName in topTopics)
+        {
+            var inserted = await IngestWorksAsync(search: topicName, maxPages: 1, cancellationToken);
+            topicReports.Add($"{topicName}: {inserted}");
+            totalInserted += inserted;
+        }
+
+        // Also pull a generic batch so we have baseline coverage.
+        var baseline = await IngestWorksAsync(search: null, maxPages: 2, cancellationToken);
+        totalInserted += baseline;
+
+        return $"Synced {totalInserted} papers from OpenAlex (per-topic: {string.Join(" | ", topicReports)}; baseline: {baseline})";
     }
 
     /// Called on-demand from search endpoints when the DB has too few rows
@@ -141,18 +180,105 @@ public class OpenAlexSyncService : IOpenAlexSyncService
 
             if (response.Results.Count == 0) break;
 
+            // Pre-fetch all journals/topics/authors/keywords that we'll need
+            // in one go, instead of issuing per-row lookups below.
+            var incomingIds = response.Results
+                .Select(w => ExtractOpenAlexId(w.Id))
+                .Where(id => !string.IsNullOrEmpty(id))
+                .Cast<string>()
+                .ToList();
+
+            var existingPapers = incomingIds.Count == 0
+                ? new HashSet<string>()
+                : (await _unitOfWork.Papers
+                    .AsNoTracking()
+                    .Where(p => p.ExternalId != null && incomingIds.Contains(p.ExternalId))
+                    .Select(p => p.ExternalId!)
+                    .ToListAsync(cancellationToken))
+                    .ToHashSet();
+
+            var journalNames = response.Results
+                .Select(w => w.PrimaryLocation?.Source?.DisplayName
+                    ?? w.Locations.FirstOrDefault()?.Source?.DisplayName)
+                .Where(n => !string.IsNullOrWhiteSpace(n))
+                .Cast<string>()
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var existingJournals = journalNames.Count == 0
+                ? new Dictionary<string, Journal>(StringComparer.OrdinalIgnoreCase)
+                : (await _unitOfWork.Journals
+                    .AsNoTracking()
+                    .Where(j => journalNames.Contains(j.Name))
+                    .ToListAsync(cancellationToken))
+                    .ToDictionary(j => j.Name, j => j, StringComparer.OrdinalIgnoreCase);
+
+            var incomingAuthorIds = response.Results
+                .SelectMany(w => w.Authorships ?? Enumerable.Empty<OpenAlexAuthorship>())
+                .Select(a => a.Authors?.FirstOrDefault()?.Id)
+                .Where(id => !string.IsNullOrEmpty(id))
+                .Select(id => ExtractOpenAlexId(id)!)
+                .Where(id => !string.IsNullOrEmpty(id))
+                .Distinct()
+                .ToList();
+
+            var existingAuthorsByExtId = incomingAuthorIds.Count == 0
+                ? new Dictionary<string, Author>()
+                : (await _unitOfWork.Authors
+                    .AsNoTracking()
+                    .Where(a => a.ExternalAuthorId != null && incomingAuthorIds.Contains(a.ExternalAuthorId))
+                    .ToListAsync(cancellationToken))
+                    .ToDictionary(a => a.ExternalAuthorId!, a => a);
+
+            var incomingKeywords = response.Results
+                .SelectMany(w => w.Concepts ?? Enumerable.Empty<OpenAlexConcept>())
+                .Where(c => c.Score > 0.3 && !string.IsNullOrWhiteSpace(c.DisplayName))
+                .Select(c => c.DisplayName!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            var existingKeywords = incomingKeywords.Count == 0
+                ? new Dictionary<string, Keyword>(StringComparer.OrdinalIgnoreCase)
+                : (await _unitOfWork.Keywords
+                    .AsNoTracking()
+                    .Where(k => incomingKeywords.Contains(k.Name))
+                    .ToListAsync(cancellationToken))
+                    .ToDictionary(k => k.Name, k => k, StringComparer.OrdinalIgnoreCase);
+
+            var incomingTopicNames = response.Results
+                .SelectMany(w => w.Concepts ?? Enumerable.Empty<OpenAlexConcept>())
+                .Where(c => c.Level == "1" && !string.IsNullOrWhiteSpace(c.DisplayName))
+                .Select(c => c.DisplayName!)
+                .Distinct(StringComparer.OrdinalIgnoreCase)
+                .ToList();
+
+            // Map name -> existing topic id only. Storing the tracked entity here
+            // would let EF try to re-attach it across papers/pages in the same
+            // DbContext, which is what causes "duplicate key value violates
+            // unique constraint research_topics_pkey" when the same topic is
+            // touched in two consecutive sync calls.
+            var existingTopicIdsByName = incomingTopicNames.Count == 0
+                ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
+                : (await _unitOfWork.ResearchTopics
+                    .AsNoTracking()
+                    .Where(t => incomingTopicNames.Contains(t.Name))
+                    .Select(t => new { t.Name, t.TopicId })
+                    .ToListAsync(cancellationToken))
+                    .ToDictionary(x => x.Name, x => x.TopicId, StringComparer.OrdinalIgnoreCase);
+
+            // Track topics that were newly created in this page so we can
+            // reuse them (and not re-query DB) when the same name appears
+            // again on a later work in the same page.
+            var localTopicsByName = new Dictionary<string, ResearchTopic>(StringComparer.OrdinalIgnoreCase);
+            var seenTopicNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
             foreach (var work in response.Results)
             {
                 var openAlexId = ExtractOpenAlexId(work.Id);
                 if (string.IsNullOrEmpty(openAlexId)) continue;
 
-                // Skip duplicates
-                var exists =
-                        await _unitOfWork.Papers
-                        .FirstOrDefaultAsync(
-                        x => x.ExternalId == openAlexId
-                        );
-                if (exists != null) continue;
+                // Skip duplicates (looked up in batch above)
+                if (existingPapers.Contains(openAlexId)) continue;
 
                 // Get or create Journal
                 Journal? journal = null;
@@ -161,26 +287,22 @@ public class OpenAlexSyncService : IOpenAlexSyncService
 
                 if (!string.IsNullOrWhiteSpace(sourceName))
                 {
-                    if (!journals.TryGetValue(sourceName, out journal!))
+                    if (!journals.TryGetValue(sourceName, out journal!) &&
+                        !existingJournals.TryGetValue(sourceName, out journal))
                     {
-                        journal = _unitOfWork.Journals
-                            .FirstOrDefault(j => j.Name.ToLower() == sourceName.ToLower());
-
-                        if (journal == null)
+                        journal = new Journal
                         {
-                            journal = new Journal
-                            {
-                                JournalId = Guid.NewGuid().ToString(),
-                                Name = sourceName,
-                                Publisher = work.PrimaryLocation?.Source?.HostPublisher
-                                    ?? work.Locations.FirstOrDefault()?.Source?.HostPublisher,
-                                Issn = work.PrimaryLocation?.Source?.Issn,
-                                CreatedAt = DateTime.Now
-                            };
-                            _unitOfWork.Add(journal);
-                        }
-                        journals[sourceName] = journal;
+                            JournalId = Guid.NewGuid().ToString(),
+                            Name = sourceName,
+                            Publisher = work.PrimaryLocation?.Source?.HostPublisher
+                                ?? work.Locations.FirstOrDefault()?.Source?.HostPublisher,
+                            Issn = work.PrimaryLocation?.Source?.Issn,
+                            CreatedAt = DateTime.Now
+                        };
+                        _unitOfWork.Add(journal);
+                        existingJournals[sourceName] = journal;
                     }
+                    journals[sourceName] = journal!;
                 }
 
                 // Create Paper
@@ -201,6 +323,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 _unitOfWork.Add(paper);
 
                 // Authors
+                var seenAuthorKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var authorship in work.Authorships ?? Enumerable.Empty<OpenAlexAuthorship>())
                 {
                     var authorName = authorship.Authors?.FirstOrDefault()?.DisplayName;
@@ -211,13 +334,15 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                         ? ExtractOpenAlexId(authorExtId) : null;
 
                     var authorKey = authorExtIdShort ?? authorName;
+                    // Skip if we've already linked this author to this paper
+                    // (OpenAlex sometimes lists the same author twice in one work).
+                    if (!seenAuthorKeys.Add(authorKey)) continue;
+
                     if (!authorsDict.TryGetValue(authorKey, out var author))
                     {
-                        author = _unitOfWork.Authors
-                            .FirstOrDefault(a =>
-                                authorExtIdShort != null
-                                    ? a.ExternalAuthorId == authorExtIdShort
-                                    : a.Name.ToLower() == authorName.ToLower());
+                        author = authorExtIdShort != null && existingAuthorsByExtId.TryGetValue(authorExtIdShort, out var existing)
+                            ? existing
+                            : null;
 
                         if (author == null)
                         {
@@ -229,10 +354,15 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                                 CreatedAt = DateTime.Now
                             };
                             _unitOfWork.Add(author);
+                            if (authorExtIdShort != null)
+                                existingAuthorsByExtId[authorExtIdShort] = author;
                         }
                         authorsDict[authorKey] = author;
                     }
 
+                    // Use explicit join row so attaching this author to the
+                    // paper doesn't accidentally re-attach an existing tracked
+                    // entity from earlier in the same SyncWorksAsync loop.
                     _unitOfWork.Add(new PaperAuthor
                     {
                         PaperId = paper.PaperId,
@@ -241,17 +371,20 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 }
 
                 // Keywords from Concepts
+                var seenKeywordNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var concept in (work.Concepts ?? Enumerable.Empty<OpenAlexConcept>())
                     .Where(c => c.Score > 0.3)
                     .OrderByDescending(c => c.Score)
                     .Take(5))
                 {
                     if (string.IsNullOrWhiteSpace(concept.DisplayName)) continue;
+                    if (!seenKeywordNames.Add(concept.DisplayName)) continue;
 
                     if (!keywordsDict.TryGetValue(concept.DisplayName, out var keyword))
                     {
-                        keyword = _unitOfWork.Keywords
-                            .FirstOrDefault(k => k.Name.ToLower() == concept.DisplayName!.ToLower());
+                        keyword = existingKeywords.TryGetValue(concept.DisplayName, out var existing)
+                            ? existing
+                            : null;
 
                         if (keyword == null)
                         {
@@ -262,6 +395,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                                 CreatedAt = DateTime.Now
                             };
                             _unitOfWork.Add(keyword);
+                            existingKeywords[concept.DisplayName] = keyword;
                         }
                         keywordsDict[concept.DisplayName] = keyword;
                     }
@@ -276,12 +410,48 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                     // search/filtering actually has data to query against.
                     if (concept.Level == "1" && !string.IsNullOrWhiteSpace(concept.DisplayName))
                     {
-                        if (!topics.TryGetValue(concept.DisplayName, out var topic))
-                        {
-                            topic = _unitOfWork.ResearchTopics
-                                .FirstOrDefault(t => t.Name.ToLower() == concept.DisplayName!.ToLower());
+                        if (!seenTopicNames.Add(concept.DisplayName)) continue;
 
-                            if (topic == null)
+                        // Look in local cache first (inserted earlier this page).
+                        // Then fall back to existing in DB. Either way we use
+                        // the entity's TopicId directly without ever assigning
+                        // an existing (untracked) entity as a nav-collection
+                        // target on a brand-new Paper, which is what causes
+                        // EF to re-attach a duplicate tracked instance and
+                        // trip the primary-key constraint.
+                        if (!localTopicsByName.TryGetValue(concept.DisplayName, out var topic))
+                        {
+                            if (existingTopicIdsByName.TryGetValue(concept.DisplayName, out var existingId))
+                            {
+                                // Existing topic already in DB. Find the
+                                // tracked instance (if any) so we reuse it
+                                // instead of creating a brand-new stub.
+                                // Creating a stub and forcing Unchanged
+                                // breaks on the 2nd sync call within the
+                                // same Scoped DbContext because EF refuses
+                                // to track two instances with the same key.
+                                var tracked = _unitOfWork.Context
+                                    .Set<ResearchTopic>()
+                                    .Local
+                                    .FirstOrDefault(t => t.TopicId == existingId);
+                                if (tracked != null)
+                                {
+                                    topic = tracked;
+                                }
+                                else
+                                {
+                                    topic = new ResearchTopic
+                                    {
+                                        TopicId = existingId,
+                                        Name = concept.DisplayName
+                                    };
+                                    var entry = _unitOfWork.Context.Entry(topic);
+                                    if (entry.State == EntityState.Detached)
+                                        entry.State = EntityState.Unchanged;
+                                }
+                                localTopicsByName[concept.DisplayName] = topic;
+                            }
+                            else
                             {
                                 topic = new ResearchTopic
                                 {
@@ -295,8 +465,8 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                                     UpdatedAt = DateTime.Now
                                 };
                                 _unitOfWork.Add(topic);
+                                localTopicsByName[concept.DisplayName] = topic;
                             }
-                            topics[concept.DisplayName] = topic;
                         }
                         paper.Topics.Add(topic);
                     }

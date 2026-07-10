@@ -25,10 +25,10 @@ public class TopicsController : ControllerBase
     [HttpGet]
     public async Task<ActionResult<IEnumerable<ResearchTopic>>> Search([FromQuery] string? q, [FromQuery] int take = 20, CancellationToken cancellationToken = default)
     {
-        if (!string.IsNullOrWhiteSpace(q))
-        {
-            await _syncService.EnsureTopicsSyncedForQueryAsync(q, cancellationToken: cancellationToken);
-        }
+        // Same as PapersController.Search — we intentionally do NOT auto-sync from
+        // OpenAlex on a user-driven topic search. Topics are populated by the
+        // background sync service and the manual admin sync endpoint.
+        _ = _syncService; // keep DI reference, suppress unused warning
 
         var result = await _topicRepository.SearchAsync(q ?? string.Empty, take, cancellationToken);
         return Ok(result);
@@ -64,6 +64,50 @@ public class TopicsController : ControllerBase
             .ToListAsync(cancellationToken);
 
         return Ok(recent);
+    }
+
+    [HttpGet("{topicId}/papers")]
+    public async Task<IActionResult> GetPapers(
+        string topicId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        if (page < 1) page = 1;
+        if (pageSize < 1) pageSize = 20;
+        if (pageSize > 100) pageSize = 100;
+
+        var query = _context.Papers
+            .Include(p => p.Journal)
+            .Where(p => p.Topics.Any(t => t.TopicId == topicId));
+
+        var total = await query.CountAsync(cancellationToken);
+        var items = await query
+            .OrderByDescending(p => p.CitationCount)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(p => new
+            {
+                p.PaperId,
+                p.Title,
+                p.Abstract,
+                p.Doi,
+                p.PublicationYear,
+                p.CitationCount,
+                p.DocType,
+                Journal = p.Journal != null ? new { p.Journal.JournalId, p.Journal.Name } : null,
+                Authors = p.Authors.Take(5).Select(a => new { a.AuthorId, a.Name }).ToList()
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(new
+        {
+            items,
+            total,
+            page,
+            pageSize,
+            pageCount = (int)Math.Ceiling(total / (double)pageSize)
+        });
     }
 
     [HttpGet("{topicId}")]

@@ -101,12 +101,10 @@ class _TopicDetailScreenState extends State<TopicDetailScreen> {
         if (idToken != null) 'Authorization': 'Bearer $idToken',
       };
 
-      final uri = Uri.parse('${AppConfig.apiBaseUrl}/api/papers').replace(
+      final uri = Uri.parse('${AppConfig.apiBaseUrl}/api/topics/${widget.topicId}/papers').replace(
         queryParameters: {
-          'topicId': widget.topicId,
           'page': _page.toString(),
           'pageSize': '20',
-          'sort': 'cited_by_count:desc',
         },
       );
       final response =

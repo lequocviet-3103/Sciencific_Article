@@ -4,6 +4,11 @@ namespace Sciencific_Article.Application.Interfaces.Repositories;
 
 public interface IUnitOfWork : IDisposable
 {
+    // Exposed so callers can manipulate EF state when needed
+    // (e.g. to attach stub entities with state = Unchanged so EF won't
+    // re-insert them on SaveChanges). Use sparingly.
+    Microsoft.EntityFrameworkCore.DbContext Context { get; }
+
     IQueryable<User> Users { get; }
     IQueryable<Paper> Papers { get; }
     IQueryable<Journal> Journals { get; }

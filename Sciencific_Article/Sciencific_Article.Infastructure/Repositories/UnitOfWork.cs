@@ -14,6 +14,8 @@ public class UnitOfWork : IUnitOfWork
         _context = context;
     }
 
+    public Microsoft.EntityFrameworkCore.DbContext Context => _context;
+
     public IQueryable<User> Users => _context.Users;
     public IQueryable<Paper> Papers => _context.Papers;
     public IQueryable<Journal> Journals => _context.Journals;

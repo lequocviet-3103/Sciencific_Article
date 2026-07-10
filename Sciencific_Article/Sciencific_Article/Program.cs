@@ -3,6 +3,7 @@ using Sciencific_Article.Application.Interfaces.Repositories;
 using Sciencific_Article.Application.Interfaces.Services;
 using Sciencific_Article.Application.Mapping;
 using Sciencific_Article.Application.Services;
+using Sciencific_Article.Domain.Entities;
 using Sciencific_Article.Infastructure.Data;
 using Sciencific_Article.Infastructure.Repositories;
 using Sciencific_Article.Infastructure.Services;
@@ -49,7 +50,8 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(
-        builder.Configuration.GetConnectionString("DefaultConnection")));
+        builder.Configuration.GetConnectionString("DefaultConnection"))
+    .EnableSensitiveDataLogging());
 
 var firebaseSection = builder.Configuration.GetSection("Firebase");
 var firebaseProjectId = firebaseSection["project_id"] ?? firebaseSection["ProjectId"];
@@ -106,6 +108,23 @@ builder.Services.AddHttpClient<IOpenAlexClient, OpenAlexClient>(client =>
 });
 
 var app = builder.Build();
+
+// Seed roles so user creation can satisfy fk_users_role even on a fresh DB
+// (after a TRUNCATE or first-time deploy). Uses fixed string IDs to match
+// whatever the client passes in (e.g. "1"=Admin, "2"=Moderator, "3"=User).
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+    if (!db.Roles.Any())
+    {
+        db.Roles.AddRange(
+            new Role { RoleId = "1", RoleName = "Admin",    Description = "System administrator" },
+            new Role { RoleId = "2", RoleName = "Moderator",Description = "Content moderator" },
+            new Role { RoleId = "3", RoleName = "User",     Description = "Regular user" }
+        );
+        db.SaveChanges();
+    }
+}
 
 if (app.Environment.IsDevelopment())
 {

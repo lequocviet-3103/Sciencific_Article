@@ -41,17 +41,10 @@ public class PapersController : ControllerBase
         if (pageSize < 1) pageSize = 20;
         if (pageSize > 100) pageSize = 100;
 
-        if (!string.IsNullOrWhiteSpace(q))
-        {
-            try
-            {
-                await _syncService.EnsureWorksSyncedForQueryAsync(q, cancellationToken: cancellationToken);
-            }
-            catch
-            {
-                // Sync failed — continue with existing DB results rather than returning 500
-            }
-        }
+        // Auto-sync is intentionally OFF for search. The Search screen, Topic detail,
+        // and Home all read straight from the DB. OpenAlex ingestion runs only via
+        // SyncBackgroundService (every 12h) and the manual admin sync endpoint, so a
+        // user's request never blocks on an external API round-trip.
 
         var query = _context.Papers
             .Include(p => p.Journal)
