@@ -12,13 +12,13 @@ D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj
 D:\PRM392\PRM393_Lab2_BigUpdate\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.sourcelink.json
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\bin\Debug\net8.0\Sciencific_Article.Domain.deps.json
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\bin\Debug\net8.0\Sciencific_Article.Domain.dll
-C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\bin\Debug\net8.0\Sciencific_Article.Domain.pdb
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.GeneratedMSBuildEditorConfig.editorconfig
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.AssemblyInfoInputs.cache
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.AssemblyInfo.cs
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.csproj.CoreCompileInputs.cache
-C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.sourcelink.json
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.dll
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\refint\Sciencific_Article.Domain.dll
-C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.pdb
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\ref\Sciencific_Article.Domain.dll
+C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\bin\Debug\net8.0\Sciencific_Article.Domain.pdb
+C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.sourcelink.json
+C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Domain\obj\Debug\net8.0\Sciencific_Article.Domain.pdb

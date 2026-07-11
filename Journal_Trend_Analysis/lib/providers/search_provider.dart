@@ -116,9 +116,18 @@ class SearchProvider extends ChangeNotifier {
     }
     notifyListeners();
 
+    // When scoped to a topic, drop the free-text `q` so the BE returns
+    // every paper in the topic rather than only the few whose title
+    // happens to mention the keyword. The topic filter alone is the
+    // authoritative scope; the user's typed text would otherwise silently
+    // hide most papers ("I picked Humanities — why don't I see all 8?").
+    final hasTopicScope =
+        _filters.topicId != null && _filters.topicId!.isNotEmpty;
+    final queryForService = hasTopicScope ? '' : trimmed;
+
     try {
       final result = await _service.searchWorks(
-        trimmed,
+        queryForService,
         page: 1,
         sort: _sortOption,
         filters: _filters,
@@ -185,9 +194,15 @@ class SearchProvider extends ChangeNotifier {
     }
     notifyListeners();
 
+    // When we have a real topic id the BE handles the topic scope, so we
+    // pass an empty `q` to avoid narrowing further by keyword. Without a
+    // real topic id we keep the keyword (plus the topic name) so the
+    // fallback textual scoping still works.
+    final queryForService = hasRealId ? '' : _effectiveQuery;
+
     try {
       final result = await _service.searchWorks(
-        _effectiveQuery,
+        queryForService,
         page: 1,
         sort: _sortOption,
         filters: _filters,
@@ -245,6 +260,18 @@ class SearchProvider extends ChangeNotifier {
 
   void setActiveTopic(Topic? topic) {
     _activeTopic = topic;
+    // Keep _filters.topicId in sync with the active topic so any subsequent
+    // search call carries the topic scope to the backend. Without this the
+    // active topic pill would render but the BE request would be missing
+    // the topicId filter — dropping the user back to a global search.
+    if (topic == null) {
+      _filters = _filters.copyWith(clearTopicId: true);
+    } else {
+      final shortId = _normalizeTopicId(topic.id);
+      if (shortId != null && _looksLikeOpenAlexId(shortId)) {
+        _filters = _filters.copyWith(topicId: shortId);
+      }
+    }
     notifyListeners();
   }
 
@@ -269,9 +296,16 @@ class SearchProvider extends ChangeNotifier {
     _isLoadingMore = true;
     notifyListeners();
 
+    // Mirror the same drop-`q`-when-topic-scoped behaviour as search()
+    // and searchWithinTopic() so pagination stays consistent with the
+    // initial request.
+    final hasTopicScope =
+        _filters.topicId != null && _filters.topicId!.isNotEmpty;
+    final queryForService = hasTopicScope ? '' : _query;
+
     try {
       final result = await _service.searchWorks(
-        _query,
+        queryForService,
         page: _currentPage + 1,
         sort: _sortOption,
         filters: _filters,

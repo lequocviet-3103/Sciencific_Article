@@ -24,6 +24,7 @@ public class OpenAlexClient : IOpenAlexClient
 
     public async Task<OpenAlexResponse<OpenAlexWork>> GetWorksAsync(
         string? search = null,
+        string? filter = null,
         string? cursor = null,
         int perPage = 25,
         CancellationToken cancellationToken = default)
@@ -36,6 +37,8 @@ public class OpenAlexClient : IOpenAlexClient
 
         if (!string.IsNullOrWhiteSpace(search))
             queryParams["search"] = search;
+        if (!string.IsNullOrWhiteSpace(filter))
+            queryParams["filter"] = filter;
         if (!string.IsNullOrWhiteSpace(cursor))
             queryParams["cursor"] = cursor;
 
@@ -45,41 +48,65 @@ public class OpenAlexClient : IOpenAlexClient
 
         var url = "https://api.openalex.org/works?" + string.Join("&",
             queryParams.Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"));
-        var response = await _httpClient.GetAsync(url, cancellationToken);
 
-        var errorBody = await response.Content.ReadAsStringAsync();
+        using var response = await _httpClient.GetAsync(url, cancellationToken);
 
+        // Read the body ONCE — calling ReadAsStringAsync or ReadFromJsonAsync
+        // twice on the same HttpContent throws / returns empty because the
+        // underlying stream is buffered and consumed after the first read.
+        // On non-2xx, throw with the response body for diagnostics; otherwise
+        // deserialize it as JSON.
         if (!response.IsSuccessStatusCode)
         {
-            throw new Exception(
-                $"OpenAlex error {(int)response.StatusCode}: {errorBody}\nURL: {url}"
-            );
+            var errorBody = await response.Content.ReadAsStringAsync(cancellationToken);
+            throw new HttpRequestException(
+                $"OpenAlex error {(int)response.StatusCode}: {errorBody}\nURL: {url}");
         }
-        response.EnsureSuccessStatusCode();
 
-        var data = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>(cancellationToken);
+        Dictionary<string, object>? data;
+        try
+        {
+            data = await response.Content.ReadFromJsonAsync<Dictionary<string, object>>(
+                cancellationToken: cancellationToken);
+        }
+        catch (JsonException ex)
+        {
+            throw new HttpRequestException(
+                $"Failed to parse OpenAlex response: {ex.Message}\nURL: {url}", ex);
+        }
 
         var results = new List<OpenAlexWork>();
 
-        if (data != null && data.TryGetValue("results", out var resultsRaw) && resultsRaw is System.Text.Json.JsonElement resultsElement)
+        if (data != null
+            && data.TryGetValue("results", out var resultsRaw)
+            && resultsRaw is System.Text.Json.JsonElement resultsElement
+            && resultsElement.ValueKind == System.Text.Json.JsonValueKind.Array)
         {
             foreach (var item in resultsElement.EnumerateArray())
             {
-                results.Add(ParseWork(item));
-
+                try
+                {
+                    results.Add(ParseWork(item));
+                }
+                catch (Exception ex)
+                {
+                    // A single malformed work shouldn't kill the whole sync.
+                    Console.WriteLine($"OpenAlex: skipped malformed work: {ex.Message}");
+                }
             }
-            Console.WriteLine(
- $"OpenAlex returned: {resultsElement.GetArrayLength()} works"
-);
         }
-        Console.WriteLine(response.StatusCode);
-        Console.WriteLine(results.Count);
+
         var meta = new OpenAlexMeta();
-        if (data != null && data.TryGetValue("meta", out var metaRaw) && metaRaw is System.Text.Json.JsonElement metaElement)
+        if (data != null
+            && data.TryGetValue("meta", out var metaRaw)
+            && metaRaw is System.Text.Json.JsonElement metaElement
+            && metaElement.ValueKind == System.Text.Json.JsonValueKind.Object)
         {
-            if (metaElement.TryGetProperty("count", out var countEl))
+            if (metaElement.TryGetProperty("count", out var countEl)
+                && countEl.ValueKind == System.Text.Json.JsonValueKind.Number)
                 meta.Count = countEl.GetInt32();
-            if (metaElement.TryGetProperty("next_cursor", out var cursorEl))
+            if (metaElement.TryGetProperty("next_cursor", out var cursorEl)
+                && cursorEl.ValueKind == System.Text.Json.JsonValueKind.String)
                 meta.NextCursor = cursorEl.GetString();
         }
 

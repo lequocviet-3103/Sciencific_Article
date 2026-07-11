@@ -44,6 +44,7 @@ public partial class AppDbContext : DbContext
     public virtual DbSet<User> Users { get; set; }
     public virtual DbSet<PaperAuthor> PaperAuthors { get; set; }
     public virtual DbSet<PaperKeyword> PaperKeywords { get; set; }
+    public virtual DbSet<PaperTopic> PaperTopics { get; set; }
 
     private string GetConnectionString()
     {
@@ -321,22 +322,21 @@ public partial class AppDbContext : DbContext
                     });
 
             entity.HasMany(d => d.Topics).WithMany(p => p.Papers)
-                .UsingEntity<Dictionary<string, object>>(
-                    "PaperTopic",
+                .UsingEntity<PaperTopic>(
                     r => r.HasOne<ResearchTopic>().WithMany()
-                        .HasForeignKey("TopicId")
+                        .HasForeignKey(pt => pt.TopicId)
                         .HasConstraintName("paper_topics_topic_id_fkey"),
                     l => l.HasOne<Paper>().WithMany()
-                        .HasForeignKey("PaperId")
+                        .HasForeignKey(pt => pt.PaperId)
                         .HasConstraintName("paper_topics_paper_id_fkey"),
                     j =>
                     {
-                        j.HasKey("PaperId", "TopicId").HasName("paper_topics_pkey");
+                        j.HasKey(pt => new { pt.PaperId, pt.TopicId }).HasName("paper_topics_pkey");
                         j.ToTable("paper_topics");
-                        j.IndexerProperty<string>("PaperId")
+                        j.Property(pt => pt.PaperId)
                             .HasMaxLength(40)
                             .HasColumnName("paper_id");
-                        j.IndexerProperty<string>("TopicId")
+                        j.Property(pt => pt.TopicId)
                             .HasMaxLength(40)
                             .HasColumnName("topic_id");
                     });

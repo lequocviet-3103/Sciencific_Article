@@ -1,5 +1,11 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Text.Json;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
 using Sciencific_Article.Application.Interfaces.Repositories;
 using Sciencific_Article.Application.Interfaces.Services;
 using Sciencific_Article.Domain.Entities;
@@ -38,14 +44,24 @@ public class OpenAlexSyncService : IOpenAlexSyncService
             "Medicine"
         };
 
-        // Pull topic names from the DB so any topic that already exists
-        // (manually added or synced in a previous run) ends up with papers
-        // linked to it.
-        var dbTopics = await _unitOfWork.ResearchTopics
+        // Pull topic names + cached OpenAlex IDs from the DB so any topic
+        // that already exists (manually added or synced in a previous run)
+        // ends up with papers linked to it, AND we can use the cached
+        // `topics.id:<id>` filter instead of paying for a per-topic
+        // /topics?search lookup.
+        var dbTopicRows = await _unitOfWork.ResearchTopics
+            .AsNoTracking()
             .OrderByDescending(t => t.WorksCount)
             .Take(10)
-            .Select(t => t.Name)
+            .Select(t => new { t.Name, t.OpenAlexId })
             .ToListAsync(cancellationToken);
+
+        // Build a lookup so we can reuse the OpenAlex topic ID if we already
+        // resolved it in a previous sync.
+        var dbTopicIdsByName = dbTopicRows
+            .Where(r => !string.IsNullOrWhiteSpace(r.OpenAlexId))
+            .ToDictionary(r => r.Name, r => r.OpenAlexId!, StringComparer.OrdinalIgnoreCase);
+        var dbTopics = dbTopicRows.Select(r => r.Name).ToList();
 
         // Combine DB topics + seeds, dedupe case-insensitively, cap at 10.
         var topTopics = dbTopics
@@ -57,16 +73,159 @@ public class OpenAlexSyncService : IOpenAlexSyncService
         var topicReports = new List<string>();
         foreach (var topicName in topTopics)
         {
-            var inserted = await IngestWorksAsync(search: topicName, maxPages: 1, cancellationToken);
+            cancellationToken.ThrowIfCancellationRequested();
+
+            // Isolate failures per-topic so one bad OpenAlex response (or a
+            // single topic failing to ingest) doesn't abort the whole sync
+            // and cause the API to return 500 to the admin user.
+            int inserted;
+            try
+            {
+                // OpenAlex deprecated `concepts.display_name` as a filter
+                // field (see OpenAlex 400 response listing valid fields).
+                // The replacement for topic-scoped filtering is `topics.id`,
+                // which requires an OpenAlex topic ID like "T12345".
+                // We resolve the topic name -> ID via the /topics endpoint
+                // once per topic, cache it on ResearchTopic.OpenAlexId, and
+                // reuse it on subsequent syncs.
+                var topicId = await ResolveTopicOpenAlexIdAsync(
+                    topicName, dbTopicIdsByName, cancellationToken);
+
+                if (!string.IsNullOrEmpty(topicId))
+                {
+                    var filter = $"topics.id:{topicId}";
+                    inserted = await IngestWorksAsync(
+                        search: null, filter: filter, maxPages: 1, cancellationToken);
+                }
+                else
+                {
+                    inserted = 0;
+                }
+
+                // Fall back to a full-text search when the topic filter
+                // returns nothing (older papers sometimes only have a
+                // "raw" match) or when we couldn't resolve an ID at all.
+                if (inserted == 0)
+                {
+                    inserted = await IngestWorksAsync(
+                        search: topicName, filter: null, maxPages: 1, cancellationToken);
+                }
+            }
+            catch (OperationCanceledException)
+            {
+                throw;
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"SyncWorksAsync: topic '{topicName}' failed: {ex.Message}");
+                Console.WriteLine($"SyncWorksAsync: topic '{topicName}' stack: {ex.StackTrace}");
+                if (ex.InnerException != null)
+                {
+                    Console.WriteLine($"SyncWorksAsync: topic '{topicName}' inner: {ex.InnerException.Message}");
+                    Console.WriteLine($"SyncWorksAsync: topic '{topicName}' inner stack: {ex.InnerException.StackTrace}");
+                }
+                topicReports.Add($"{topicName}: ERROR({ex.GetType().Name})");
+                continue;
+            }
+
             topicReports.Add($"{topicName}: {inserted}");
             totalInserted += inserted;
         }
 
         // Also pull a generic batch so we have baseline coverage.
-        var baseline = await IngestWorksAsync(search: null, maxPages: 2, cancellationToken);
-        totalInserted += baseline;
+        int baseline = 0;
+        try
+        {
+            baseline = await IngestWorksAsync(
+                search: null, filter: "authors_count:>0,publication_year:>2018",
+                maxPages: 2, cancellationToken);
+            totalInserted += baseline;
+        }
+        catch (OperationCanceledException)
+        {
+            throw;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"SyncWorksAsync: baseline ingest failed: {ex.Message}");
+            topicReports.Add($"baseline: ERROR({ex.GetType().Name})");
+        }
 
         return $"Synced {totalInserted} papers from OpenAlex (per-topic: {string.Join(" | ", topicReports)}; baseline: {baseline})";
+    }
+
+    /// Resolves a topic display name (e.g. "Computer science") into an
+    /// OpenAlex topic ID (e.g. "T11925") that can be used as a
+    /// `topics.id:<id>` filter on the works endpoint.
+    ///
+    /// Uses the cached ID on ResearchTopic.OpenAlexId when available so we
+    /// don't hit the /topics lookup on every sync. Falls back to the /topics
+    /// endpoint for topics we haven't seen before, then persists the new ID
+    /// so future syncs can skip the lookup.
+    ///
+    /// Returns null when the topic name can't be resolved (no match, network
+    /// error, etc.) so the caller can fall back to a full-text search.
+    private async Task<string?> ResolveTopicOpenAlexIdAsync(
+        string topicName,
+        Dictionary<string, string> cachedIdsByName,
+        CancellationToken cancellationToken)
+    {
+        if (cachedIdsByName.TryGetValue(topicName, out var cached) && !string.IsNullOrWhiteSpace(cached))
+            return cached;
+
+        try
+        {
+            var (statusCode, body) = await _openAlexClient.GetRawJsonAsync(
+                $"topics?search={Uri.EscapeDataString(topicName)}&per_page=1",
+                cancellationToken);
+            if (statusCode != 200 || string.IsNullOrWhiteSpace(body))
+                return null;
+
+            using var doc = JsonDocument.Parse(body);
+            if (!doc.RootElement.TryGetProperty("results", out var results)
+                || results.ValueKind != JsonValueKind.Array
+                || results.GetArrayLength() == 0)
+                return null;
+
+            var first = results[0];
+            if (!first.TryGetProperty("id", out var idEl) || idEl.ValueKind != JsonValueKind.String)
+                return null;
+
+            // OpenAlex returns IDs as full URLs like
+            // "https://openalex.org/T12345"; strip them down to the bare
+            // short form that `topics.id:<id>` accepts.
+            var rawId = idEl.GetString();
+            var shortId = ExtractOpenAlexId(rawId);
+            if (string.IsNullOrEmpty(shortId) || !shortId.StartsWith("T", StringComparison.Ordinal))
+                return null;
+
+            // Persist on the matching DB row (if any) so the next sync can
+            // reuse this without a network lookup.
+            try
+            {
+                var tracked = _unitOfWork.ResearchTopics
+                    .FirstOrDefault(t => t.Name.ToLower() == topicName.ToLower());
+                if (tracked != null && string.IsNullOrWhiteSpace(tracked.OpenAlexId))
+                {
+                    tracked.OpenAlexId = shortId;
+                    tracked.UpdatedAt = DateTime.Now;
+                    await _unitOfWork.SaveChangesAsync(cancellationToken);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Caching the ID is a perf nicety; don't fail the whole
+                // sync if the cache write fails.
+                Console.WriteLine($"ResolveTopicOpenAlexIdAsync: cache write failed for '{topicName}': {ex.Message}");
+            }
+
+            return shortId;
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"ResolveTopicOpenAlexIdAsync: lookup failed for '{topicName}': {ex.Message}");
+            return null;
+        }
     }
 
     /// Called on-demand from search endpoints when the DB has too few rows
@@ -90,7 +249,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
 
         if (existingCount >= minResults) return 0;
 
-        return await IngestWorksAsync(search: query, maxPages, cancellationToken);
+        return await IngestWorksAsync(search: query, filter: null, maxPages, cancellationToken);
     }
 
     /// Same idea as EnsureWorksSyncedForQueryAsync but for the Topics table,
@@ -157,7 +316,11 @@ public class OpenAlexSyncService : IOpenAlexSyncService
         return inserted;
     }
 
-    private async Task<int> IngestWorksAsync(string? search, int maxPages, CancellationToken cancellationToken)
+    private async Task<int> IngestWorksAsync(
+        string? search,
+        string? filter,
+        int maxPages,
+        CancellationToken cancellationToken)
     {
         var cursor = "*";
         var page = 0;
@@ -174,6 +337,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
 
             var response = await _openAlexClient.GetWorksAsync(
                 search: search,
+                filter: filter,
                 cursor: cursor == "*" ? null : cursor,
                 perPage: 25,
                 cancellationToken: cancellationToken);
@@ -205,11 +369,19 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
 
+            // DB rows can contain duplicates of the same journal name from
+            // older syncs (the page-level cache now uses OrdinalIgnoreCase
+            // but the underlying table has been written without deduping).
+            // GroupBy ensures we hand back one entry per normalized name
+            // instead of crashing ToDictionary with "An item with the same
+            // key has already been added".
             var existingJournals = journalNames.Count == 0
                 ? new Dictionary<string, Journal>(StringComparer.OrdinalIgnoreCase)
                 : (await _unitOfWork.Journals
                     .AsNoTracking()
                     .Where(j => journalNames.Contains(j.Name))
+                    .GroupBy(j => j.Name)
+                    .Select(g => g.OrderBy(x => x.JournalId).First())
                     .ToListAsync(cancellationToken))
                     .ToDictionary(j => j.Name, j => j, StringComparer.OrdinalIgnoreCase);
 
@@ -223,12 +395,14 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 .ToList();
 
             var existingAuthorsByExtId = incomingAuthorIds.Count == 0
-                ? new Dictionary<string, Author>()
+                ? new Dictionary<string, Author>(StringComparer.OrdinalIgnoreCase)
                 : (await _unitOfWork.Authors
                     .AsNoTracking()
                     .Where(a => a.ExternalAuthorId != null && incomingAuthorIds.Contains(a.ExternalAuthorId))
+                    .GroupBy(a => a.ExternalAuthorId!)
+                    .Select(g => g.OrderBy(x => x.AuthorId).First())
                     .ToListAsync(cancellationToken))
-                    .ToDictionary(a => a.ExternalAuthorId!, a => a);
+                    .ToDictionary(a => a.ExternalAuthorId!, a => a, StringComparer.OrdinalIgnoreCase);
 
             var incomingKeywords = response.Results
                 .SelectMany(w => w.Concepts ?? Enumerable.Empty<OpenAlexConcept>())
@@ -257,12 +431,15 @@ public class OpenAlexSyncService : IOpenAlexSyncService
             // DbContext, which is what causes "duplicate key value violates
             // unique constraint research_topics_pkey" when the same topic is
             // touched in two consecutive sync calls.
+            // GroupBy dedupes any historical duplicate topic rows in the
+            // table before ToDictionary tries to insert a duplicate key.
             var existingTopicIdsByName = incomingTopicNames.Count == 0
                 ? new Dictionary<string, string>(StringComparer.OrdinalIgnoreCase)
                 : (await _unitOfWork.ResearchTopics
                     .AsNoTracking()
                     .Where(t => incomingTopicNames.Contains(t.Name))
-                    .Select(t => new { t.Name, t.TopicId })
+                    .GroupBy(t => t.Name)
+                    .Select(g => new { Name = g.Key, TopicId = g.OrderBy(x => x.TopicId).First().TopicId })
                     .ToListAsync(cancellationToken))
                     .ToDictionary(x => x.Name, x => x.TopicId, StringComparer.OrdinalIgnoreCase);
 
@@ -495,7 +672,81 @@ public class OpenAlexSyncService : IOpenAlexSyncService
             await NotifyNewPapersAsync(newPaperTitles, cancellationToken);
         }
 
+        // Recompute WorksCount for every topic based on actual rows in
+        // paper_topics, so the home page and topic cards show the real
+        // number of papers linked to each topic rather than the stale
+        // value (1) we set on first insert.
+        await RecomputeTopicWorksCountsAsync(cancellationToken);
+
         return inserted;
+    }
+
+    private async Task RecomputeTopicWorksCountsAsync(CancellationToken cancellationToken)
+    {
+        try
+        {
+            // Count the real rows in the join table per topic, then
+            // push that count back onto ResearchTopic.WorksCount. We
+            // explicitly do this with two LINQ queries instead of
+            // SQL because the Application project doesn't reference
+            // Microsoft.EntityFrameworkCore.Relational, so GetDbConnection
+            // isn't available here.
+            var countsByTopicId = await _unitOfWork.Context
+                .Set<PaperTopic>()
+                .GroupBy(pt => pt.TopicId)
+                .Select(g => new { TopicId = g.Key, Count = g.Count() })
+                .ToListAsync(cancellationToken);
+
+            var counts = countsByTopicId.ToDictionary(x => x.TopicId, x => x.Count);
+            var topics = await _unitOfWork.ResearchTopics
+                .AsNoTracking()
+                .ToListAsync(cancellationToken);
+
+            var now = DateTime.Now;
+            foreach (var topic in topics)
+            {
+                var realCount = counts.TryGetValue(topic.TopicId, out var c) ? c : 0;
+                if (topic.WorksCount == realCount) continue;
+
+                // If the same TopicId was already added to the change tracker
+                // during this sync (e.g. we just inserted brand-new topics
+                // while ingesting works), updating it through that tracked
+                // instance is the only safe option — Attach(stub) on a key
+                // EF already knows about throws "another instance with the
+                // same key value is already being tracked".
+                var tracked = _unitOfWork.Context
+                    .Set<ResearchTopic>()
+                    .Local
+                    .FirstOrDefault(t => t.TopicId == topic.TopicId);
+                if (tracked != null)
+                {
+                    tracked.WorksCount = realCount;
+                    tracked.UpdatedAt = now;
+                    continue;
+                }
+
+                // Otherwise, attach a stub with just the fields we want to
+                // change so EF doesn't blow away unrelated columns.
+                var stub = new ResearchTopic
+                {
+                    TopicId = topic.TopicId,
+                    WorksCount = realCount,
+                    UpdatedAt = now,
+                };
+                _unitOfWork.Context.Attach(stub);
+                var entry = _unitOfWork.Context.Entry(stub);
+                entry.Property(e => e.WorksCount).IsModified = true;
+                entry.Property(e => e.UpdatedAt).IsModified = true;
+            }
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            Console.WriteLine($"RecomputeTopicWorksCountsAsync: updated {countsByTopicId.Count} topics with papers, {topics.Count - countsByTopicId.Count} topics have 0 papers");
+        }
+        catch (Exception ex)
+        {
+            // Recompute is a display-only side effect; never fail the whole
+            // sync just because this fails.
+            Console.WriteLine($"RecomputeTopicWorksCountsAsync failed: {ex.Message}");
+        }
     }
 
     private async Task NotifyNewPapersAsync(List<string> newPaperTitles, CancellationToken cancellationToken)

@@ -4,6 +4,7 @@ public interface IOpenAlexClient
 {
     Task<OpenAlexResponse<OpenAlexWork>> GetWorksAsync(
         string? search = null,
+        string? filter = null,
         string? cursor = null,
         int perPage = 25,
         CancellationToken cancellationToken = default);

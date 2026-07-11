@@ -128,8 +128,15 @@ class PaperSearchService {
     SortOption sort = SortOption.citedByDesc,
     SearchFilters filters = const SearchFilters(),
   }) async {
+    final hasTopic = filters.topicId != null && filters.topicId!.isNotEmpty;
     final params = <String, String>{
-      'q': query,
+      // When scoped to a topic, the topic filter already narrows the
+      // result set. Adding the user's free-text query on top would only
+      // drop papers whose title doesn't mention the keyword — confusing
+      // UX ("I picked Humanities, why don't I see all 8 works?"). So we
+      // drop `q` whenever the topic scope is active and let the BE return
+      // every paper in the topic, sorted/paginated per the user's choice.
+      if (query.isNotEmpty && !hasTopic) 'q': query,
       'page': page.toString(),
       'pageSize': perPage.toString(),
       'sort': sort.apiValue,

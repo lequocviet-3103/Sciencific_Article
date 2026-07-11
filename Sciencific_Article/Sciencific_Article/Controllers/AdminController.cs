@@ -170,4 +170,113 @@ public class AdminController : ControllerBase
 
         return Ok(new { topTopics, topJournals, usersByRole });
     }
+
+    /// <summary>
+    /// One-shot fix: recompute <c>works_count</c> on every topic from the actual
+    /// rows in <c>paper_topics</c>. Useful when the column got stuck on 1 due
+    /// to a previous bug in the sync service. Safe to call repeatedly.
+    /// </summary>
+    [HttpPost("recompute-topic-works-counts")]
+    public async Task<IActionResult> RecomputeTopicWorksCounts(CancellationToken cancellationToken = default)
+    {
+        // Pull the real counts first so we can return them even if the
+        // UPDATE step blows up (e.g. Npgsql DateTime kind issues).
+        var countsByTopicId = await _context.PaperTopics
+            .GroupBy(pt => pt.TopicId)
+            .Select(g => new { TopicId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.TopicId, x => x.Count, cancellationToken);
+
+        var topics = await _context.ResearchTopics
+            .AsNoTracking()
+            .ToListAsync(cancellationToken);
+
+        // Run the UPDATE as raw SQL so we don't fight with Npgsql's
+        // DateTime/Kind mapping for an unrelated timestamp column.
+        // updated_at uses PG NOW() (timestamp without time zone) which
+        // matches the column type.
+        var updatedRows = 0;
+        try
+        {
+            foreach (var topic in topics)
+            {
+                var realCount = countsByTopicId.TryGetValue(topic.TopicId, out var c) ? c : 0;
+                if (topic.WorksCount == realCount) continue;
+
+                updatedRows += await _context.Database.ExecuteSqlRawAsync(
+                    "UPDATE research_topics SET works_count = {0}, updated_at = NOW() WHERE topic_id = {1}",
+                    new object[] { realCount, topic.TopicId },
+                    cancellationToken);
+            }
+        }
+        catch (Exception ex)
+        {
+            return StatusCode(500, new
+            {
+                message = "Recompute partially failed",
+                updatedRows,
+                error = ex.Message,
+                innerError = ex.InnerException?.Message
+            });
+        }
+
+        var top10 = topics
+            .Select(t => new
+            {
+                t.TopicId,
+                t.Name,
+                WorksCount = countsByTopicId.TryGetValue(t.TopicId, out var c) ? c : 0
+            })
+            .OrderByDescending(t => t.WorksCount)
+            .Take(10)
+            .ToList();
+
+        return Ok(new
+        {
+            updatedRows,
+            totalTopics = topics.Count,
+            topicsWithPapers = countsByTopicId.Count,
+            top10
+        });
+    }
+
+    /// <summary>
+    /// Diagnostic: for every topic with works_count > 0, also report the
+    /// actual paper_count we can find through the navigation property, so we
+    /// can see whether anything is orphaned or whether the navigation is
+    /// wired wrong.
+    /// </summary>
+    [HttpGet("topic-works-counts-audit")]
+    public async Task<IActionResult> AuditTopicCounts(CancellationToken cancellationToken = default)
+    {
+        var byJoinTable = await _context.PaperTopics
+            .GroupBy(pt => pt.TopicId)
+            .Select(g => new { TopicId = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.TopicId, x => x.Count, cancellationToken);
+
+        var byNavigation = await _context.ResearchTopics
+            .AsNoTracking()
+            .Where(t => t.WorksCount > 0 || t.Papers.Any())
+            .Take(50)
+            .Select(t => new
+            {
+                t.TopicId,
+                t.Name,
+                WorksCount = t.WorksCount,
+                NavCount = t.Papers.Count()
+            })
+            .ToListAsync(cancellationToken);
+
+        var rows = byNavigation.Select(t => new
+        {
+            t.TopicId,
+            t.Name,
+            WorksCount = t.WorksCount,
+            JoinTableCount = byJoinTable.TryGetValue(t.TopicId, out var c) ? c : 0,
+            t.NavCount,
+            Mismatch = (byJoinTable.TryGetValue(t.TopicId, out var cc) ? cc : 0) != t.NavCount
+                      || (byJoinTable.TryGetValue(t.TopicId, out var ccc) ? ccc : 0) != t.WorksCount
+        }).ToList();
+
+        return Ok(rows);
+    }
 }
