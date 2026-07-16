@@ -44,25 +44,36 @@ class Publication {
     final journalMap = json['journal'] as Map<String, dynamic>?;
     final authorsJson = (json['authors'] as List?) ?? const [];
     final topicsJson = (json['topics'] as List?) ?? const [];
+    final keywordsJson = (json['keywords'] as List?) ?? const [];
     final docType = json['docType']?.toString();
+    final doi = _normalizeDoi(json['doi']?.toString());
+
+    // Older synced rows may not have a paper_topics relationship even though
+    // their OpenAlex concepts were persisted into paper_keywords. Use those
+    // names as a detail-screen fallback instead of showing Topics as N/A.
+    final researchAreas = topicsJson.isNotEmpty ? topicsJson : keywordsJson;
 
     return Publication(
       id: json['paperId']?.toString() ?? '',
       title: _cleanTitle(json['title']?.toString() ?? 'Untitled'),
-      doi: json['doi']?.toString(),
+      doi: doi,
       year: _parseYear(json['publicationYear']),
       citedByCount: (json['citationCount'] as num?)?.toInt() ?? 0,
       abstractText: json['abstract']?.toString(),
       journal: Journal(
         id: journalMap?['journalId']?.toString() ?? '',
         name: journalMap?['name']?.toString() ?? 'Unknown Journal',
+        publisher: journalMap?['publisher']?.toString(),
+        issn: journalMap?['issn']?.toString(),
       ),
       authors: authorsJson
           .map((e) => Author.fromBackendJson(e as Map<String, dynamic>))
           .toList(),
-      type: (docType != null && docType.isNotEmpty) ? _formatDocType(docType) : null,
-      topics: topicsJson
-          .map((e) => Topic.fromBackendJson(e as Map<String, dynamic>))
+      type: (docType != null && docType.isNotEmpty)
+          ? _formatDocType(docType)
+          : null,
+      topics: researchAreas
+          .map((e) => Topic.fromBackendJson(_asBackendTopic(e)))
           .toList(),
     );
   }
@@ -75,7 +86,10 @@ class Publication {
     return _fromJson(json, full: false);
   }
 
-  static Publication _fromJson(Map<String, dynamic> json, {required bool full}) {
+  static Publication _fromJson(
+    Map<String, dynamic> json, {
+    required bool full,
+  }) {
     final primaryLocation = json['primary_location'] as Map<String, dynamic>?;
     final source = primaryLocation?['source'] as Map<String, dynamic>?;
     // Try locations as fallback for journal info
@@ -88,7 +102,8 @@ class Publication {
       for (final loc in locations) {
         if (loc is Map<String, dynamic>) {
           final locSource = loc['source'] as Map<String, dynamic>?;
-          if (locSource != null && (locSource['display_name'] as String?)?.isNotEmpty == true) {
+          if (locSource != null &&
+              (locSource['display_name'] as String?)?.isNotEmpty == true) {
             journalSource = locSource;
             break;
           }
@@ -160,20 +175,37 @@ class Publication {
   }
 
   Map<String, dynamic> toJson() => {
-        'id': id,
-        'doi': doi,
-        'title': title,
-        'publication_year': year,
-        'cited_by_count': citedByCount,
-        'abstract_inverted_index': null,
-        'authorships': authors.map((a) => a.toJson()).toList(),
-        'type': type,
-        'language': language,
-        'topics': topics.map((t) => t.toJson()).toList(),
-      };
+    'id': id,
+    'doi': doi,
+    'title': title,
+    'publication_year': year,
+    'cited_by_count': citedByCount,
+    'abstract_inverted_index': null,
+    'authorships': authors.map((a) => a.toJson()).toList(),
+    'type': type,
+    'language': language,
+    'topics': topics.map((t) => t.toJson()).toList(),
+  };
 
   static String _cleanTitle(String raw) =>
       raw.replaceAll(RegExp(r'\s+'), ' ').trim();
+
+  static String? _normalizeDoi(String? raw) {
+    final value = raw?.trim();
+    if (value == null || value.isEmpty) return null;
+    return value
+        .replaceFirst(
+          RegExp(r'^https?://(dx\.)?doi\.org/', caseSensitive: false),
+          '',
+        )
+        .trim();
+  }
+
+  static Map<String, dynamic> _asBackendTopic(dynamic value) {
+    final map = value as Map<String, dynamic>;
+    if (map.containsKey('topicId')) return map;
+    return {'topicId': map['keywordId'], 'name': map['name']};
+  }
 
   static int? _parseYear(dynamic v) {
     if (v == null) return null;

@@ -206,7 +206,7 @@ class _DatabasePapersScreenState extends State<DatabasePapersScreen> {
                 ),
               const SizedBox(width: 8),
               Text(
-                _isSyncing ? 'Syncing...' : 'Sorted newest first',
+                _isSyncing ? 'Syncing...' : 'Sorted by citations',
                 style: Theme.of(context).textTheme.bodySmall?.copyWith(
                       color: Theme.of(context).colorScheme.outline,
                     ),

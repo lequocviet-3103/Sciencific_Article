@@ -23,17 +23,18 @@ class HomeShell extends StatefulWidget {
 class _HomeShellState extends State<HomeShell> {
   int _index = 0;
 
-  static const _tabs = [
-    TopicsScreen(),
-    SearchScreen(),
-    BookmarksScreen(),
-    NotificationsScreen(),
-    ProfileScreen(),
-  ];
+  late final List<Widget> _tabs;
 
   @override
   void initState() {
     super.initState();
+    _tabs = [
+      const TopicsScreen(),
+      SearchScreen(onBack: _goHome),
+      const BookmarksScreen(),
+      const NotificationsScreen(),
+      const ProfileScreen(),
+    ];
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted) return;
       context.read<NotificationProvider>().initPush();
@@ -42,6 +43,10 @@ class _HomeShellState extends State<HomeShell> {
         context.read<NotificationProvider>().loadNotifications(userId);
       }
     });
+  }
+
+  void _goHome() {
+    if (mounted && _index != 0) setState(() => _index = 0);
   }
 
   @override

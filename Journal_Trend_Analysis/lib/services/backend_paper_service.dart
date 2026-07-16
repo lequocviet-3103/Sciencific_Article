@@ -4,10 +4,10 @@ import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import '../config/app_config.dart';
 import '../models/api_error.dart';
 import '../models/publication.dart';
-import '../models/journal.dart';
 
 class BackendPaperService {
-  BackendPaperService({http.Client? client}) : _client = client ?? http.Client();
+  BackendPaperService({http.Client? client})
+    : _client = client ?? http.Client();
   final http.Client _client;
 
   Future<Map<String, String>> _headers() async {
@@ -32,34 +32,26 @@ class BackendPaperService {
       params['q'] = query;
     }
 
-    final uri = Uri.parse('${AppConfig.apiBaseUrl}/api/papers')
-        .replace(queryParameters: params);
+    final uri = Uri.parse(
+      '${AppConfig.apiBaseUrl}/api/papers',
+    ).replace(queryParameters: params);
 
     final response = await _client.get(uri, headers: await _headers());
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiError('Backend error: ${response.statusCode}', statusCode: response.statusCode);
+      throw ApiError(
+        'Backend error: ${response.statusCode}',
+        statusCode: response.statusCode,
+      );
     }
 
     final data = jsonDecode(response.body) as Map<String, dynamic>;
     final items = data['items'] as List<dynamic>? ?? [];
     final total = data['total'] as int? ?? 0;
 
-    final publications = items.map((e) {
-      final map = e as Map<String, dynamic>;
-      final journalMap = map['journal'] as Map<String, dynamic>?;
-      return Publication(
-        id: map['paperId']?.toString() ?? '',
-        title: map['title']?.toString() ?? '',
-        doi: map['doi']?.toString(),
-        year: map['publicationYear'] as int?,
-        citedByCount: map['citationCount'] as int? ?? 0,
-        journal: Journal(
-          id: journalMap?['journalId']?.toString() ?? '',
-          name: journalMap?['name']?.toString() ?? 'Unknown Journal',
-        ),
-      );
-    }).toList();
+    final publications = items
+        .map((e) => Publication.fromBackendJson(e as Map<String, dynamic>))
+        .toList();
 
     return BackendSearchResult(
       publications: publications,
@@ -76,21 +68,14 @@ class BackendPaperService {
 
     if (response.statusCode == 404) return null;
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiError('Backend error: ${response.statusCode}', statusCode: response.statusCode);
+      throw ApiError(
+        'Backend error: ${response.statusCode}',
+        statusCode: response.statusCode,
+      );
     }
 
-    final data = jsonDecode(response.body) as Map<String, dynamic>;
-    final journalMap = data['journal'] as Map<String, dynamic>?;
-    return Publication(
-      id: data['paperId']?.toString() ?? '',
-      title: data['title']?.toString() ?? '',
-      doi: data['doi']?.toString(),
-      year: data['publicationYear'] as int?,
-      citedByCount: data['citationCount'] as int? ?? 0,
-      journal: Journal(
-        id: journalMap?['journalId']?.toString() ?? '',
-        name: journalMap?['name']?.toString() ?? 'Unknown Journal',
-      ),
+    return Publication.fromBackendJson(
+      jsonDecode(response.body) as Map<String, dynamic>,
     );
   }
 
@@ -114,34 +99,26 @@ class BackendPaperService {
     };
   }
 
-  /// Fetches the latest [take] papers from the DB (sorted by year desc).
-  Future<List<Publication>> getLatestPapers({int take = 10}) async {
-    final uri = Uri.parse('${AppConfig.apiBaseUrl}/api/papers/latest')
-        .replace(queryParameters: {'take': take.toString()});
+  /// Fetches the top cited papers from the DB.
+  Future<List<Publication>> getTopPapers({int take = 10}) async {
+    final uri = Uri.parse(
+      '${AppConfig.apiBaseUrl}/api/papers/popular',
+    ).replace(queryParameters: {'take': take.toString()});
     final response = await _client
         .get(uri, headers: await _headers())
         .timeout(AppConfig.httpTimeout);
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiError('Failed to load latest papers', statusCode: response.statusCode);
+      throw ApiError(
+        'Failed to load top papers',
+        statusCode: response.statusCode,
+      );
     }
 
     final list = jsonDecode(response.body) as List;
-    return list.map((e) {
-      final map = e as Map<String, dynamic>;
-      final journalMap = map['journal'] as Map<String, dynamic>?;
-      return Publication(
-        id: map['paperId']?.toString() ?? '',
-        title: map['title']?.toString() ?? '',
-        doi: map['doi']?.toString(),
-        year: map['publicationYear'] as int?,
-        citedByCount: map['citationCount'] as int? ?? 0,
-        journal: Journal(
-          id: journalMap?['journalId']?.toString() ?? '',
-          name: journalMap?['name']?.toString() ?? 'Unknown Journal',
-        ),
-      );
-    }).toList();
+    return list
+        .map((e) => Publication.fromBackendJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   Future<String> triggerSync() async {
@@ -149,7 +126,10 @@ class BackendPaperService {
     final response = await _client.post(uri, headers: await _headers());
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiError('Sync failed: ${response.statusCode}', statusCode: response.statusCode);
+      throw ApiError(
+        'Sync failed: ${response.statusCode}',
+        statusCode: response.statusCode,
+      );
     }
 
     final data = jsonDecode(response.body) as Map<String, dynamic>;
@@ -161,7 +141,10 @@ class BackendPaperService {
     final response = await _client.post(uri, headers: await _headers());
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
-      throw ApiError('Recompute failed: ${response.statusCode}', statusCode: response.statusCode);
+      throw ApiError(
+        'Recompute failed: ${response.statusCode}',
+        statusCode: response.statusCode,
+      );
     }
 
     final data = jsonDecode(response.body) as Map<String, dynamic>;

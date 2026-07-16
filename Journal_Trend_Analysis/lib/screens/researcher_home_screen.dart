@@ -20,13 +20,23 @@ class ResearcherHomeScreen extends StatefulWidget {
 class _ResearcherHomeScreenState extends State<ResearcherHomeScreen> {
   int _index = 0;
 
-  final _tabs = const [
-    TopicsScreen(),
-    _AnalyticsTab(),
-    DbDashboardScreen(),
-    SearchScreen(),
-    ProfileScreen(),
-  ];
+  late final List<Widget> _tabs;
+
+  @override
+  void initState() {
+    super.initState();
+    _tabs = [
+      const TopicsScreen(),
+      const _AnalyticsTab(),
+      const DbDashboardScreen(),
+      SearchScreen(onBack: _goHome),
+      const ProfileScreen(),
+    ];
+  }
+
+  void _goHome() {
+    if (mounted && _index != 0) setState(() => _index = 0);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,8 +172,10 @@ class _AnalyticsTab extends StatelessWidget {
                       ],
                     ),
                   ),
-                  Icon(Icons.chevron_right,
-                      color: colorScheme.onSurface.withAlpha(80)),
+                  Icon(
+                    Icons.chevron_right,
+                    color: colorScheme.onSurface.withAlpha(80),
+                  ),
                 ],
               ),
             ),

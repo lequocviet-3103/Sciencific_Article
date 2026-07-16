@@ -20,14 +20,11 @@ import 'publication_detail_screen.dart';
 import 'trend_analysis_screen.dart';
 
 class SearchScreen extends StatefulWidget {
-  const SearchScreen({
-    super.key,
-    this.topic,
-    this.initialQuery,
-  });
+  const SearchScreen({super.key, this.topic, this.initialQuery, this.onBack});
 
   final Topic? topic;
   final String? initialQuery;
+  final VoidCallback? onBack;
 
   @override
   State<SearchScreen> createState() => _SearchScreenState();
@@ -96,6 +93,15 @@ class _SearchScreenState extends State<SearchScreen> {
     context.read<SearchProvider>().search(q);
   }
 
+  void _handleBack() {
+    final navigator = Navigator.of(context);
+    if (navigator.canPop()) {
+      navigator.pop();
+      return;
+    }
+    widget.onBack?.call();
+  }
+
   void _showSortMenu(BuildContext context) {
     final sp = context.read<SearchProvider>();
     showModalBottomSheet(
@@ -108,7 +114,9 @@ class _SearchScreenState extends State<SearchScreen> {
           return ListTile(
             leading: Icon(
               selected ? Icons.check_circle : Icons.circle_outlined,
-              color: selected ? Theme.of(context).colorScheme.primary : Colors.grey,
+              color: selected
+                  ? Theme.of(context).colorScheme.primary
+                  : Colors.grey,
             ),
             title: Text(opt.label),
             onTap: () {
@@ -147,7 +155,9 @@ class _SearchScreenState extends State<SearchScreen> {
               statusBarColor: Colors.transparent,
             ),
       child: Scaffold(
-        backgroundColor: isDark ? const Color(0xFF0F0F1A) : const Color(0xFFF0F2F8),
+        backgroundColor: isDark
+            ? const Color(0xFF0F0F1A)
+            : const Color(0xFFF0F2F8),
         body: Stack(
           children: [
             // Background gradient blobs
@@ -161,8 +171,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      (isDark ? Colors.indigo : Colors.indigo)
-                          .withAlpha(40),
+                      (isDark ? Colors.indigo : Colors.indigo).withAlpha(40),
                       Colors.transparent,
                     ],
                   ),
@@ -179,8 +188,7 @@ class _SearchScreenState extends State<SearchScreen> {
                   shape: BoxShape.circle,
                   gradient: RadialGradient(
                     colors: [
-                      (isDark ? Colors.purple : Colors.purple)
-                          .withAlpha(30),
+                      (isDark ? Colors.purple : Colors.purple).withAlpha(30),
                       Colors.transparent,
                     ],
                   ),
@@ -228,7 +236,7 @@ class _SearchScreenState extends State<SearchScreen> {
             children: [
               _GlassIconButton(
                 icon: const Icon(Icons.arrow_back_rounded, size: 20),
-                onTap: () => Navigator.maybePop(context),
+                onTap: _handleBack,
               ),
               const SizedBox(width: 12),
               Expanded(
@@ -239,8 +247,8 @@ class _SearchScreenState extends State<SearchScreen> {
                       activeTopic != null
                           ? activeTopic.displayName
                           : (search.query.isNotEmpty
-                              ? search.query
-                              : 'ResearchHub'),
+                                ? search.query
+                                : 'ResearchHub'),
                       style: TextStyle(
                         fontSize: 22,
                         fontWeight: FontWeight.bold,
@@ -253,11 +261,11 @@ class _SearchScreenState extends State<SearchScreen> {
                     Text(
                       activeTopic != null
                           ? (activeTopic.category.isNotEmpty
-                              ? activeTopic.category
-                              : 'Filtering by topic')
+                                ? activeTopic.category
+                                : 'Filtering by topic')
                           : (search.hasResults
-                              ? '${search.totalCount} publications'
-                              : 'Discover academic research'),
+                                ? '${search.totalCount} publications'
+                                : 'Discover academic research'),
                       style: TextStyle(
                         fontSize: 12,
                         color: colorScheme.onSurface.withAlpha(150),
@@ -309,7 +317,7 @@ class _SearchScreenState extends State<SearchScreen> {
               ],
             ],
           ),
-            if (activeTopic != null && search.hasResults)
+          if (activeTopic != null && search.hasResults)
             Padding(
               padding: const EdgeInsets.only(top: 14),
               child: _TopicPill(
@@ -318,8 +326,9 @@ class _SearchScreenState extends State<SearchScreen> {
                   if (_controller.text != t.displayName) {
                     _controller.value = TextEditingValue(
                       text: t.displayName,
-                      selection:
-                          TextSelection.collapsed(offset: t.displayName.length),
+                      selection: TextSelection.collapsed(
+                        offset: t.displayName.length,
+                      ),
                     );
                   }
                   FocusScope.of(context).unfocus();
@@ -622,15 +631,10 @@ class _ModernSearchBox extends StatelessWidget {
         textInputAction: TextInputAction.search,
         onSubmitted: (_) => onSubmitted(),
         onChanged: onChanged,
-        style: TextStyle(
-          fontSize: 15,
-          color: colorScheme.onSurface,
-        ),
+        style: TextStyle(fontSize: 15, color: colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: 'Search research topics...',
-          hintStyle: TextStyle(
-            color: colorScheme.onSurface.withAlpha(100),
-          ),
+          hintStyle: TextStyle(color: colorScheme.onSurface.withAlpha(100)),
           prefixIcon: Container(
             margin: const EdgeInsets.only(left: 12, right: 4),
             padding: const EdgeInsets.all(0),
@@ -642,7 +646,10 @@ class _ModernSearchBox extends StatelessWidget {
           ),
           suffixIcon: controller.text.isNotEmpty
               ? IconButton(
-                  icon: Icon(Icons.close, color: colorScheme.onSurface.withAlpha(150)),
+                  icon: Icon(
+                    Icons.close,
+                    color: colorScheme.onSurface.withAlpha(150),
+                  ),
                   onPressed: onClear,
                 )
               : null,
@@ -656,9 +663,7 @@ class _ModernSearchBox extends StatelessWidget {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
-            borderSide: BorderSide(
-              color: colorScheme.outline.withAlpha(30),
-            ),
+            borderSide: BorderSide(color: colorScheme.outline.withAlpha(30)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(20),
@@ -703,9 +708,7 @@ class _ModernChip extends StatelessWidget {
           color: isDark
               ? colorScheme.surfaceContainerHighest.withAlpha(150)
               : Colors.white.withAlpha(230),
-          border: Border.all(
-            color: colorScheme.outline.withAlpha(40),
-          ),
+          border: Border.all(color: colorScheme.outline.withAlpha(40)),
           boxShadow: [
             BoxShadow(
               color: colorScheme.shadow.withAlpha(8),
@@ -783,9 +786,7 @@ class _GlassIconButton extends StatelessWidget {
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(14),
           color: colorScheme.surfaceContainerHighest.withAlpha(150),
-          border: Border.all(
-            color: colorScheme.outline.withAlpha(40),
-          ),
+          border: Border.all(color: colorScheme.outline.withAlpha(40)),
         ),
         child: Center(child: icon),
       ),
@@ -828,7 +829,10 @@ class _ResultsBody extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Container(
-                padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 10,
+                  vertical: 4,
+                ),
                 decoration: BoxDecoration(
                   gradient: LinearGradient(
                     colors: [
@@ -861,7 +865,9 @@ class _ResultsBody extends StatelessWidget {
                 icon: const Icon(Icons.insights_outlined, size: 20),
                 onPressed: () => Navigator.push(
                   context,
-                  MaterialPageRoute(builder: (_) => const TrendAnalysisScreen()),
+                  MaterialPageRoute(
+                    builder: (_) => const TrendAnalysisScreen(),
+                  ),
                 ),
               ),
             ],
@@ -882,10 +888,12 @@ class _ResultsBody extends StatelessWidget {
                       label:
                           '${search.filters.fromYear ?? '*'}–${search.filters.toYear ?? '*'}',
                       onRemove: () {
-                        search.setFilters(search.filters.copyWith(
-                          clearFromYear: true,
-                          clearToYear: true,
-                        ));
+                        search.setFilters(
+                          search.filters.copyWith(
+                            clearFromYear: true,
+                            clearToYear: true,
+                          ),
+                        );
                         search.refreshCurrent();
                       },
                     ),
@@ -893,7 +901,9 @@ class _ResultsBody extends StatelessWidget {
                     _ActiveFilterChip(
                       label: '>${search.filters.minCitations} citations',
                       onRemove: () {
-                        search.setFilters(search.filters.copyWith(minCitations: 0));
+                        search.setFilters(
+                          search.filters.copyWith(minCitations: 0),
+                        );
                         search.refreshCurrent();
                       },
                     ),
@@ -901,7 +911,9 @@ class _ResultsBody extends StatelessWidget {
                     _ActiveFilterChip(
                       label: search.filters.type!.replaceAll('-', ' '),
                       onRemove: () {
-                        search.setFilters(search.filters.copyWith(clearType: true));
+                        search.setFilters(
+                          search.filters.copyWith(clearType: true),
+                        );
                         search.refreshCurrent();
                       },
                     ),
@@ -910,7 +922,9 @@ class _ResultsBody extends StatelessWidget {
                     _ActiveFilterChip(
                       label: 'Author: ${search.filters.authorName!}',
                       onRemove: () {
-                        search.setFilters(search.filters.copyWith(clearAuthorName: true));
+                        search.setFilters(
+                          search.filters.copyWith(clearAuthorName: true),
+                        );
                         search.refreshCurrent();
                       },
                     ),
@@ -919,7 +933,9 @@ class _ResultsBody extends StatelessWidget {
                     _ActiveFilterChip(
                       label: 'Journal: ${search.filters.journalName!}',
                       onRemove: () {
-                        search.setFilters(search.filters.copyWith(clearJournalName: true));
+                        search.setFilters(
+                          search.filters.copyWith(clearJournalName: true),
+                        );
                         search.refreshCurrent();
                       },
                     ),
@@ -1126,10 +1142,7 @@ class _InlineSearchBoxState extends State<_InlineSearchBox> {
         controller: widget.controller,
         textInputAction: TextInputAction.search,
         onSubmitted: widget.onSubmitted,
-        style: TextStyle(
-          fontSize: 14,
-          color: colorScheme.onSurface,
-        ),
+        style: TextStyle(fontSize: 14, color: colorScheme.onSurface),
         decoration: InputDecoration(
           hintText: widget.hintText,
           hintStyle: TextStyle(
@@ -1162,9 +1175,7 @@ class _InlineSearchBoxState extends State<_InlineSearchBox> {
           ),
           enabledBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(
-              color: colorScheme.outline.withAlpha(30),
-            ),
+            borderSide: BorderSide(color: colorScheme.outline.withAlpha(30)),
           ),
           focusedBorder: OutlineInputBorder(
             borderRadius: BorderRadius.circular(16),
@@ -1186,10 +1197,7 @@ class _InlineSearchBoxState extends State<_InlineSearchBox> {
 // ── Modern Bottom Sheet ────────────────────────────────────────
 
 class _ModernBottomSheet extends StatelessWidget {
-  const _ModernBottomSheet({
-    required this.title,
-    required this.children,
-  });
+  const _ModernBottomSheet({required this.title, required this.children});
 
   final String title;
   final List<Widget> children;
@@ -1222,9 +1230,9 @@ class _ModernBottomSheet extends StatelessWidget {
               children: [
                 Text(
                   title,
-                  style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                        fontWeight: FontWeight.bold,
-                      ),
+                  style: Theme.of(
+                    context,
+                  ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 ),
               ],
             ),
@@ -1291,18 +1299,20 @@ class _FilterSheetState extends State<_FilterSheet> {
 
   void _apply() {
     final sp = context.read<SearchProvider>();
-    sp.setFilters(SearchFilters(
-      fromYear: int.tryParse(_fromYearCtrl.text),
-      toYear: int.tryParse(_toYearCtrl.text),
-      minCitations: int.tryParse(_minCitCtrl.text) ?? 0,
-      type: _selectedType,
-      authorName: _authorNameCtrl.text.trim().isEmpty
-          ? null
-          : _authorNameCtrl.text.trim(),
-      journalName: _journalNameCtrl.text.trim().isEmpty
-          ? null
-          : _journalNameCtrl.text.trim(),
-    ));
+    sp.setFilters(
+      SearchFilters(
+        fromYear: int.tryParse(_fromYearCtrl.text),
+        toYear: int.tryParse(_toYearCtrl.text),
+        minCitations: int.tryParse(_minCitCtrl.text) ?? 0,
+        type: _selectedType,
+        authorName: _authorNameCtrl.text.trim().isEmpty
+            ? null
+            : _authorNameCtrl.text.trim(),
+        journalName: _journalNameCtrl.text.trim().isEmpty
+            ? null
+            : _journalNameCtrl.text.trim(),
+      ),
+    );
     Navigator.pop(context);
     if (sp.query.isNotEmpty) sp.search(sp.query);
   }
@@ -1351,8 +1361,8 @@ class _FilterSheetState extends State<_FilterSheet> {
                   Text(
                     'Filters',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
                   const Spacer(),
                   TextButton(onPressed: _clear, child: const Text('Clear All')),
@@ -1460,11 +1470,13 @@ class _FilterSheetState extends State<_FilterSheet> {
                     selected: _selectedType == null,
                     onTap: () => setState(() => _selectedType = null),
                   ),
-                  ...SearchFilters.docTypes.map((t) => _TypeChip(
-                        label: t.$2,
-                        selected: _selectedType == t.$1,
-                        onTap: () => setState(() => _selectedType = t.$1),
-                      )),
+                  ...SearchFilters.docTypes.map(
+                    (t) => _TypeChip(
+                      label: t.$2,
+                      selected: _selectedType == t.$1,
+                      onTap: () => setState(() => _selectedType = t.$1),
+                    ),
+                  ),
                 ],
               ),
 
@@ -1517,7 +1529,9 @@ class _TypeChip extends StatelessWidget {
               ? colorScheme.primaryContainer
               : colorScheme.surfaceContainerHighest,
           border: Border.all(
-            color: selected ? colorScheme.primary : colorScheme.outline.withAlpha(50),
+            color: selected
+                ? colorScheme.primary
+                : colorScheme.outline.withAlpha(50),
             width: selected ? 2 : 1,
           ),
         ),
@@ -1590,7 +1604,9 @@ class _TopicPillState extends State<_TopicPill> {
     if (topicsProvider.status == TopicsStatus.idle) {
       try {
         await topicsProvider.loadFeatured();
-      } catch (_) {/* ignore; fallback list will be used */}
+      } catch (_) {
+        /* ignore; fallback list will be used */
+      }
     }
 
     if (!mounted) {
@@ -1608,9 +1624,10 @@ class _TopicPillState extends State<_TopicPill> {
       all.putIfAbsent(t.id, () => t);
     }
     final options = all.values.toList()
-      ..sort((a, b) => a.displayName
-          .toLowerCase()
-          .compareTo(b.displayName.toLowerCase()));
+      ..sort(
+        (a, b) =>
+            a.displayName.toLowerCase().compareTo(b.displayName.toLowerCase()),
+      );
 
     Topic? result;
     bool clearRequested = false;
@@ -1623,10 +1640,8 @@ class _TopicPillState extends State<_TopicPill> {
         shape: const RoundedRectangleBorder(
           borderRadius: BorderRadius.vertical(top: Radius.circular(24)),
         ),
-        builder: (sheetContext) => _TopicPickerSheet(
-          options: options,
-          current: widget.topic,
-        ),
+        builder: (sheetContext) =>
+            _TopicPickerSheet(options: options, current: widget.topic),
       );
       if (raw is _TopicResult) {
         result = raw.topic;
@@ -1664,9 +1679,7 @@ class _TopicPillState extends State<_TopicPill> {
     try {
       widget.onPickTopic(result);
     } catch (e) {
-      messenger.showSnackBar(
-        SnackBar(content: Text('Search failed: $e')),
-      );
+      messenger.showSnackBar(SnackBar(content: Text('Search failed: $e')));
     }
   }
 
@@ -1687,9 +1700,7 @@ class _TopicPillState extends State<_TopicPill> {
           begin: Alignment.topLeft,
           end: Alignment.bottomRight,
         ),
-        border: Border.all(
-          color: colorScheme.primary.withAlpha(50),
-        ),
+        border: Border.all(color: colorScheme.primary.withAlpha(50)),
       ),
       child: Row(
         children: [
@@ -1739,8 +1750,7 @@ class _TopicPillState extends State<_TopicPill> {
             icon: const Icon(Icons.swap_horiz_rounded, size: 16),
             label: const Text('Change'),
             style: TextButton.styleFrom(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+              padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
               minimumSize: Size.zero,
               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
               foregroundColor: colorScheme.primary,
@@ -1757,8 +1767,7 @@ class _TopicPillState extends State<_TopicPill> {
             ),
             visualDensity: VisualDensity.compact,
             padding: EdgeInsets.zero,
-            constraints:
-                const BoxConstraints.tightFor(width: 32, height: 32),
+            constraints: const BoxConstraints.tightFor(width: 32, height: 32),
           ),
         ],
       ),
@@ -1769,10 +1778,7 @@ class _TopicPillState extends State<_TopicPill> {
 /// Bottom sheet that lists every available topic and lets the user
 /// either pick a new one or clear the active filter.
 class _TopicPickerSheet extends StatefulWidget {
-  const _TopicPickerSheet({
-    required this.options,
-    required this.current,
-  });
+  const _TopicPickerSheet({required this.options, required this.current});
 
   final List<Topic> options;
   final Topic current;
@@ -1925,8 +1931,9 @@ class _TopicPickerSheetState extends State<_TopicPickerSheet> {
                 ),
               ),
               onTap: () {
-                Navigator.of(context)
-                    .pop<_TopicPickerResult>(_ClearRequestedResult());
+                Navigator.of(
+                  context,
+                ).pop<_TopicPickerResult>(_ClearRequestedResult());
               },
             ),
 
@@ -1948,17 +1955,14 @@ class _TopicPickerSheetState extends State<_TopicPickerSheet> {
                       controller: controller,
                       padding: const EdgeInsets.symmetric(vertical: 4),
                       itemCount: filtered.length,
-                      separatorBuilder: (_, _) => const Divider(
-                        height: 1,
-                        indent: 64,
-                      ),
+                      separatorBuilder: (_, _) =>
+                          const Divider(height: 1, indent: 64),
                       itemBuilder: (_, i) {
                         final t = filtered[i];
                         final selected = t.id == widget.current.id;
                         return ListTile(
                           selected: selected,
-                          selectedTileColor:
-                              colorScheme.primary.withAlpha(20),
+                          selectedTileColor: colorScheme.primary.withAlpha(20),
                           leading: CircleAvatar(
                             radius: 18,
                             backgroundColor: selected
@@ -2006,8 +2010,9 @@ class _TopicPickerSheetState extends State<_TopicPickerSheet> {
                                   size: 22,
                                 )
                               : null,
-                          onTap: () => Navigator.of(context)
-                              .pop<_TopicPickerResult>(_TopicResult(t)),
+                          onTap: () => Navigator.of(
+                            context,
+                          ).pop<_TopicPickerResult>(_TopicResult(t)),
                         );
                       },
                     ),

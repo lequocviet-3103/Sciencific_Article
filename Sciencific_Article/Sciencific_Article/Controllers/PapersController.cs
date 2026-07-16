@@ -176,9 +176,12 @@ public class PapersController : ControllerBase
         [FromQuery] int take = 20,
         CancellationToken cancellationToken = default)
     {
+        take = Math.Clamp(take, 1, 100);
         var items = await _context.Papers
             .Include(p => p.Journal)
+            .Where(p => p.CitationCount > 0)
             .OrderByDescending(p => p.CitationCount)
+            .ThenByDescending(p => p.PublicationYear)
             .Take(take)
             .Select(p => new
             {

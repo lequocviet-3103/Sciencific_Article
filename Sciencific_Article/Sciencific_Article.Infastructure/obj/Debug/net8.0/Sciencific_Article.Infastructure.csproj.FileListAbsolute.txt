@@ -76,3 +76,42 @@ C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sc
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Domain.pdb
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.sourcelink.json
 C:\Users\nhutl\OneDrive\Desktop\prn new\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.pdb
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-Black.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-BlackItalic.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-Bold.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-BoldItalic.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-ExtraBold.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-ExtraBoldItalic.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-ExtraLight.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-ExtraLightItalic.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-Italic.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-Light.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-LightItalic.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-Medium.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-MediumItalic.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-Regular.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-SemiBold.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-SemiBoldItalic.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-Thin.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\Lato-ThinItalic.ttf
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\LatoFont\OFL.txt
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Infastructure.deps.json
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Infastructure.runtimeconfig.json
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Infastructure.dll
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Infastructure.pdb
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Application.dll
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Domain.dll
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Application.pdb
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\bin\Debug\net8.0\Sciencific_Article.Domain.pdb
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.csproj.AssemblyReference.cache
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.GeneratedMSBuildEditorConfig.editorconfig
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.AssemblyInfoInputs.cache
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.AssemblyInfo.cs
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.csproj.CoreCompileInputs.cache
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.sourcelink.json
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencif.C2822603.Up2Date
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.dll
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\refint\Sciencific_Article.Infastructure.dll
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.pdb
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\Sciencific_Article.Infastructure.genruntimeconfig.cache
+D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article.Infastructure\obj\Debug\net8.0\ref\Sciencific_Article.Infastructure.dll

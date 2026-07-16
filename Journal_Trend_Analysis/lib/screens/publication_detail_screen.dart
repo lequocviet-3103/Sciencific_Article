@@ -32,17 +32,15 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
   }
 
   Future<void> _fetchFullDetails() async {
-    // Always fetch full details when authors are missing — the list endpoint
-    // does not return authors, so a paper with an abstract from list results
-    // would otherwise show "Authors: N/A".
-    if (_publication.authors.isNotEmpty && _publication.abstractText != null) return;
+    // Summary responses can contain authors/abstract while still omitting
+    // topics. Always refresh a valid backend paper id from the detail API.
+    if (_publication.id.isEmpty) return;
 
     setState(() => _isLoadingFull = true);
 
+    final service = PaperSearchService();
     try {
-      final service = PaperSearchService();
       final full = await service.fetchWorkById(_publication.id);
-      service.dispose();
       if (mounted) {
         setState(() {
           _publication = full;
@@ -53,6 +51,8 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
       // Silently fall back — the screen still renders with whatever data was
       // already loaded from the search result. Abstract shows "not available".
       if (mounted) setState(() => _isLoadingFull = false);
+    } finally {
+      service.dispose();
     }
   }
 
@@ -72,8 +72,11 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
   }
 
   void _sharePublication() {
-    final doi = _publication.doi != null ? 'https://doi.org/${_publication.doi}' : '';
-    final text = '${_publication.title}\n'
+    final doi = _publication.doi != null
+        ? 'https://doi.org/${_publication.doi}'
+        : '';
+    final text =
+        '${_publication.title}\n'
         'Year: ${_publication.year ?? 'N/A'}  |  Citations: ${formatInt(_publication.citedByCount)}\n'
         'Journal: ${_publication.journal.name}\n'
         '$doi';
@@ -94,7 +97,9 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
 
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0F0F1A) : const Color(0xFFF0F2F8),
+      backgroundColor: isDark
+          ? const Color(0xFF0F0F1A)
+          : const Color(0xFFF0F2F8),
       appBar: ModernAppBar(
         title: 'Publication Detail',
         actions: [
@@ -132,9 +137,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                   end: Alignment.bottomRight,
                 ),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(
-                  color: colorScheme.primary.withAlpha(40),
-                ),
+                border: Border.all(color: colorScheme.primary.withAlpha(40)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,7 +147,9 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                       if (_publication.year != null)
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: colorScheme.primary,
                             borderRadius: BorderRadius.circular(20),
@@ -162,7 +167,9 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
-                              horizontal: 10, vertical: 4),
+                            horizontal: 10,
+                            vertical: 4,
+                          ),
                           decoration: BoxDecoration(
                             color: colorScheme.secondaryContainer,
                             borderRadius: BorderRadius.circular(20),
@@ -290,10 +297,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                           ),
                         ),
                       ),
-                      label: Text(
-                        name,
-                        style: const TextStyle(fontSize: 13),
-                      ),
+                      label: Text(name, style: const TextStyle(fontSize: 13)),
                       backgroundColor: colorScheme.surfaceContainerHigh,
                     );
                   }).toList(),
@@ -315,9 +319,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                 decoration: BoxDecoration(
                   color: colorScheme.surfaceContainerHighest,
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: colorScheme.outline.withAlpha(50),
-                  ),
+                  border: Border.all(color: colorScheme.outline.withAlpha(50)),
                 ),
                 child: Row(
                   children: [
@@ -409,8 +411,10 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                 runSpacing: 8,
                 children: _publication.topics.map((topic) {
                   return Container(
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 12,
+                      vertical: 6,
+                    ),
                     decoration: BoxDecoration(
                       color: colorScheme.secondaryContainer,
                       borderRadius: BorderRadius.circular(20),
@@ -441,9 +445,7 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
               decoration: BoxDecoration(
                 color: colorScheme.surfaceContainerHighest,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(
-                  color: colorScheme.outline.withAlpha(30),
-                ),
+                border: Border.all(color: colorScheme.outline.withAlpha(30)),
               ),
               child: _isLoadingFull
                   ? Row(
@@ -562,17 +564,18 @@ class _CitationChart extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(
-          color: colorScheme.outline.withAlpha(30),
-        ),
+        border: Border.all(color: colorScheme.outline.withAlpha(30)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Row(
             children: [
-              Icon(Icons.analytics_outlined,
-                  size: 18, color: colorScheme.primary),
+              Icon(
+                Icons.analytics_outlined,
+                size: 18,
+                color: colorScheme.primary,
+              ),
               const SizedBox(width: 8),
               Text(
                 'Citation Strength',
@@ -597,8 +600,11 @@ class _CitationChart extends StatelessWidget {
           if (citedByCount == 0)
             Row(
               children: [
-                Icon(Icons.info_outline,
-                    size: 16, color: colorScheme.onSurface.withAlpha(120)),
+                Icon(
+                  Icons.info_outline,
+                  size: 16,
+                  color: colorScheme.onSurface.withAlpha(120),
+                ),
                 const SizedBox(width: 8),
                 Text(
                   'No citations recorded yet',
@@ -636,12 +642,12 @@ class _CitationChart extends StatelessWidget {
               citationLevel == 5
                   ? '⭐⭐⭐⭐⭐ Extremely High Impact'
                   : citationLevel == 4
-                      ? '⭐⭐⭐⭐ Very High Impact'
-                      : citationLevel == 3
-                          ? '⭐⭐⭐ High Impact'
-                          : citationLevel == 2
-                              ? '⭐⭐ Moderate Impact'
-                              : '⭐ Low Impact',
+                  ? '⭐⭐⭐⭐ Very High Impact'
+                  : citationLevel == 3
+                  ? '⭐⭐⭐ High Impact'
+                  : citationLevel == 2
+                  ? '⭐⭐ Moderate Impact'
+                  : '⭐ Low Impact',
               style: TextStyle(
                 fontSize: 12,
                 fontWeight: FontWeight.w600,
@@ -719,9 +725,7 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         color: colorScheme.surfaceContainerHighest,
         borderRadius: BorderRadius.circular(14),
-        border: Border.all(
-          color: color.withAlpha(40),
-        ),
+        border: Border.all(color: color.withAlpha(40)),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -824,10 +828,7 @@ class _InfoRow extends StatelessWidget {
         Expanded(
           child: Text(
             value,
-            style: TextStyle(
-              fontSize: 13,
-              color: colorScheme.onSurface,
-            ),
+            style: TextStyle(fontSize: 13, color: colorScheme.onSurface),
           ),
         ),
       ],
@@ -861,9 +862,7 @@ class _DetailActionButton extends StatelessWidget {
           decoration: BoxDecoration(
             borderRadius: BorderRadius.circular(12),
             color: colorScheme.surfaceContainerHighest.withAlpha(150),
-            border: Border.all(
-              color: colorScheme.outline.withAlpha(30),
-            ),
+            border: Border.all(color: colorScheme.outline.withAlpha(30)),
           ),
           child: Center(child: icon),
         ),

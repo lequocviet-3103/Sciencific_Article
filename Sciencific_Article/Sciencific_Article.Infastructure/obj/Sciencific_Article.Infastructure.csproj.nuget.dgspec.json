@@ -1,23 +1,23 @@
 {
   "format": 1,
   "restore": {
-    "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj": {}
+    "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj": {}
   },
   "projects": {
-    "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj": {
+    "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
+        "projectUniqueName": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
         "projectName": "Sciencific_Article.Application",
-        "projectPath": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
-        "packagesPath": "C:\\Users\\nhutl\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\obj\\",
+        "projectPath": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj",
+        "packagesPath": "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\",
+        "outputPath": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\nhutl\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Le Quoc Viet\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -25,14 +25,15 @@
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj": {
-                "projectPath": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj"
+              "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj": {
+                "projectPath": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj"
               }
             }
           }
@@ -47,7 +48,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -86,24 +87,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.310/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj": {
+    "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj",
+        "projectUniqueName": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj",
         "projectName": "Sciencific_Article.Domain",
-        "projectPath": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj",
-        "packagesPath": "C:\\Users\\nhutl\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\obj\\",
+        "projectPath": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj",
+        "packagesPath": "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\",
+        "outputPath": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\nhutl\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Le Quoc Viet\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -111,6 +112,7 @@
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
@@ -129,7 +131,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -150,24 +152,24 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.310/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     },
-    "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj": {
+    "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj",
+        "projectUniqueName": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj",
         "projectName": "Sciencific_Article.Infastructure",
-        "projectPath": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj",
-        "packagesPath": "C:\\Users\\nhutl\\.nuget\\packages\\",
-        "outputPath": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\obj\\",
+        "projectPath": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\Sciencific_Article.Infastructure.csproj",
+        "packagesPath": "C:\\Users\\Le Quoc Viet\\.nuget\\packages\\",
+        "outputPath": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Infastructure\\obj\\",
         "projectStyle": "PackageReference",
         "fallbackFolders": [
           "C:\\Program Files (x86)\\Microsoft Visual Studio\\Shared\\NuGetPackages"
         ],
         "configFilePaths": [
-          "C:\\Users\\nhutl\\AppData\\Roaming\\NuGet\\NuGet.Config",
+          "C:\\Users\\Le Quoc Viet\\AppData\\Roaming\\NuGet\\NuGet.Config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.FallbackLocation.config",
           "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
         ],
@@ -175,17 +177,18 @@
           "net8.0"
         ],
         "sources": {
+          "C:\\Program Files (x86)\\Microsoft SDKs\\NuGetPackages\\": {},
           "https://api.nuget.org/v3/index.json": {}
         },
         "frameworks": {
           "net8.0": {
             "targetAlias": "net8.0",
             "projectReferences": {
-              "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj": {
-                "projectPath": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj"
+              "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj": {
+                "projectPath": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Application\\Sciencific_Article.Application.csproj"
               },
-              "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj": {
-                "projectPath": "C:\\Users\\nhutl\\OneDrive\\Desktop\\prn new\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj"
+              "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj": {
+                "projectPath": "D:\\PRM392\\PRN_Journal\\Sciencific_Article\\Sciencific_Article\\Sciencific_Article.Domain\\Sciencific_Article.Domain.csproj"
               }
             }
           }
@@ -200,7 +203,7 @@
           "auditLevel": "low",
           "auditMode": "direct"
         },
-        "SdkAnalysisLevel": "9.0.300"
+        "SdkAnalysisLevel": "10.0.200"
       },
       "frameworks": {
         "net8.0": {
@@ -263,7 +266,7 @@
               "privateAssets": "all"
             }
           },
-          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\9.0.310/PortableRuntimeIdentifierGraph.json"
+          "runtimeIdentifierGraphPath": "C:\\Program Files\\dotnet\\sdk\\10.0.201/PortableRuntimeIdentifierGraph.json"
         }
       }
     }
