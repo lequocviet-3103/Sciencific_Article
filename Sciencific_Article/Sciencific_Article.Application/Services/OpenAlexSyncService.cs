@@ -15,6 +15,9 @@ namespace Sciencific_Article.Application.Services;
 public class OpenAlexSyncService : IOpenAlexSyncService
 {
     public const string NewPapersTopic = "new_papers";
+    private const int DefaultSyncCount = 50;
+    private const int MaxManualSyncCount = 1000;
+    private static readonly SemaphoreSlim SyncGate = new(1, 1);
 
     private readonly IUnitOfWork _unitOfWork;
     private readonly IOpenAlexClient _openAlexClient;
@@ -31,127 +34,66 @@ public class OpenAlexSyncService : IOpenAlexSyncService
     }
 
     public async Task<string> SyncWorksAsync(CancellationToken cancellationToken = default)
+        => (await SyncWorksAsync(DefaultSyncCount, cancellationToken)).Message;
+
+    public async Task<SyncWorksResult> SyncWorksAsync(
+        int requestedCount,
+        CancellationToken cancellationToken = default)
     {
-        // Fallback seed topics used when the DB is empty or has no
-        // high-WorksCount topics yet. Without this, the very first sync
-        // after a fresh DB produces "Synced X papers (per-topic: ;
-        // baseline: ...)" and the featured/topics pages stay empty.
-        var seedTopics = new[]
+        if (requestedCount < 1 || requestedCount > MaxManualSyncCount)
         {
-            "Quantum mechanics", "Marine biology", "Astrophysics",
-            "Computer science", "Genetics", "Neuroscience",
-            "Climate change", "Materials science", "Chemistry",
-            "Medicine"
-        };
-
-        // Pull topic names + cached OpenAlex IDs from the DB so any topic
-        // that already exists (manually added or synced in a previous run)
-        // ends up with papers linked to it, AND we can use the cached
-        // `topics.id:<id>` filter instead of paying for a per-topic
-        // /topics?search lookup.
-        var dbTopicRows = await _unitOfWork.ResearchTopics
-            .AsNoTracking()
-            .OrderByDescending(t => t.WorksCount)
-            .Take(10)
-            .Select(t => new { t.Name, t.OpenAlexId })
-            .ToListAsync(cancellationToken);
-
-        // Build a lookup so we can reuse the OpenAlex topic ID if we already
-        // resolved it in a previous sync.
-        var dbTopicIdsByName = dbTopicRows
-            .Where(r => !string.IsNullOrWhiteSpace(r.OpenAlexId))
-            .ToDictionary(r => r.Name, r => r.OpenAlexId!, StringComparer.OrdinalIgnoreCase);
-        var dbTopics = dbTopicRows.Select(r => r.Name).ToList();
-
-        // Combine DB topics + seeds, dedupe case-insensitively, cap at 10.
-        var topTopics = dbTopics
-            .Concat(seedTopics.Where(s => !dbTopics.Any(d => d.Equals(s, StringComparison.OrdinalIgnoreCase))))
-            .Take(10)
-            .ToList();
-
-        var totalInserted = 0;
-        var topicReports = new List<string>();
-        foreach (var topicName in topTopics)
-        {
-            cancellationToken.ThrowIfCancellationRequested();
-
-            // Isolate failures per-topic so one bad OpenAlex response (or a
-            // single topic failing to ingest) doesn't abort the whole sync
-            // and cause the API to return 500 to the admin user.
-            int inserted;
-            try
-            {
-                // OpenAlex deprecated `concepts.display_name` as a filter
-                // field (see OpenAlex 400 response listing valid fields).
-                // The replacement for topic-scoped filtering is `topics.id`,
-                // which requires an OpenAlex topic ID like "T12345".
-                // We resolve the topic name -> ID via the /topics endpoint
-                // once per topic, cache it on ResearchTopic.OpenAlexId, and
-                // reuse it on subsequent syncs.
-                var topicId = await ResolveTopicOpenAlexIdAsync(
-                    topicName, dbTopicIdsByName, cancellationToken);
-
-                if (!string.IsNullOrEmpty(topicId))
-                {
-                    var filter = $"topics.id:{topicId}";
-                    inserted = await IngestWorksAsync(
-                        search: null, filter: filter, maxPages: 1, cancellationToken);
-                }
-                else
-                {
-                    inserted = 0;
-                }
-
-                // Fall back to a full-text search when the topic filter
-                // returns nothing (older papers sometimes only have a
-                // "raw" match) or when we couldn't resolve an ID at all.
-                if (inserted == 0)
-                {
-                    inserted = await IngestWorksAsync(
-                        search: topicName, filter: null, maxPages: 1, cancellationToken);
-                }
-            }
-            catch (OperationCanceledException)
-            {
-                throw;
-            }
-            catch (Exception ex)
-            {
-                Console.WriteLine($"SyncWorksAsync: topic '{topicName}' failed: {ex.Message}");
-                Console.WriteLine($"SyncWorksAsync: topic '{topicName}' stack: {ex.StackTrace}");
-                if (ex.InnerException != null)
-                {
-                    Console.WriteLine($"SyncWorksAsync: topic '{topicName}' inner: {ex.InnerException.Message}");
-                    Console.WriteLine($"SyncWorksAsync: topic '{topicName}' inner stack: {ex.InnerException.StackTrace}");
-                }
-                topicReports.Add($"{topicName}: ERROR({ex.GetType().Name})");
-                continue;
-            }
-
-            topicReports.Add($"{topicName}: {inserted}");
-            totalInserted += inserted;
+            throw new ArgumentOutOfRangeException(
+                nameof(requestedCount),
+                $"Requested count must be between 1 and {MaxManualSyncCount}.");
         }
 
-        // Also pull a generic batch so we have baseline coverage.
-        int baseline = 0;
+        if (!await SyncGate.WaitAsync(0, cancellationToken))
+        {
+            throw new InvalidOperationException("Another OpenAlex sync is already running.");
+        }
+
         try
         {
-            baseline = await IngestWorksAsync(
-                search: null, filter: "authors_count:>0,publication_year:>2018",
-                maxPages: 2, cancellationToken);
-            totalInserted += baseline;
-        }
-        catch (OperationCanceledException)
-        {
-            throw;
-        }
-        catch (Exception ex)
-        {
-            Console.WriteLine($"SyncWorksAsync: baseline ingest failed: {ex.Message}");
-            topicReports.Add($"baseline: ERROR({ex.GetType().Name})");
-        }
+            // Scan well beyond the requested number so already-synced works do
+            // not prevent the admin from receiving the requested number of new
+            // rows. The cap prevents an unbounded request when OpenAlex mostly
+            // returns records that already exist locally.
+            var maxPages = Math.Clamp(
+                (int)Math.Ceiling(requestedCount / 100d) * 5,
+                20,
+                100);
 
-        return $"Synced {totalInserted} papers from OpenAlex (per-topic: {string.Join(" | ", topicReports)}; baseline: {baseline})";
+            var ingest = await IngestWorksAsync(
+                search: null,
+                filter: "authors_count:>0",
+                maxPages: maxPages,
+                maxNewPapers: requestedCount,
+                cancellationToken: cancellationToken);
+
+            var result = new SyncWorksResult(
+                requestedCount,
+                ingest.InsertedCount,
+                ingest.SkippedDuplicates,
+                ingest.ScannedCount,
+                ingest.SourceExhausted);
+
+            _unitOfWork.Add(new SyncLog
+            {
+                SyncLogId = Guid.NewGuid().ToString(),
+                SourceApi = "OpenAlex",
+                Status = ingest.InsertedCount >= requestedCount ? "Success" : "Partial",
+                RecordsInserted = ingest.InsertedCount,
+                ErrorMessage = ingest.InsertedCount >= requestedCount ? null : result.Message,
+                SyncTime = DateTime.Now,
+            });
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+
+            return result;
+        }
+        finally
+        {
+            SyncGate.Release();
+        }
     }
 
     /// Resolves a topic display name (e.g. "Computer science") into an
@@ -249,7 +191,13 @@ public class OpenAlexSyncService : IOpenAlexSyncService
 
         if (existingCount >= minResults) return 0;
 
-        return await IngestWorksAsync(search: query, filter: null, maxPages, cancellationToken);
+        var result = await IngestWorksAsync(
+            search: query,
+            filter: null,
+            maxPages: maxPages,
+            maxNewPapers: int.MaxValue,
+            cancellationToken: cancellationToken);
+        return result.InsertedCount;
     }
 
     /// Same idea as EnsureWorksSyncedForQueryAsync but for the Topics table,
@@ -316,33 +264,51 @@ public class OpenAlexSyncService : IOpenAlexSyncService
         return inserted;
     }
 
-    private async Task<int> IngestWorksAsync(
+    private async Task<IngestWorksResult> IngestWorksAsync(
         string? search,
         string? filter,
         int maxPages,
+        int maxNewPapers,
         CancellationToken cancellationToken)
     {
         var cursor = "*";
         var page = 0;
         var inserted = 0;
+        var scanned = 0;
+        var skippedDuplicates = 0;
+        var sourceExhausted = false;
         var newPaperTitles = new List<string>();
         var journals = new Dictionary<string, Journal>(StringComparer.OrdinalIgnoreCase);
-        var topics = new Dictionary<string, ResearchTopic>(StringComparer.OrdinalIgnoreCase);
         var keywordsDict = new Dictionary<string, Keyword>(StringComparer.OrdinalIgnoreCase);
         var authorsDict = new Dictionary<string, Author>(StringComparer.OrdinalIgnoreCase);
+        var knownDoiKeys = (await _unitOfWork.Papers
+                .AsNoTracking()
+                .Where(p => p.Doi != null && p.Doi != "")
+                .Select(p => p.Doi!)
+                .ToListAsync(cancellationToken))
+            .Select(NormalizeDoi)
+            .Where(doi => doi != null)
+            .Cast<string>()
+            .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
-        while (page < maxPages)
+        while (page < maxPages && inserted < maxNewPapers)
         {
             cancellationToken.ThrowIfCancellationRequested();
 
             var response = await _openAlexClient.GetWorksAsync(
                 search: search,
                 filter: filter,
-                cursor: cursor == "*" ? null : cursor,
-                perPage: 25,
+                // OpenAlex cursor pagination must start with cursor="*".
+                // Omitting it only returns the first page and no next cursor.
+                cursor: cursor,
+                perPage: 100,
                 cancellationToken: cancellationToken);
 
-            if (response.Results.Count == 0) break;
+            if (response.Results.Count == 0)
+            {
+                sourceExhausted = true;
+                break;
+            }
 
             // Pre-fetch all journals/topics/authors/keywords that we'll need
             // in one go, instead of issuing per-row lookups below.
@@ -353,13 +319,13 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 .ToList();
 
             var existingPapers = incomingIds.Count == 0
-                ? new HashSet<string>()
+                ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
                 : (await _unitOfWork.Papers
                     .AsNoTracking()
                     .Where(p => p.ExternalId != null && incomingIds.Contains(p.ExternalId))
                     .Select(p => p.ExternalId!)
                     .ToListAsync(cancellationToken))
-                    .ToHashSet();
+                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
 
             var journalNames = response.Results
                 .Select(w => w.PrimaryLocation?.Source?.DisplayName
@@ -447,15 +413,23 @@ public class OpenAlexSyncService : IOpenAlexSyncService
             // reuse them (and not re-query DB) when the same name appears
             // again on a later work in the same page.
             var localTopicsByName = new Dictionary<string, ResearchTopic>(StringComparer.OrdinalIgnoreCase);
-            var seenTopicNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-
             foreach (var work in response.Results)
             {
+                if (inserted >= maxNewPapers) break;
+                scanned++;
+
                 var openAlexId = ExtractOpenAlexId(work.Id);
                 if (string.IsNullOrEmpty(openAlexId)) continue;
 
-                // Skip duplicates (looked up in batch above)
-                if (existingPapers.Contains(openAlexId)) continue;
+                // OpenAlex ids are the primary identity. DOI is a second guard
+                // for legacy rows or records imported before ExternalId existed.
+                var doiKey = NormalizeDoi(work.Doi);
+                if (existingPapers.Contains(openAlexId) ||
+                    (doiKey != null && knownDoiKeys.Contains(doiKey)))
+                {
+                    skippedDuplicates++;
+                    continue;
+                }
 
                 // Get or create Journal
                 Journal? journal = null;
@@ -501,6 +475,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
 
                 // Authors
                 var seenAuthorKeys = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+                var seenTopicNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
                 foreach (var authorship in work.Authorships ?? Enumerable.Empty<OpenAlexAuthorship>())
                 {
                     var authorName = authorship.Authors?.FirstOrDefault()?.DisplayName;
@@ -650,6 +625,8 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 }
 
                 inserted++;
+                existingPapers.Add(openAlexId);
+                if (doiKey != null) knownDoiKeys.Add(doiKey);
                 newPaperTitles.Add(paper.Title);
             }
 
@@ -663,7 +640,11 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 throw;
             }
             cursor = response.Meta.NextCursor ?? string.Empty;
-            if (string.IsNullOrEmpty(cursor)) break;
+            if (string.IsNullOrEmpty(cursor))
+            {
+                sourceExhausted = true;
+                break;
+            }
             page++;
         }
 
@@ -678,7 +659,11 @@ public class OpenAlexSyncService : IOpenAlexSyncService
         // value (1) we set on first insert.
         await RecomputeTopicWorksCountsAsync(cancellationToken);
 
-        return inserted;
+        return new IngestWorksResult(
+            inserted,
+            skippedDuplicates,
+            scanned,
+            sourceExhausted);
     }
 
     private async Task RecomputeTopicWorksCountsAsync(CancellationToken cancellationToken)
@@ -798,6 +783,28 @@ public class OpenAlexSyncService : IOpenAlexSyncService
         => Task.FromResult("Keywords synced as part of SyncWorksAsync");
     public Task<string> RecomputeTrendsAsync(CancellationToken cancellationToken = default)
         => Task.FromResult("Trends recomputed");
+
+    private sealed record IngestWorksResult(
+        int InsertedCount,
+        int SkippedDuplicates,
+        int ScannedCount,
+        bool SourceExhausted);
+
+    private static string? NormalizeDoi(string? doi)
+    {
+        if (string.IsNullOrWhiteSpace(doi)) return null;
+
+        var value = doi.Trim();
+        if (value.StartsWith("https://doi.org/", StringComparison.OrdinalIgnoreCase))
+            value = value["https://doi.org/".Length..];
+        else if (value.StartsWith("http://doi.org/", StringComparison.OrdinalIgnoreCase))
+            value = value["http://doi.org/".Length..];
+        else if (value.StartsWith("doi:", StringComparison.OrdinalIgnoreCase))
+            value = value["doi:".Length..];
+
+        value = value.Trim();
+        return value.Length == 0 ? null : value.ToLowerInvariant();
+    }
 
     private static string? ExtractOpenAlexId(string? url)
         => string.IsNullOrWhiteSpace(url) ? null

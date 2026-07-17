@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import '../models/role.dart';
 import '../models/user.dart';
 import '../services/analysis_service.dart';
@@ -69,6 +70,7 @@ class _AdminDashboardTab extends StatefulWidget {
 class _AdminDashboardTabState extends State<_AdminDashboardTab> {
   final _service = AnalysisService();
   final _paperService = BackendPaperService();
+  final _syncCountController = TextEditingController(text: '50');
   Map<String, dynamic>? _stats;
   bool _loading = true;
   String? _error;
@@ -84,6 +86,8 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
   @override
   void dispose() {
     _service.dispose();
+    _paperService.dispose();
+    _syncCountController.dispose();
     super.dispose();
   }
 
@@ -107,10 +111,20 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
   }
 
   Future<void> _syncWorks() async {
+    final requestedCount = int.tryParse(_syncCountController.text.trim());
+    if (requestedCount == null || requestedCount < 1 || requestedCount > 1000) {
+      _showSnack('Please enter a paper count from 1 to 1000.');
+      return;
+    }
+
+    FocusScope.of(context).unfocus();
     setState(() => _syncingWorks = true);
     try {
-      final msg = await _paperService.triggerSync();
+      final msg = await _paperService.triggerSync(
+        requestedCount: requestedCount,
+      );
       _showSnack(msg);
+      await _load();
     } catch (e) {
       _showSnack('Sync failed: $e');
     } finally {
@@ -149,127 +163,172 @@ class _AdminDashboardTabState extends State<_AdminDashboardTab> {
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
+          ? Center(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Text(_error!, style: TextStyle(color: colorScheme.error)),
+                  const SizedBox(height: 12),
+                  FilledButton(onPressed: _load, child: const Text('Retry')),
+                ],
+              ),
+            )
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView(
+                padding: const EdgeInsets.all(16),
+                children: [
+                  // Stats grid
+                  Text(
+                    'System Overview',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 12),
+                  GridView.count(
+                    crossAxisCount: 2,
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    crossAxisSpacing: 12,
+                    mainAxisSpacing: 12,
+                    childAspectRatio: 1.8,
                     children: [
-                      Text(_error!, style: TextStyle(color: colorScheme.error)),
-                      const SizedBox(height: 12),
-                      FilledButton(onPressed: _load, child: const Text('Retry')),
+                      _StatCard(
+                        label: 'Users',
+                        value: '${_stats?['userCount'] ?? 0}',
+                        icon: Icons.people,
+                        color: colorScheme.primary,
+                        sub: '${_stats?['bannedCount'] ?? 0} banned',
+                      ),
+                      _StatCard(
+                        label: 'Papers',
+                        value: '${_stats?['paperCount'] ?? 0}',
+                        icon: Icons.article_outlined,
+                        color: Colors.green.shade600,
+                      ),
+                      _StatCard(
+                        label: 'Topics',
+                        value: '${_stats?['topicCount'] ?? 0}',
+                        icon: Icons.category_outlined,
+                        color: Colors.orange.shade600,
+                      ),
+                      _StatCard(
+                        label: 'Journals',
+                        value: '${_stats?['journalCount'] ?? 0}',
+                        icon: Icons.menu_book_outlined,
+                        color: Colors.purple.shade600,
+                      ),
+                      _StatCard(
+                        label: 'Authors',
+                        value: '${_stats?['authorCount'] ?? 0}',
+                        icon: Icons.person_outline,
+                        color: Colors.teal.shade600,
+                      ),
+                      _StatCard(
+                        label: 'Sync Logs',
+                        value: '${_stats?['syncLogCount'] ?? 0}',
+                        icon: Icons.sync_outlined,
+                        color: Colors.blue.shade600,
+                      ),
                     ],
                   ),
-                )
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView(
-                    padding: const EdgeInsets.all(16),
-                    children: [
-                      // Stats grid
-                      Text('System Overview',
-                          style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 12),
-                      GridView.count(
-                        crossAxisCount: 2,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisSpacing: 12,
-                        mainAxisSpacing: 12,
-                        childAspectRatio: 1.8,
-                        children: [
-                          _StatCard(
-                            label: 'Users',
-                            value: '${_stats?['userCount'] ?? 0}',
-                            icon: Icons.people,
-                            color: colorScheme.primary,
-                            sub: '${_stats?['bannedCount'] ?? 0} banned',
-                          ),
-                          _StatCard(
-                            label: 'Papers',
-                            value: '${_stats?['paperCount'] ?? 0}',
-                            icon: Icons.article_outlined,
-                            color: Colors.green.shade600,
-                          ),
-                          _StatCard(
-                            label: 'Topics',
-                            value: '${_stats?['topicCount'] ?? 0}',
-                            icon: Icons.category_outlined,
-                            color: Colors.orange.shade600,
-                          ),
-                          _StatCard(
-                            label: 'Journals',
-                            value: '${_stats?['journalCount'] ?? 0}',
-                            icon: Icons.menu_book_outlined,
-                            color: Colors.purple.shade600,
-                          ),
-                          _StatCard(
-                            label: 'Authors',
-                            value: '${_stats?['authorCount'] ?? 0}',
-                            icon: Icons.person_outline,
-                            color: Colors.teal.shade600,
-                          ),
-                          _StatCard(
-                            label: 'Sync Logs',
-                            value: '${_stats?['syncLogCount'] ?? 0}',
-                            icon: Icons.sync_outlined,
-                            color: Colors.blue.shade600,
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 24),
+                  const SizedBox(height: 24),
 
-                      // Sync actions
-                      Text('Sync Controls',
-                          style: Theme.of(context).textTheme.titleMedium),
-                      const SizedBox(height: 8),
-                      Card(
-                        child: Column(
-                          children: [
-                            ListTile(
-                              leading: const Icon(Icons.cloud_sync_outlined),
-                              title: const Text('Sync papers from OpenAlex'),
-                              subtitle: const Text(
-                                  'Pulls new works, notifies users via FCM'),
-                              trailing: _syncingWorks
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2))
-                                  : FilledButton(
-                                      onPressed: _syncWorks,
-                                      child: const Text('Run')),
-                            ),
-                            const Divider(height: 1),
-                            ListTile(
-                              leading: const Icon(Icons.auto_graph_outlined),
-                              title: const Text('Recompute publication trends'),
-                              trailing: _recomputingTrends
-                                  ? const SizedBox(
-                                      width: 20,
-                                      height: 20,
-                                      child: CircularProgressIndicator(
-                                          strokeWidth: 2))
-                                  : FilledButton(
-                                      onPressed: _recomputeTrends,
-                                      child: const Text('Run')),
-                            ),
-                          ],
+                  // Sync actions
+                  Text(
+                    'Sync Controls',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  const SizedBox(height: 8),
+                  Card(
+                    child: Column(
+                      children: [
+                        const ListTile(
+                          leading: Icon(Icons.cloud_sync_outlined),
+                          title: Text('Sync papers from OpenAlex'),
+                          subtitle: Text(
+                            'Downloads the requested number of new papers and skips existing OpenAlex IDs/DOIs.',
+                          ),
                         ),
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      // Recent sync logs
-                      if (_stats?['recentSyncLogs'] != null) ...[
-                        Text('Recent Sync Logs',
-                            style: Theme.of(context).textTheme.titleMedium),
-                        const SizedBox(height: 8),
-                        ...(_stats!['recentSyncLogs'] as List).map((log) =>
-                            _SyncLogTile(log: log as Map<String, dynamic>)),
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(16, 0, 16, 16),
+                          child: Row(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _syncCountController,
+                                  enabled: !_syncingWorks,
+                                  keyboardType: TextInputType.number,
+                                  inputFormatters: [
+                                    FilteringTextInputFormatter.digitsOnly,
+                                  ],
+                                  decoration: const InputDecoration(
+                                    labelText: 'Number of new papers',
+                                    hintText: '50',
+                                    helperText: 'Allowed range: 1–1000',
+                                    border: OutlineInputBorder(),
+                                  ),
+                                  onSubmitted: (_) {
+                                    if (!_syncingWorks) _syncWorks();
+                                  },
+                                ),
+                              ),
+                              const SizedBox(width: 12),
+                              FilledButton.icon(
+                                onPressed: _syncingWorks ? null : _syncWorks,
+                                icon: _syncingWorks
+                                    ? const SizedBox(
+                                        width: 18,
+                                        height: 18,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                        ),
+                                      )
+                                    : const Icon(Icons.download),
+                                label: Text(
+                                  _syncingWorks ? 'Syncing...' : 'Sync',
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const Divider(height: 1),
+                        ListTile(
+                          leading: const Icon(Icons.auto_graph_outlined),
+                          title: const Text('Recompute publication trends'),
+                          trailing: _recomputingTrends
+                              ? const SizedBox(
+                                  width: 20,
+                                  height: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : FilledButton(
+                                  onPressed: _recomputeTrends,
+                                  child: const Text('Run'),
+                                ),
+                        ),
                       ],
-                    ],
+                    ),
                   ),
-                ),
+
+                  const SizedBox(height: 24),
+
+                  // Recent sync logs
+                  if (_stats?['recentSyncLogs'] != null) ...[
+                    Text(
+                      'Recent Sync Logs',
+                      style: Theme.of(context).textTheme.titleMedium,
+                    ),
+                    const SizedBox(height: 8),
+                    ...(_stats!['recentSyncLogs'] as List).map(
+                      (log) => _SyncLogTile(log: log as Map<String, dynamic>),
+                    ),
+                  ],
+                ],
+              ),
+            ),
     );
   }
 }
@@ -354,7 +413,9 @@ class _AdminUsersTabState extends State<_AdminUsersTab> {
 
   void _showSnack(String message) {
     if (!mounted) return;
-    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(SnackBar(content: Text(message)));
   }
 
   @override
@@ -364,105 +425,113 @@ class _AdminUsersTabState extends State<_AdminUsersTab> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('User Management'),
-        actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: _load)],
+        actions: [
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Text(_error!,
-                      style: TextStyle(color: colorScheme.error)))
-              : RefreshIndicator(
-                  onRefresh: _load,
-                  child: ListView.builder(
-                    padding: const EdgeInsets.all(12),
-                    itemCount: _users.length,
-                    itemBuilder: (context, i) {
-                      final u = _users[i];
-                      final banned = u.isBanned == true;
-                      return Card(
-                        margin: const EdgeInsets.only(bottom: 8),
-                        child: ListTile(
-                          leading: CircleAvatar(
-                            backgroundColor: banned
-                                ? colorScheme.errorContainer
-                                : colorScheme.primaryContainer,
-                            child: Text(
-                              u.fullName.isNotEmpty
-                                  ? u.fullName[0].toUpperCase()
-                                  : '?',
-                              style: TextStyle(
-                                color: banned
-                                    ? colorScheme.onErrorContainer
-                                    : colorScheme.onPrimaryContainer,
-                              ),
-                            ),
-                          ),
-                          title: Row(
-                            children: [
-                              Expanded(
-                                  child: Text(u.fullName,
-                                      overflow: TextOverflow.ellipsis)),
-                              if (banned)
-                                Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 6, vertical: 2),
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                    color: colorScheme.errorContainer,
-                                  ),
-                                  child: Text(
-                                    'Banned',
-                                    style: TextStyle(
-                                      fontSize: 10,
-                                      color: colorScheme.onErrorContainer,
-                                    ),
-                                  ),
-                                ),
-                            ],
-                          ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(u.email,
-                                  style: const TextStyle(fontSize: 12),
-                                  overflow: TextOverflow.ellipsis),
-                              DropdownButton<String>(
-                                value: _roles.any((r) => r.roleId == u.roleId)
-                                    ? u.roleId
-                                    : null,
-                                hint: Text(u.roleName),
-                                isDense: true,
-                                items: _roles
-                                    .map((r) => DropdownMenuItem(
-                                          value: r.roleId,
-                                          child:
-                                              Text(r.roleName ?? r.roleId),
-                                        ))
-                                    .toList(),
-                                onChanged: (roleId) {
-                                  if (roleId != null && roleId != u.roleId) {
-                                    _changeRole(u, roleId);
-                                  }
-                                },
-                              ),
-                            ],
-                          ),
-                          trailing: IconButton(
-                            tooltip: banned ? 'Unban user' : 'Ban user',
-                            icon: Icon(
-                              banned ? Icons.lock_open : Icons.block,
-                              color: banned
-                                  ? Colors.green
-                                  : colorScheme.error,
-                            ),
-                            onPressed: () => _toggleBan(u),
+          ? Center(
+              child: Text(_error!, style: TextStyle(color: colorScheme.error)),
+            )
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: _users.length,
+                itemBuilder: (context, i) {
+                  final u = _users[i];
+                  final banned = u.isBanned == true;
+                  return Card(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    child: ListTile(
+                      leading: CircleAvatar(
+                        backgroundColor: banned
+                            ? colorScheme.errorContainer
+                            : colorScheme.primaryContainer,
+                        child: Text(
+                          u.fullName.isNotEmpty
+                              ? u.fullName[0].toUpperCase()
+                              : '?',
+                          style: TextStyle(
+                            color: banned
+                                ? colorScheme.onErrorContainer
+                                : colorScheme.onPrimaryContainer,
                           ),
                         ),
-                      );
-                    },
-                  ),
-                ),
+                      ),
+                      title: Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              u.fullName,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          if (banned)
+                            Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                borderRadius: BorderRadius.circular(8),
+                                color: colorScheme.errorContainer,
+                              ),
+                              child: Text(
+                                'Banned',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  color: colorScheme.onErrorContainer,
+                                ),
+                              ),
+                            ),
+                        ],
+                      ),
+                      subtitle: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            u.email,
+                            style: const TextStyle(fontSize: 12),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                          DropdownButton<String>(
+                            value: _roles.any((r) => r.roleId == u.roleId)
+                                ? u.roleId
+                                : null,
+                            hint: Text(u.roleName),
+                            isDense: true,
+                            items: _roles
+                                .map(
+                                  (r) => DropdownMenuItem(
+                                    value: r.roleId,
+                                    child: Text(r.roleName ?? r.roleId),
+                                  ),
+                                )
+                                .toList(),
+                            onChanged: (roleId) {
+                              if (roleId != null && roleId != u.roleId) {
+                                _changeRole(u, roleId);
+                              }
+                            },
+                          ),
+                        ],
+                      ),
+                      trailing: IconButton(
+                        tooltip: banned ? 'Unban user' : 'Ban user',
+                        icon: Icon(
+                          banned ? Icons.lock_open : Icons.block,
+                          color: banned ? Colors.green : colorScheme.error,
+                        ),
+                        onPressed: () => _toggleBan(u),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ),
     );
   }
 }
@@ -520,27 +589,29 @@ class _SyncLogsTabState extends State<_SyncLogsTab> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Sync Logs'),
-        actions: [IconButton(icon: const Icon(Icons.refresh), onPressed: _load)],
+        actions: [
+          IconButton(icon: const Icon(Icons.refresh), onPressed: _load),
+        ],
       ),
       body: _loading
           ? const Center(child: CircularProgressIndicator())
           : _error != null
-              ? Center(
-                  child: Text(_error!,
-                      style: TextStyle(color: colorScheme.error)))
-              : _logs.isEmpty
-                  ? const Center(child: Text('No sync logs yet.'))
-                  : RefreshIndicator(
-                      onRefresh: _load,
-                      child: ListView.builder(
-                        padding: const EdgeInsets.all(12),
-                        itemCount: _logs.length,
-                        itemBuilder: (context, i) {
-                          final log = _logs[i] as Map<String, dynamic>;
-                          return _SyncLogTile(log: log);
-                        },
-                      ),
-                    ),
+          ? Center(
+              child: Text(_error!, style: TextStyle(color: colorScheme.error)),
+            )
+          : _logs.isEmpty
+          ? const Center(child: Text('No sync logs yet.'))
+          : RefreshIndicator(
+              onRefresh: _load,
+              child: ListView.builder(
+                padding: const EdgeInsets.all(12),
+                itemCount: _logs.length,
+                itemBuilder: (context, i) {
+                  final log = _logs[i] as Map<String, dynamic>;
+                  return _SyncLogTile(log: log);
+                },
+              ),
+            ),
     );
   }
 }
@@ -600,13 +671,12 @@ class _StatCard extends StatelessWidget {
                 Text(
                   label,
                   style: TextStyle(
-                      fontSize: 12, color: colorScheme.onSurface.withAlpha(150)),
+                    fontSize: 12,
+                    color: colorScheme.onSurface.withAlpha(150),
+                  ),
                 ),
                 if (sub != null)
-                  Text(
-                    sub!,
-                    style: TextStyle(fontSize: 10, color: color),
-                  ),
+                  Text(sub!, style: TextStyle(fontSize: 10, color: color)),
               ],
             ),
           ),
@@ -625,14 +695,15 @@ class _SyncLogTile extends StatelessWidget {
     final colorScheme = Theme.of(context).colorScheme;
     final status = log['status']?.toString() ?? 'unknown';
     final isSuccess = status.toLowerCase() == 'success';
-    final isError = status.toLowerCase().contains('error') ||
+    final isError =
+        status.toLowerCase().contains('error') ||
         status.toLowerCase().contains('fail');
 
     final statusColor = isSuccess
         ? Colors.green.shade600
         : isError
-            ? colorScheme.error
-            : Colors.orange.shade600;
+        ? colorScheme.error
+        : Colors.orange.shade600;
 
     final rawTime = log['syncTime']?.toString();
     String timeDisplay = 'N/A';
@@ -654,8 +725,8 @@ class _SyncLogTile extends StatelessWidget {
             isSuccess
                 ? Icons.check_circle_outline
                 : isError
-                    ? Icons.error_outline
-                    : Icons.hourglass_empty,
+                ? Icons.error_outline
+                : Icons.hourglass_empty,
             color: statusColor,
             size: 18,
           ),
@@ -670,7 +741,9 @@ class _SyncLogTile extends StatelessWidget {
             Text(
               '$timeDisplay • ${log['recordsInserted'] ?? 0} records inserted',
               style: TextStyle(
-                  fontSize: 11, color: colorScheme.onSurface.withAlpha(140)),
+                fontSize: 11,
+                color: colorScheme.onSurface.withAlpha(140),
+              ),
             ),
             if (log['errorMessage'] != null &&
                 log['errorMessage'].toString().isNotEmpty)
@@ -691,9 +764,10 @@ class _SyncLogTile extends StatelessWidget {
           child: Text(
             status,
             style: TextStyle(
-                fontSize: 11,
-                color: statusColor,
-                fontWeight: FontWeight.w600),
+              fontSize: 11,
+              color: statusColor,
+              fontWeight: FontWeight.w600,
+            ),
           ),
         ),
       ),

@@ -121,13 +121,22 @@ class BackendPaperService {
         .toList();
   }
 
-  Future<String> triggerSync() async {
-    final uri = Uri.parse('${AppConfig.apiBaseUrl}/api/sync/works');
+  Future<String> triggerSync({int requestedCount = 50}) async {
+    if (requestedCount < 1 || requestedCount > 1000) {
+      throw const ApiError('Paper count must be between 1 and 1000');
+    }
+
+    final uri = Uri.parse(
+      '${AppConfig.apiBaseUrl}/api/sync/works',
+    ).replace(queryParameters: {'requestedCount': requestedCount.toString()});
     final response = await _client.post(uri, headers: await _headers());
 
     if (response.statusCode < 200 || response.statusCode >= 300) {
+      final body = response.body.isNotEmpty
+          ? jsonDecode(response.body) as Map<String, dynamic>
+          : <String, dynamic>{};
       throw ApiError(
-        'Sync failed: ${response.statusCode}',
+        body['message']?.toString() ?? 'Sync failed: ${response.statusCode}',
         statusCode: response.statusCode,
       );
     }

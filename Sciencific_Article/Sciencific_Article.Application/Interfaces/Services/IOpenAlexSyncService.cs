@@ -3,6 +3,9 @@ namespace Sciencific_Article.Application.Interfaces.Services;
 public interface IOpenAlexSyncService
 {
     Task<string> SyncWorksAsync(CancellationToken cancellationToken = default);
+    Task<SyncWorksResult> SyncWorksAsync(
+        int requestedCount,
+        CancellationToken cancellationToken = default);
     Task<string> SyncJournalsAsync(CancellationToken cancellationToken = default);
     Task<string> SyncAuthorsAsync(CancellationToken cancellationToken = default);
     Task<string> SyncTopicsAsync(CancellationToken cancellationToken = default);
@@ -23,4 +26,21 @@ public interface IOpenAlexSyncService
         string query,
         int minResults = 5,
         CancellationToken cancellationToken = default);
+}
+
+public sealed record SyncWorksResult(
+    int RequestedCount,
+    int InsertedCount,
+    int SkippedDuplicates,
+    int ScannedCount,
+    bool SourceExhausted)
+{
+    public string Message => InsertedCount >= RequestedCount
+        ? $"Synced {InsertedCount} new papers from OpenAlex. " +
+          $"Skipped {SkippedDuplicates} duplicates while scanning {ScannedCount} works."
+        : $"Synced {InsertedCount}/{RequestedCount} requested new papers from OpenAlex. " +
+          $"Skipped {SkippedDuplicates} duplicates while scanning {ScannedCount} works. " +
+          (SourceExhausted
+              ? "OpenAlex returned no more works."
+              : "The safe scan limit was reached; run sync again to continue.");
 }

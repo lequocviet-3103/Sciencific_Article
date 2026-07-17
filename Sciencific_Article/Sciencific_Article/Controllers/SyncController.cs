@@ -19,12 +19,30 @@ public class SyncController : ControllerBase
     }
 
     [HttpPost("works")]
-    public async Task<IActionResult> SyncWorks(CancellationToken cancellationToken)
+    public async Task<IActionResult> SyncWorks(
+        [FromQuery] int requestedCount = 50,
+        CancellationToken cancellationToken = default)
     {
+        if (requestedCount < 1 || requestedCount > 1000)
+        {
+            return BadRequest(new
+            {
+                message = "requestedCount must be between 1 and 1000."
+            });
+        }
+
         try
         {
-            var result = await _syncService.SyncWorksAsync(cancellationToken);
-            return Ok(new { message = result });
+            var result = await _syncService.SyncWorksAsync(requestedCount, cancellationToken);
+            return Ok(new
+            {
+                message = result.Message,
+                result.RequestedCount,
+                result.InsertedCount,
+                result.SkippedDuplicates,
+                result.ScannedCount,
+                result.SourceExhausted,
+            });
         }
         catch (OperationCanceledException)
         {
@@ -41,6 +59,10 @@ public class SyncController : ControllerBase
                 message = "Failed to reach OpenAlex. " + ex.Message,
                 source = "OpenAlex"
             });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
         }
         catch (Exception ex)
         {
