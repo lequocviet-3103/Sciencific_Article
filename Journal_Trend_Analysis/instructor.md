@@ -830,12 +830,20 @@ Các màn hình detail/analytics chủ yếu dùng `MaterialPageRoute` trực ti
 Trong `AppConfig`:
 
 - Web: `http://localhost:5255`
-- Android emulator: `http://10.0.2.2:5255`
+- Android Emulator: `http://10.0.2.2:5255` vì emulator dùng địa chỉ này để gọi localhost của máy Windows host.
 - Search page size: 30.
 - Search giữ tối đa: 200 record.
 - HTTP timeout chung: 35 giây.
 
-Với điện thoại Android thật, `10.0.2.2` không trỏ tới máy dev; cần đổi sang IP LAN hoặc cơ chế config theo environment.
+Có thể ghi đè URL ở thời điểm chạy bằng `--dart-define`, ví dụ:
+
+```powershell
+flutter run --dart-define=API_BASE_URL=http://192.168.1.10:5255
+```
+
+`AppConfig` tự bỏ dấu `/` cuối URL để các service không tạo URL có hai dấu gạch chéo.
+
+Với điện thoại Android thật, `10.0.2.2` không trỏ tới máy dev; cần truyền IP LAN của máy chạy backend qua `API_BASE_URL`.
 
 `BackendPaperService.triggerSync()` hiện không gắn timeout 35 giây, phù hợp với sync dài nhưng request có thể chờ lâu nếu backend/OpenAlex treo.
 
@@ -1005,3 +1013,113 @@ Manual sync Admin và background sync dùng cùng `SyncGate`, nên không chạy
 - `lib/services/storage_service.dart`
 
 Tài liệu nên được cập nhật mỗi khi thêm role, đổi role ID, thay bottom navigation, đổi endpoint hoặc chuyển một dữ liệu từ local sang backend.
+
+---
+
+## 21. Cách chạy trên Android Emulator
+
+Project dùng Android Emulator làm môi trường chạy chính. Nên mở hai terminal riêng: một terminal cho database/.NET API và một terminal cho Flutter Android.
+
+### 21.1 Chuẩn bị chung
+
+Cài đặt tối thiểu:
+
+- Flutter SDK và Dart SDK.
+- .NET SDK tương thích project backend.
+- PostgreSQL hoặc Docker Desktop.
+- Android Studio + Android SDK + một Android Virtual Device để chạy emulator.
+
+Kiểm tra môi trường:
+
+```powershell
+flutter doctor -v
+flutter devices
+```
+
+Tại thư mục Flutter, tải dependency:
+
+```powershell
+cd D:\PRM392\PRN_Journal\Sciencific_Article\Journal_Trend_Analysis
+flutter pub get
+```
+
+### 21.2 Chạy database và .NET API
+
+#### Cách A: chạy toàn bộ bằng Docker Compose
+
+Từ thư mục repository:
+
+```powershell
+cd D:\PRM392\PRN_Journal\Sciencific_Article
+docker compose up --build
+```
+
+API được map ra `http://localhost:5255`. PostgreSQL ở port `5432`.
+
+#### Cách B: chạy API bằng dotnet
+
+Nếu đang dùng connection string đã cấu hình trong `appsettings.Development.json`:
+
+```powershell
+cd D:\PRM392\PRN_Journal\Sciencific_Article\Sciencific_Article\Sciencific_Article
+dotnet restore
+dotnet run --launch-profile http
+```
+
+Khi console hiện `Now listening on: http://localhost:5255`, kiểm tra:
+
+```text
+http://localhost:5255/swagger
+```
+
+Phải giữ API chạy trong lúc dùng Flutter.
+
+### 21.3 Chạy Android Emulator
+
+1. Mở Android Studio → Device Manager.
+2. Tạo hoặc chọn một AVD, ví dụ Pixel API 34/35.
+3. Bấm Start để mở emulator.
+4. Kiểm tra Flutter nhìn thấy thiết bị:
+
+```powershell
+flutter devices
+```
+
+5. Trong thư mục `Journal_Trend_Analysis`, chạy:
+
+```powershell
+flutter run -d emulator-5554
+```
+
+Tên device có thể khác `emulator-5554`; dùng đúng ID từ `flutter devices`.
+
+Không cần truyền API URL khi backend chạy trên máy host vì Flutter tự dùng:
+
+```text
+http://10.0.2.2:5255
+```
+
+Android manifest đã có quyền `INTERNET` và cho phép cleartext HTTP để gọi API local trong môi trường phát triển.
+
+Nếu chạy điện thoại Android thật trong cùng Wi-Fi, dùng IP LAN của máy Windows:
+
+```powershell
+flutter run -d <device-id> --dart-define=API_BASE_URL=http://192.168.1.10:5255
+```
+
+Đồng thời backend phải listen trên interface có thể truy cập từ LAN và Windows Firewall phải cho phép port `5255`.
+
+### 21.4 Lệnh kiểm tra trước khi bàn giao
+
+```powershell
+flutter analyze
+flutter test
+flutter build apk --debug
+```
+
+Nếu Android không gọi được API:
+
+1. Kiểm tra backend có đang ở port `5255`.
+2. Từ Android Emulator phải dùng `10.0.2.2`, không dùng `localhost`.
+3. Kiểm tra Windows Firewall.
+4. Mở `http://localhost:5255/swagger` trên máy host trước.
