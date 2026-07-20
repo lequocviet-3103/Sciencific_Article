@@ -7,6 +7,7 @@ import '../models/publication.dart';
 import '../providers/bookmark_provider.dart';
 import '../providers/recent_provider.dart';
 import '../services/paper_search_service.dart';
+import '../services/analytics_service_flutter.dart';
 import '../utils/number_format.dart';
 import '../widgets/modern_app_bar.dart';
 
@@ -24,10 +25,30 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
   late Publication _publication;
   bool _isLoadingFull = false;
 
+  String get _languageLabel {
+    final language = _publication.language?.trim().toLowerCase();
+    if (language == null || language.isEmpty) return 'Not recorded';
+    return const {
+          'en': 'English',
+          'vi': 'Vietnamese',
+          'fr': 'French',
+          'de': 'German',
+          'es': 'Spanish',
+          'zh': 'Chinese',
+          'ja': 'Japanese',
+          'ko': 'Korean',
+        }[language] ??
+        language.toUpperCase();
+  }
+
   @override
   void initState() {
     super.initState();
     _publication = widget.publication;
+    AnalyticsService.instance.logViewPublication(
+      _publication.title,
+      _publication.year ?? 0,
+    );
     _fetchFullDetails();
   }
 
@@ -243,11 +264,9 @@ class _PublicationDetailScreenState extends State<PublicationDetailScreen> {
                 const SizedBox(width: 12),
                 Expanded(
                   child: _StatCard(
-                    icon: Icons.label_outline,
-                    label: 'Topics',
-                    value: _publication.topics.isEmpty
-                        ? 'N/A'
-                        : _publication.topics.length.toString(),
+                    icon: Icons.language,
+                    label: 'Language',
+                    value: _languageLabel,
                     color: Colors.blue,
                     colorScheme: colorScheme,
                   ),

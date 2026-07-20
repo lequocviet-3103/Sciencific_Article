@@ -7,6 +7,7 @@ public interface IOpenAlexClient
         string? filter = null,
         string? cursor = null,
         int perPage = 25,
+        string? sort = null,
         CancellationToken cancellationToken = default);
 
     /// Forwards a path+query (relative to the OpenAlex base URL, e.g.
@@ -40,10 +41,13 @@ public class OpenAlexWork
     public int? PublicationYear { get; set; }
     public int? CitedByCount { get; set; }
     public string? Type { get; set; }
+    public string? Language { get; set; }
     public OpenAlexLocation? PrimaryLocation { get; set; }
     public List<OpenAlexLocation> Locations { get; set; } = new();
     public List<OpenAlexAuthorship> Authorships { get; set; } = new();
     public List<OpenAlexConcept> Concepts { get; set; } = new();
+    public List<OpenAlexConcept> Topics { get; set; } = new();
+    public OpenAlexConcept? PrimaryTopic { get; set; }
     public Dictionary<string, int[]>? AbstractInvertedIndex { get; set; }
 }
 
@@ -86,5 +90,6 @@ public class OpenAlexConcept
     public string? Level { get; set; }
     public string? Field { get; set; }
     public string? Domain { get; set; }
+    public string? Subfield { get; set; }
     public double? Score { get; set; }
 }

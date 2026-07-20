@@ -1,58 +1,60 @@
 import 'package:firebase_analytics/firebase_analytics.dart';
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
 import 'package:flutter/foundation.dart';
 
 class AnalyticsService {
-  AnalyticsService() : _analytics = FirebaseAnalytics.instance;
+  AnalyticsService._() : _analytics = FirebaseAnalytics.instance;
+
+  static final AnalyticsService instance = AnalyticsService._();
   final FirebaseAnalytics _analytics;
 
-  Future<void> logLogin({String? method}) async {
-    await _analytics.logLogin(loginMethod: method ?? 'email');
-    debugPrint('[Analytics] login - method: ${method ?? 'email'}');
-  }
+  Future<void> logLogin({required String method}) =>
+      _log('login', {'method': method});
 
-  Future<void> logRegister({String? roleId}) async {
-    await _analytics.logSignUp(signUpMethod: roleId ?? 'email');
-    debugPrint('[Analytics] register - role: $roleId');
-  }
+  Future<void> logRegister({String? roleId}) =>
+      _log('sign_up', {'method': roleId ?? 'email'});
 
-  Future<void> logSearchTopic(String topicId, String topicName) async {
-    await _analytics.logSearch(searchTerm: topicName);
-    await _analytics.logEvent(name: 'search_topic', parameters: {
-      'topic_id': topicId,
-      'topic_name': topicName,
-    });
-    debugPrint('[Analytics] search_topic - $topicName ($topicId)');
-  }
+  Future<void> logSearchTopic(String keyword) =>
+      _log('search_topic', {'keyword': keyword});
 
-  Future<void> logViewPublication(String paperId, String title) async {
-    await _analytics.logEvent(name: 'view_publication', parameters: {
-      'paper_id': paperId,
-      'title': title,
-    });
-    debugPrint('[Analytics] view_publication - $title ($paperId)');
-  }
+  Future<void> logViewPublication(String title, int year) => _log(
+    'view_publication',
+    {'publication_title': title, 'publication_year': year},
+  );
 
-  Future<void> logBookmark(String paperId, String title, bool isBookmarked) async {
-    await _analytics.logEvent(name: 'bookmark', parameters: {
-      'paper_id': paperId,
-      'title': title,
-      'action': isBookmarked ? 'add' : 'remove',
-    });
-    debugPrint('[Analytics] bookmark - $title ($paperId) - ${isBookmarked ? 'added' : 'removed'}');
-  }
+  Future<void> logViewJournal(String journalName) =>
+      _log('view_journal', {'journal_name': journalName});
 
-  Future<void> logExportPdf(String reportId, String? topicId) async {
-    await _analytics.logEvent(name: 'export_pdf', parameters: {
-      'report_id': reportId,
-      if (topicId != null) 'topic_id': topicId,
-    });
-    debugPrint('[Analytics] export_pdf - report: $reportId');
-  }
+  Future<void> logViewKeyword(String keyword) =>
+      _log('view_keyword', {'keyword': keyword});
 
-  Future<void> logDashboardView(String? topicId) async {
-    await _analytics.logEvent(name: 'view_dashboard', parameters: {
-      if (topicId != null) 'topic_id': topicId,
-    });
-    debugPrint('[Analytics] view_dashboard');
+  Future<void> logBookmark(String paperId, String title, bool isBookmarked) =>
+      _log('bookmark', {
+        'paper_id': paperId,
+        'title': title,
+        'action': isBookmarked ? 'add' : 'remove',
+      });
+
+  Future<void> logExportPdf(String topic) =>
+      _log('export_pdf', {'topic': topic});
+
+  Future<void> logLogout() => _log('logout');
+
+  Future<void> logDashboardView(String? topicId) =>
+      _log('view_dashboard', {if (topicId != null) 'topic_id': topicId});
+
+  Future<void> _log(String name, [Map<String, Object>? parameters]) async {
+    try {
+      await _analytics.logEvent(name: name, parameters: parameters);
+      debugPrint('[Analytics] $name ${parameters ?? ''}');
+    } catch (error, stackTrace) {
+      debugPrint('[Analytics] failed to log $name: $error');
+      await FirebaseCrashlytics.instance.recordError(
+        error,
+        stackTrace,
+        reason: 'Firebase Analytics event failed: $name',
+        fatal: false,
+      );
+    }
   }
 }

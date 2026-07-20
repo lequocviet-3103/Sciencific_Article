@@ -44,11 +44,20 @@ public class JournalsController : ControllerBase
         [FromQuery] int take = 10,
         CancellationToken cancellationToken = default)
     {
+        take = Math.Clamp(take, 1, 100);
         var top = await _context.Papers
             .Where(p => p.JournalId != null)
             .GroupBy(p => new { p.JournalId, p.Journal!.Name })
-            .Select(g => new { journalId = g.Key.JournalId, name = g.Key.Name, paperCount = g.Count() })
+            .Select(g => new
+            {
+                journalId = g.Key.JournalId,
+                name = g.Key.Name,
+                paperCount = g.Count(),
+                totalCitations = g.Sum(p => p.CitationCount ?? 0),
+                avgCitations = g.Average(p => (double)(p.CitationCount ?? 0))
+            })
             .OrderByDescending(x => x.paperCount)
+            .ThenByDescending(x => x.totalCitations)
             .Take(take)
             .ToListAsync(cancellationToken);
 
@@ -68,6 +77,14 @@ public class JournalsController : ControllerBase
         var paperCount = await _context.Papers
             .CountAsync(p => p.JournalId == journalId, cancellationToken);
 
+        var totalCitations = await _context.Papers
+            .Where(p => p.JournalId == journalId)
+            .SumAsync(p => p.CitationCount ?? 0, cancellationToken);
+
+        var avgCitations = paperCount == 0
+            ? 0
+            : totalCitations / (double)paperCount;
+
         return Ok(new
         {
             journal.JournalId,
@@ -75,7 +92,9 @@ public class JournalsController : ControllerBase
             journal.Publisher,
             journal.Issn,
             journal.CreatedAt,
-            paperCount
+            paperCount,
+            totalCitations,
+            avgCitations = Math.Round(avgCitations, 1)
         });
     }
 

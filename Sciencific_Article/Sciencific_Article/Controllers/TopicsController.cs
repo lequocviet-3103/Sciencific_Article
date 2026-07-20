@@ -54,7 +54,7 @@ public class TopicsController : ControllerBase
                 t.Name,
                 t.Field,
                 t.Domain,
-                t.WorksCount,
+                WorksCount = t.Papers.Count(),
                 recentPaperCount = t.Papers.Count(p => p.PublicationYear >= currentYear - 2),
                 totalPaperCount = t.Papers.Count()
             })
@@ -135,7 +135,7 @@ public class TopicsController : ControllerBase
             topic.Field,
             topic.Domain,
             topic.Subfield,
-            topic.WorksCount,
+            WorksCount = paperCount,
             topic.OpenAlexId,
             paperCount,
             trendByYear

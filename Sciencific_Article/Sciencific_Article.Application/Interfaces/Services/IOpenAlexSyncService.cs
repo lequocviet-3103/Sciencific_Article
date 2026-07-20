@@ -26,6 +26,12 @@ public interface IOpenAlexSyncService
         string query,
         int minResults = 5,
         CancellationToken cancellationToken = default);
+
+    /// Seeds the database with representative, cited works for the topic
+    /// shortcuts shown by the Flutter search screen.
+    Task<int> SyncPopularTopicsAsync(
+        int papersPerTopic = 10,
+        CancellationToken cancellationToken = default);
 }
 
 public sealed record SyncWorksResult(

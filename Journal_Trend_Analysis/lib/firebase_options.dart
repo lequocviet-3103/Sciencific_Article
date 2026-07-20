@@ -38,7 +38,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '740754340231',
     projectId: 'scientific-article-b73bc',
     authDomain: 'scientific-article-b73bc.firebaseapp.com',
-    storageBucket: 'scientific-article-b73bc.appspot.com',
+    storageBucket: 'scientific-article-b73bc.firebasestorage.app',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
@@ -46,7 +46,7 @@ class DefaultFirebaseOptions {
     appId: '1:740754340231:android:dfbbd4be7e606c32767b22',
     messagingSenderId: '740754340231',
     projectId: 'scientific-article-b73bc',
-    storageBucket: 'scientific-article-b73bc.appspot.com',
+    storageBucket: 'scientific-article-b73bc.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -54,7 +54,7 @@ class DefaultFirebaseOptions {
     appId: '1:740754340231:android:dfbbd4be7e606c32767b22',
     messagingSenderId: '740754340231',
     projectId: 'scientific-article-b73bc',
-    storageBucket: 'scientific-article-b73bc.appspot.com',
+    storageBucket: 'scientific-article-b73bc.firebasestorage.app',
     iosBundleId: 'com.example.prm393lab2jta',
   );
 
@@ -63,7 +63,7 @@ class DefaultFirebaseOptions {
     appId: '1:740754340231:android:dfbbd4be7e606c32767b22',
     messagingSenderId: '740754340231',
     projectId: 'scientific-article-b73bc',
-    storageBucket: 'scientific-article-b73bc.appspot.com',
+    storageBucket: 'scientific-article-b73bc.firebasestorage.app',
     iosBundleId: 'com.example.prm393lab2jta.RunnerTests',
   );
 
@@ -72,6 +72,6 @@ class DefaultFirebaseOptions {
     appId: '1:740754340231:android:dfbbd4be7e606c32767b22',
     messagingSenderId: '740754340231',
     projectId: 'scientific-article-b73bc',
-    storageBucket: 'scientific-article-b73bc.appspot.com',
+    storageBucket: 'scientific-article-b73bc.firebasestorage.app',
   );
 }

@@ -99,4 +99,36 @@ public class SyncController : ControllerBase
             });
         }
     }
+
+    [HttpPost("popular-topics")]
+    public async Task<IActionResult> SyncPopularTopics(
+        [FromQuery] int papersPerTopic = 10,
+        CancellationToken cancellationToken = default)
+    {
+        if (papersPerTopic < 1 || papersPerTopic > 50)
+            return BadRequest(new { message = "papersPerTopic must be between 1 and 50." });
+
+        try
+        {
+            var inserted = await _syncService.SyncPopularTopicsAsync(
+                papersPerTopic,
+                cancellationToken);
+            return Ok(new
+            {
+                message = $"Popular topics synced. Inserted {inserted} new papers and refreshed existing metadata.",
+                inserted,
+                topics = 8,
+                papersPerTopic
+            });
+        }
+        catch (InvalidOperationException ex)
+        {
+            return Conflict(new { message = ex.Message });
+        }
+        catch (HttpRequestException ex)
+        {
+            _logger.LogError(ex, "OpenAlex HTTP error during popular topics sync");
+            return StatusCode(StatusCodes.Status502BadGateway, new { message = ex.Message });
+        }
+    }
 }

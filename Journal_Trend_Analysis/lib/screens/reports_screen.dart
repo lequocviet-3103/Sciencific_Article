@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../providers/auth_provider.dart';
 import '../providers/report_provider.dart';
+import '../providers/remote_config_provider.dart';
 
 class ReportsScreen extends StatefulWidget {
   const ReportsScreen({super.key});
@@ -26,16 +27,18 @@ class _ReportsScreenState extends State<ReportsScreen> {
   @override
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
+    final enableExport = context.watch<RemoteConfigProvider>().enableExport;
     return Scaffold(
       backgroundColor: colorScheme.surface,
       appBar: AppBar(
         title: const Text('My Reports'),
         actions: [
-          IconButton(
-            icon: const Icon(Icons.add),
-            tooltip: 'Generate Report',
-            onPressed: () => _showGenerateDialog(context),
-          ),
+          if (enableExport)
+            IconButton(
+              icon: const Icon(Icons.add),
+              tooltip: 'Generate Report',
+              onPressed: () => _showGenerateDialog(context),
+            ),
           IconButton(
             icon: const Icon(Icons.refresh),
             onPressed: () {
@@ -60,7 +63,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 children: [
                   Icon(Icons.error_outline, size: 48, color: colorScheme.error),
                   const SizedBox(height: 16),
-                  Text(provider.error!, style: TextStyle(color: colorScheme.error)),
+                  Text(
+                    provider.error!,
+                    style: TextStyle(color: colorScheme.error),
+                  ),
                   const SizedBox(height: 16),
                   FilledButton(
                     onPressed: () {
@@ -81,18 +87,30 @@ class _ReportsScreenState extends State<ReportsScreen> {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  Icon(Icons.description_outlined, size: 64, color: colorScheme.outline),
+                  Icon(
+                    Icons.description_outlined,
+                    size: 64,
+                    color: colorScheme.outline,
+                  ),
                   const SizedBox(height: 16),
                   Text(
                     'No reports yet',
-                    style: Theme.of(context).textTheme.titleMedium?.copyWith(color: colorScheme.outline),
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      color: colorScheme.outline,
+                    ),
                   ),
                   const SizedBox(height: 24),
-                  FilledButton.icon(
-                    onPressed: () => _showGenerateDialog(context),
-                    icon: const Icon(Icons.add),
-                    label: const Text('Generate Report'),
-                  ),
+                  if (enableExport)
+                    FilledButton.icon(
+                      onPressed: () => _showGenerateDialog(context),
+                      icon: const Icon(Icons.add),
+                      label: const Text('Generate Report'),
+                    )
+                  else
+                    const Text(
+                      'PDF export is temporarily disabled.',
+                      textAlign: TextAlign.center,
+                    ),
                 ],
               ),
             );
@@ -109,7 +127,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                 child: ListTile(
                   leading: CircleAvatar(
                     backgroundColor: colorScheme.primaryContainer,
-                    child: Icon(Icons.picture_as_pdf, color: colorScheme.primary),
+                    child: Icon(
+                      Icons.picture_as_pdf,
+                      color: colorScheme.primary,
+                    ),
                   ),
                   title: Text(report.reportType ?? 'Trend Report'),
                   subtitle: Column(
@@ -126,7 +147,10 @@ class _ReportsScreenState extends State<ReportsScreen> {
                   ),
                   trailing: report.fileUrl != null
                       ? IconButton(
-                          icon: Icon(Icons.download, color: colorScheme.primary),
+                          icon: Icon(
+                            Icons.download,
+                            color: colorScheme.primary,
+                          ),
                           onPressed: () => _openUrl(report.fileUrl!),
                         )
                       : const Icon(Icons.hourglass_empty, size: 20),
@@ -143,6 +167,12 @@ class _ReportsScreenState extends State<ReportsScreen> {
   }
 
   Future<void> _showGenerateDialog(BuildContext context) async {
+    if (!context.read<RemoteConfigProvider>().enableExport) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('PDF export is currently disabled.')),
+      );
+      return;
+    }
     final auth = context.read<AuthProvider>();
     if (auth.user == null) return;
 
@@ -175,7 +205,8 @@ class _ReportsScreenState extends State<ReportsScreen> {
                     labelText: 'Topic / search term',
                     hintText: 'e.g. Artificial Intelligence',
                   ),
-                  validator: (v) => (v == null || v.trim().isEmpty) ? 'Required' : null,
+                  validator: (v) =>
+                      (v == null || v.trim().isEmpty) ? 'Required' : null,
                 ),
                 if (isGenerating) ...[
                   const SizedBox(height: 16),
@@ -214,9 +245,9 @@ class _ReportsScreenState extends State<ReportsScreen> {
     );
 
     if (result == true && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Report generated!')),
-      );
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(const SnackBar(content: Text('Report generated!')));
     } else if (result != true && mounted) {
       final error = context.read<ReportProvider>().error;
       if (error != null) {

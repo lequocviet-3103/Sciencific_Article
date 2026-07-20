@@ -1,9 +1,13 @@
+import 'dart:math' as math;
+
 import 'package:flutter/foundation.dart';
 import '../config/app_config.dart';
 import '../models/api_error.dart';
 import '../models/publication.dart';
 import '../models/topic.dart';
 import '../services/paper_search_service.dart';
+import '../services/analytics_service_flutter.dart';
+import '../services/remote_config_service.dart';
 import '../services/search_history_service.dart';
 
 enum SearchStatus { idle, loading, success, error }
@@ -12,11 +16,20 @@ class SearchProvider extends ChangeNotifier {
   SearchProvider({
     PaperSearchService? service,
     SearchHistoryService? historyService,
-  })  : _service = service ?? PaperSearchService(),
-        _historyService = historyService ?? SearchHistoryService();
+    AnalyticsService? analyticsService,
+    RemoteConfigService? remoteConfigService,
+  }) : _service = service ?? PaperSearchService(),
+       _historyService = historyService ?? SearchHistoryService(),
+       _analytics = analyticsService ?? AnalyticsService.instance,
+       _remoteConfig = remoteConfigService ?? RemoteConfigService.instance;
 
   final PaperSearchService _service;
   final SearchHistoryService _historyService;
+  final AnalyticsService _analytics;
+  final RemoteConfigService _remoteConfig;
+
+  int get _resultLimit => _remoteConfig.maxSearchResults;
+  int get _pageSize => math.min(AppConfig.defaultPerPage, _resultLimit);
 
   /// Hook called every time a search successfully finishes. The
   /// `DashboardProvider` registers itself here so the analytics it
@@ -24,9 +37,7 @@ class SearchProvider extends ChangeNotifier {
   /// latest search, regardless of which screen triggered it.
   void Function(List<Publication> pubs, String query, int total)? _onSuccess;
 
-  void attachDashboardHook(
-    void Function(List<Publication>, String, int) hook,
-  ) {
+  void attachDashboardHook(void Function(List<Publication>, String, int) hook) {
     _onSuccess = hook;
   }
 
@@ -94,7 +105,8 @@ class SearchProvider extends ChangeNotifier {
   }
 
   void clearFilters() {
-    _filters = const SearchFilters();
+    // Keep the topic selected on Home while clearing optional filters.
+    _filters = SearchFilters(topicId: _backendTopicId(_activeTopic));
     notifyListeners();
     if (_query.isNotEmpty) search(_query);
   }
@@ -115,6 +127,7 @@ class SearchProvider extends ChangeNotifier {
       _filters = _filters.copyWith(clearTopicId: true);
     }
     notifyListeners();
+    await _analytics.logSearchTopic(trimmed);
 
     // When scoped to a topic, drop the free-text `q` so the BE returns
     // every paper in the topic rather than only the few whose title
@@ -129,22 +142,19 @@ class SearchProvider extends ChangeNotifier {
       final result = await _service.searchWorks(
         queryForService,
         page: 1,
+        perPage: _pageSize,
         sort: _sortOption,
         filters: _filters,
       );
-      _publications = result.publications;
+      _publications = result.publications.take(_resultLimit).toList();
       _totalCount = result.totalCount;
-      _hasMore = result.hasMore;
+      _hasMore = result.hasMore && _publications.length < _resultLimit;
       _status = SearchStatus.success;
       await _addToHistory(trimmed);
       // Fire the dashboard hook so analytics are always in sync
       // with the current search, no matter which screen triggered
       // it (TopicsScreen, SearchScreen, history re-run, etc.).
-      _onSuccess?.call(
-        result.publications,
-        trimmed,
-        result.totalCount,
-      );
+      _onSuccess?.call(_publications, trimmed, result.totalCount);
       _onProfileSearch?.call(trimmed);
     } on ApiError catch (e) {
       _errorMessage = e.message;
@@ -174,25 +184,27 @@ class SearchProvider extends ChangeNotifier {
     final trimmed = keyword.trim();
     if (trimmed.isEmpty) return;
 
-    final rawId = _activeTopic!.id;
-    final shortId = _normalizeTopicId(rawId);
-    final hasRealId = shortId != null && _looksLikeOpenAlexId(shortId);
+    final topicId = _backendTopicId(_activeTopic);
+    final hasRealId = topicId != null;
 
     _query = trimmed;
-    _effectiveQuery = hasRealId ? trimmed : '$trimmed ${_activeTopic!.displayName}';
+    _effectiveQuery = hasRealId
+        ? trimmed
+        : '$trimmed ${_activeTopic!.displayName}';
     _currentPage = 1;
     _status = SearchStatus.loading;
     _errorMessage = null;
     _publications = [];
 
     if (hasRealId) {
-      _filters = _filters.copyWith(topicId: shortId, clearTopicId: false);
+      _filters = _filters.copyWith(topicId: topicId, clearTopicId: false);
     } else {
       // No real topic id available (e.g. fallback list); clear the
       // filter and scope the search textually instead.
       _filters = _filters.copyWith(clearTopicId: true);
     }
     notifyListeners();
+    await _analytics.logSearchTopic(trimmed);
 
     // When we have a real topic id the BE handles the topic scope, so we
     // pass an empty `q` to avoid narrowing further by keyword. Without a
@@ -204,19 +216,16 @@ class SearchProvider extends ChangeNotifier {
       final result = await _service.searchWorks(
         queryForService,
         page: 1,
+        perPage: _pageSize,
         sort: _sortOption,
         filters: _filters,
       );
-      _publications = result.publications;
+      _publications = result.publications.take(_resultLimit).toList();
       _totalCount = result.totalCount;
-      _hasMore = result.hasMore;
+      _hasMore = result.hasMore && _publications.length < _resultLimit;
       _status = SearchStatus.success;
       await _addToHistory(trimmed);
-      _onSuccess?.call(
-        result.publications,
-        _effectiveQuery,
-        result.totalCount,
-      );
+      _onSuccess?.call(_publications, _effectiveQuery, result.totalCount);
       _onProfileSearch?.call(trimmed);
     } on ApiError catch (e) {
       _errorMessage = e.message;
@@ -228,33 +237,18 @@ class SearchProvider extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Pull the short id out of an OpenAlex topic reference. The api
-  /// may give us a full URL (`https://openalex.org/T1234`) or just
-  /// the bare id (`T1234`); normalising makes the request predictable.
-  String? _normalizeTopicId(String? raw) {
-    if (raw == null) return null;
-    final trimmed = raw.trim();
-    if (trimmed.isEmpty) return null;
-    if (trimmed.contains('/')) {
-      final last = trimmed.split('/').last;
-      return last.isEmpty ? null : last;
-    }
-    return trimmed;
-  }
-
-  /// Returns true when [id] looks like a real OpenAlex topic id.
-  /// Real ids start with 'T' followed by digits (e.g. "T1234",
-  /// "T11233345"). Placeholder ids like "fallback-ai" are rejected so
-  /// we know when to fall back to textual scoping.
-  static bool _looksLikeOpenAlexId(String id) {
-    if (id.isEmpty) return false;
-    return RegExp(r'^T\d+$').hasMatch(id);
+  /// Return the ResearchTopic.TopicId exposed by our API. Offline
+  /// suggestions intentionally use fallback ids and cannot filter the DB.
+  static String? _backendTopicId(Topic? topic) {
+    final id = topic?.id.trim();
+    if (id == null || id.isEmpty || id.startsWith('fallback-')) return null;
+    return id;
   }
 
   /// Run a search that was triggered by selecting a topic from TopicsScreen.
   /// Stores the topic so the results screen can show its category/field.
   Future<void> searchByTopic(Topic topic) async {
-    _activeTopic = topic;
+    setActiveTopic(topic);
     await search(topic.displayName);
   }
 
@@ -267,10 +261,10 @@ class SearchProvider extends ChangeNotifier {
     if (topic == null) {
       _filters = _filters.copyWith(clearTopicId: true);
     } else {
-      final shortId = _normalizeTopicId(topic.id);
-      if (shortId != null && _looksLikeOpenAlexId(shortId)) {
-        _filters = _filters.copyWith(topicId: shortId);
-      }
+      final topicId = _backendTopicId(topic);
+      _filters = topicId == null
+          ? _filters.copyWith(clearTopicId: true)
+          : _filters.copyWith(topicId: topicId);
     }
     notifyListeners();
   }
@@ -279,6 +273,7 @@ class SearchProvider extends ChangeNotifier {
   /// not touch the current query or results.
   void clearActiveTopic() {
     _activeTopic = null;
+    _filters = _filters.copyWith(clearTopicId: true);
     notifyListeners();
   }
 
@@ -287,7 +282,7 @@ class SearchProvider extends ChangeNotifier {
     // Hard cap: stop auto-paginating once the user has already loaded the
     // configured maximum number of results. The list will still show a
     // "Load more" button so the user can opt-in to more.
-    if (_publications.length >= AppConfig.maxLoadedResults) {
+    if (_publications.length >= _resultLimit) {
       _hasMore = false;
       notifyListeners();
       return;
@@ -307,14 +302,15 @@ class SearchProvider extends ChangeNotifier {
       final result = await _service.searchWorks(
         queryForService,
         page: _currentPage + 1,
+        perPage: _pageSize,
         sort: _sortOption,
         filters: _filters,
       );
       _currentPage++;
       _publications = [..._publications, ...result.publications];
       // Re-check cap after appending: another page may have pushed us over.
-      if (_publications.length >= AppConfig.maxLoadedResults) {
-        _publications = _publications.sublist(0, AppConfig.maxLoadedResults);
+      if (_publications.length >= _resultLimit) {
+        _publications = _publications.sublist(0, _resultLimit);
         _hasMore = false;
       } else {
         _hasMore = result.hasMore;
@@ -363,6 +359,7 @@ class SearchProvider extends ChangeNotifier {
     _isLoadingMore = false;
     _currentPage = 1;
     _activeTopic = null;
+    _filters = const SearchFilters();
     notifyListeners();
   }
 

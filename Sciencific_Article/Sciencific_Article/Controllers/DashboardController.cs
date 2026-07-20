@@ -18,12 +18,34 @@ public class DashboardController : ControllerBase
     [HttpGet]
     public async Task<IActionResult> GetDashboard(
         [FromQuery] string? topicId,
+        [FromQuery] string? q,
         [FromQuery] int? year,
         CancellationToken cancellationToken = default)
     {
         var query = _context.Papers
             .Include(p => p.Journal)
+            .Include(p => p.Authors)
+            .Include(p => p.Topics)
+            .AsNoTracking()
             .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(topicId))
+        {
+            query = query.Where(p => p.Topics.Any(t => t.TopicId == topicId));
+        }
+
+        if (!string.IsNullOrWhiteSpace(q) && string.IsNullOrWhiteSpace(topicId))
+        {
+            query = query.Where(p =>
+                EF.Functions.ILike(p.Title, $"%{q}%") ||
+                (p.Abstract != null && EF.Functions.ILike(p.Abstract, $"%{q}%")) ||
+                p.Topics.Any(t =>
+                    EF.Functions.ILike(t.Name, $"%{q}%") ||
+                    (t.Field != null && EF.Functions.ILike(t.Field, $"%{q}%")) ||
+                    (t.Subfield != null && EF.Functions.ILike(t.Subfield, $"%{q}%")) ||
+                    (t.Domain != null && EF.Functions.ILike(t.Domain, $"%{q}%"))) ||
+                p.Keywords.Any(k => EF.Functions.ILike(k.Name, $"%{q}%")));
+        }
 
         if (year.HasValue)
         {
@@ -45,11 +67,37 @@ public class DashboardController : ControllerBase
 
         var journalCounts = paperList
             .Where(p => p.Journal != null && !string.IsNullOrWhiteSpace(p.Journal.Name))
-            .GroupBy(p => p.Journal!.Name!)
-            .Select(g => new { name = g.Key, count = g.Count() })
-            .OrderByDescending(x => x.count)
+            .GroupBy(p => new { p.Journal!.JournalId, p.Journal.Name })
+            .Select(g => new
+            {
+                journalId = g.Key.JournalId,
+                name = g.Key.Name,
+                paperCount = g.Count(),
+                totalCitations = g.Sum(p => p.CitationCount ?? 0)
+            })
+            .OrderByDescending(x => x.paperCount)
             .Take(10)
             .ToList();
+
+        // A paper can have several topic tags. For an overview that adds up
+        // to totalPublications, count it once under its first populated field.
+        var fieldBreakdown = paperList
+            .Select(p => p.Topics
+                .Where(t => !string.IsNullOrWhiteSpace(t.Field))
+                .OrderBy(t => t.TopicId)
+                .Select(t => t.Field!)
+                .FirstOrDefault() ?? "Other")
+            .GroupBy(field => field)
+            .Select(g => new { name = g.Key, paperCount = g.Count() })
+            .OrderByDescending(x => x.paperCount)
+            .ThenBy(x => x.name)
+            .ToList();
+
+        var uniqueAuthors = paperList
+            .SelectMany(p => p.Authors)
+            .Select(a => a.AuthorId)
+            .Distinct()
+            .Count();
 
         var topPapers = paperList
             .OrderByDescending(p => p.CitationCount)
@@ -81,7 +129,9 @@ public class DashboardController : ControllerBase
             totalPublications,
             totalCitations,
             avgCitations = Math.Round(avgCitations ?? 0, 2),
+            uniqueAuthors,
             publicationsByYear = yearCounts,
+            fieldBreakdown,
             topJournals = journalCounts,
             topPapers,
             recentPapers

@@ -14,10 +14,9 @@ import '../utils/debouncer.dart';
 import '../widgets/empty_view.dart';
 import '../widgets/error_view.dart';
 import '../widgets/publication_card.dart';
+import '../widgets/search_dashboard_panel.dart';
 import 'bookmarks_screen.dart';
-import 'dashboard_screen.dart';
 import 'publication_detail_screen.dart';
-import 'trend_analysis_screen.dart';
 
 class SearchScreen extends StatefulWidget {
   const SearchScreen({super.key, this.topic, this.initialQuery, this.onBack});
@@ -34,6 +33,7 @@ class _SearchScreenState extends State<SearchScreen> {
   final _controller = TextEditingController();
   final _debouncer = Debouncer();
   final _scrollController = ScrollController();
+  int _resultsTab = 0;
 
   static const _suggestions = [
     'Artificial Intelligence',
@@ -87,6 +87,7 @@ class _SearchScreenState extends State<SearchScreen> {
     final q = (override ?? _controller.text).trim();
     if (q.isEmpty) return;
     FocusScope.of(context).unfocus();
+    if (_resultsTab != 0) setState(() => _resultsTab = 0);
     // The SearchProvider → DashboardProvider hook in main.dart already
     // calls `recompute` on every successful search, so we don't need
     // to do it again here.
@@ -385,6 +386,9 @@ class _SearchScreenState extends State<SearchScreen> {
           suggestions: _suggestions,
           onSearch: _runSearch,
           onSuggestionTap: (s) {
+            // Popular topic chips always start a global DB-backed search;
+            // don't accidentally retain a topic filter from a previous page.
+            context.read<SearchProvider>().clearActiveTopic();
             _controller.text = s;
             _runSearch(s);
           },
@@ -411,6 +415,8 @@ class _SearchScreenState extends State<SearchScreen> {
           search: search,
           scrollController: _scrollController,
           onLoadMore: () => search.loadMore(),
+          selectedTab: _resultsTab,
+          onTabChanged: (value) => setState(() => _resultsTab = value),
         );
     }
   }
@@ -802,11 +808,15 @@ class _ResultsBody extends StatelessWidget {
     required this.search,
     required this.scrollController,
     required this.onLoadMore,
+    required this.selectedTab,
+    required this.onTabChanged,
   });
 
   final SearchProvider search;
   final ScrollController scrollController;
   final VoidCallback onLoadMore;
+  final int selectedTab;
+  final ValueChanged<int> onTabChanged;
 
   @override
   Widget build(BuildContext context) {
@@ -814,169 +824,167 @@ class _ResultsBody extends StatelessWidget {
 
     return Column(
       children: [
-        // Results header
-        Padding(
-          padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
-          child: Row(
-            children: [
-              Text(
-                '${search.totalCount} results',
-                style: TextStyle(
-                  fontSize: 14,
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
-                ),
-              ),
-              const SizedBox(width: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 10,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  gradient: LinearGradient(
-                    colors: [
-                      colorScheme.primary.withAlpha(30),
-                      colorScheme.secondary.withAlpha(30),
-                    ],
-                  ),
-                  borderRadius: BorderRadius.circular(20),
-                ),
-                child: Text(
-                  search.sortOption.label,
-                  style: TextStyle(
-                    fontSize: 12,
-                    color: colorScheme.primary,
-                    fontWeight: FontWeight.w600,
-                  ),
-                ),
-              ),
-              const Spacer(),
-              IconButton(
-                tooltip: 'Dashboard',
-                icon: const Icon(Icons.dashboard_outlined, size: 20),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (_) => const DashboardScreen()),
-                ),
-              ),
-              IconButton(
-                tooltip: 'Trend Analysis',
-                icon: const Icon(Icons.insights_outlined, size: 20),
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (_) => const TrendAnalysisScreen(),
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ),
+        _ResultTabs(selected: selectedTab, onChanged: onTabChanged),
 
-        // Active filters
-        if (search.filters.isActive)
+        if (selectedTab == 0)
+          Expanded(
+            child: SearchDashboardPanel(
+              key: ValueKey(
+                'dashboard_${search.filters.topicId}_${search.query}',
+              ),
+              topicId: search.filters.topicId,
+              query: search.query,
+            ),
+          )
+        else ...[
+          // Results header
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SingleChildScrollView(
-              scrollDirection: Axis.horizontal,
-              child: Row(
-                children: [
-                  if (search.filters.fromYear != null ||
-                      search.filters.toYear != null)
-                    _ActiveFilterChip(
-                      label:
-                          '${search.filters.fromYear ?? '*'}–${search.filters.toYear ?? '*'}',
-                      onRemove: () {
-                        search.setFilters(
-                          search.filters.copyWith(
-                            clearFromYear: true,
-                            clearToYear: true,
-                          ),
-                        );
-                        search.refreshCurrent();
-                      },
+            padding: const EdgeInsets.fromLTRB(20, 16, 20, 8),
+            child: Row(
+              children: [
+                Text(
+                  '${search.totalCount} results',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Container(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 10,
+                    vertical: 4,
+                  ),
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: [
+                        colorScheme.primary.withAlpha(30),
+                        colorScheme.secondary.withAlpha(30),
+                      ],
                     ),
-                  if (search.filters.minCitations > 0)
-                    _ActiveFilterChip(
-                      label: '>${search.filters.minCitations} citations',
-                      onRemove: () {
-                        search.setFilters(
-                          search.filters.copyWith(minCitations: 0),
-                        );
-                        search.refreshCurrent();
-                      },
+                    borderRadius: BorderRadius.circular(20),
+                  ),
+                  child: Text(
+                    search.sortOption.label,
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.primary,
+                      fontWeight: FontWeight.w600,
                     ),
-                  if (search.filters.type != null)
-                    _ActiveFilterChip(
-                      label: search.filters.type!.replaceAll('-', ' '),
-                      onRemove: () {
-                        search.setFilters(
-                          search.filters.copyWith(clearType: true),
-                        );
-                        search.refreshCurrent();
-                      },
-                    ),
-                  if (search.filters.authorName != null &&
-                      search.filters.authorName!.isNotEmpty)
-                    _ActiveFilterChip(
-                      label: 'Author: ${search.filters.authorName!}',
-                      onRemove: () {
-                        search.setFilters(
-                          search.filters.copyWith(clearAuthorName: true),
-                        );
-                        search.refreshCurrent();
-                      },
-                    ),
-                  if (search.filters.journalName != null &&
-                      search.filters.journalName!.isNotEmpty)
-                    _ActiveFilterChip(
-                      label: 'Journal: ${search.filters.journalName!}',
-                      onRemove: () {
-                        search.setFilters(
-                          search.filters.copyWith(clearJournalName: true),
-                        );
-                        search.refreshCurrent();
-                      },
-                    ),
-                ],
-              ),
+                  ),
+                ),
+                const Spacer(),
+              ],
             ),
           ),
 
-        // Results list
-        Expanded(
-          child: RefreshIndicator(
-            onRefresh: () => search.refreshCurrent(),
-            child: ListView.separated(
-              controller: scrollController,
-              padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
-              // Disable built-in keep-alive / repaint boundaries: each
-              // PublicationCard already wraps itself in a RepaintBoundary
-              // and the cards don't need to survive scrolling off-screen.
-              // Skipping these saves layout work for long lists.
-              addAutomaticKeepAlives: false,
-              addRepaintBoundaries: false,
-              itemCount: search.publications.length + (search.hasMore ? 1 : 0),
-              separatorBuilder: (context, _) => const SizedBox(height: 12),
-              itemBuilder: (context, i) {
-                if (i >= search.publications.length) {
-                  return _buildLoadMore(search);
-                }
-                final pub = search.publications[i];
-                return PublicationCard(
-                  publication: pub,
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => PublicationDetailScreen(publication: pub),
+          // Active filters
+          if (search.filters.isActive)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 20),
+              child: SingleChildScrollView(
+                scrollDirection: Axis.horizontal,
+                child: Row(
+                  children: [
+                    if (search.filters.fromYear != null ||
+                        search.filters.toYear != null)
+                      _ActiveFilterChip(
+                        label:
+                            '${search.filters.fromYear ?? '*'}–${search.filters.toYear ?? '*'}',
+                        onRemove: () {
+                          search.setFilters(
+                            search.filters.copyWith(
+                              clearFromYear: true,
+                              clearToYear: true,
+                            ),
+                          );
+                          search.refreshCurrent();
+                        },
+                      ),
+                    if (search.filters.minCitations > 0)
+                      _ActiveFilterChip(
+                        label: '>${search.filters.minCitations} citations',
+                        onRemove: () {
+                          search.setFilters(
+                            search.filters.copyWith(minCitations: 0),
+                          );
+                          search.refreshCurrent();
+                        },
+                      ),
+                    if (search.filters.type != null)
+                      _ActiveFilterChip(
+                        label: search.filters.type!.replaceAll('-', ' '),
+                        onRemove: () {
+                          search.setFilters(
+                            search.filters.copyWith(clearType: true),
+                          );
+                          search.refreshCurrent();
+                        },
+                      ),
+                    if (search.filters.authorName != null &&
+                        search.filters.authorName!.isNotEmpty)
+                      _ActiveFilterChip(
+                        label: 'Author: ${search.filters.authorName!}',
+                        onRemove: () {
+                          search.setFilters(
+                            search.filters.copyWith(clearAuthorName: true),
+                          );
+                          search.refreshCurrent();
+                        },
+                      ),
+                    if (search.filters.journalName != null &&
+                        search.filters.journalName!.isNotEmpty)
+                      _ActiveFilterChip(
+                        label: 'Journal: ${search.filters.journalName!}',
+                        onRemove: () {
+                          search.setFilters(
+                            search.filters.copyWith(clearJournalName: true),
+                          );
+                          search.refreshCurrent();
+                        },
+                      ),
+                  ],
+                ),
+              ),
+            ),
+
+          // Results list
+          Expanded(
+            child: RefreshIndicator(
+              onRefresh: () => search.refreshCurrent(),
+              child: ListView.separated(
+                controller: scrollController,
+                padding: const EdgeInsets.fromLTRB(16, 8, 16, 100),
+                // Disable built-in keep-alive / repaint boundaries: each
+                // PublicationCard already wraps itself in a RepaintBoundary
+                // and the cards don't need to survive scrolling off-screen.
+                // Skipping these saves layout work for long lists.
+                addAutomaticKeepAlives: false,
+                addRepaintBoundaries: false,
+                itemCount:
+                    search.publications.length + (search.hasMore ? 1 : 0),
+                separatorBuilder: (context, _) => const SizedBox(height: 12),
+                itemBuilder: (context, i) {
+                  if (i >= search.publications.length) {
+                    return _buildLoadMore(search);
+                  }
+                  final pub = search.publications[i];
+                  return PublicationCard(
+                    publication: pub,
+                    onTap: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) =>
+                            PublicationDetailScreen(publication: pub),
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             ),
           ),
-        ),
+        ],
       ],
     );
   }
@@ -1003,6 +1011,93 @@ class _ResultsBody extends StatelessWidget {
                 icon: const Icon(Icons.expand_more),
                 label: const Text('Load More'),
               ),
+      ),
+    );
+  }
+}
+
+class _ResultTabs extends StatelessWidget {
+  const _ResultTabs({required this.selected, required this.onChanged});
+
+  final int selected;
+  final ValueChanged<int> onChanged;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      margin: const EdgeInsets.only(top: 12),
+      decoration: BoxDecoration(
+        border: Border(bottom: BorderSide(color: cs.outline.withAlpha(25))),
+      ),
+      child: Row(
+        children: [
+          Expanded(
+            child: _ResultTab(
+              icon: Icons.dashboard,
+              label: 'Dashboard & Trends',
+              selected: selected == 0,
+              onTap: () => onChanged(0),
+            ),
+          ),
+          Expanded(
+            child: _ResultTab(
+              icon: Icons.library_books,
+              label: 'Publications',
+              selected: selected == 1,
+              onTap: () => onChanged(1),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ResultTab extends StatelessWidget {
+  const _ResultTab({
+    required this.icon,
+    required this.label,
+    required this.selected,
+    required this.onTap,
+  });
+
+  final IconData icon;
+  final String label;
+  final bool selected;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final cs = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        padding: const EdgeInsets.symmetric(vertical: 14),
+        decoration: BoxDecoration(
+          border: Border(
+            bottom: BorderSide(
+              color: selected ? cs.primary : Colors.transparent,
+              width: 2.5,
+            ),
+          ),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Icon(icon, size: 21, color: selected ? cs.primary : cs.outline),
+            const SizedBox(height: 6),
+            Text(
+              label,
+              style: TextStyle(
+                fontSize: 13,
+                fontWeight: FontWeight.w700,
+                color: selected ? cs.primary : cs.outline,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -1305,6 +1400,8 @@ class _FilterSheetState extends State<_FilterSheet> {
         toYear: int.tryParse(_toYearCtrl.text),
         minCitations: int.tryParse(_minCitCtrl.text) ?? 0,
         type: _selectedType,
+        // Preserve the DB relationship selected from the Home topic card.
+        topicId: widget.initialFilters.topicId,
         authorName: _authorNameCtrl.text.trim().isEmpty
             ? null
             : _authorNameCtrl.text.trim(),

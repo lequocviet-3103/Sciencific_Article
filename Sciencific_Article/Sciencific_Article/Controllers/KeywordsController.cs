@@ -42,10 +42,19 @@ public class KeywordsController : ControllerBase
         [FromQuery] int take = 20,
         CancellationToken cancellationToken = default)
     {
+        take = Math.Clamp(take, 1, 100);
         var popular = await _context.PaperKeywords
             .GroupBy(pk => new { pk.KeywordId, pk.Keyword.Name })
-            .Select(g => new { keywordId = g.Key.KeywordId, name = g.Key.Name, paperCount = g.Count() })
+            .Select(g => new
+            {
+                keywordId = g.Key.KeywordId,
+                name = g.Key.Name,
+                paperCount = g.Count(),
+                totalCitations = g.Sum(x => x.Paper.CitationCount ?? 0),
+                avgCitations = g.Average(x => (double)(x.Paper.CitationCount ?? 0))
+            })
             .OrderByDescending(x => x.paperCount)
+            .ThenByDescending(x => x.totalCitations)
             .Take(take)
             .ToListAsync(cancellationToken);
 
@@ -66,5 +75,53 @@ public class KeywordsController : ControllerBase
             .CountAsync(pk => pk.KeywordId == keywordId, cancellationToken);
 
         return Ok(new { keyword.KeywordId, keyword.Name, paperCount });
+    }
+
+    [HttpGet("{keywordId}/papers")]
+    public async Task<IActionResult> GetPapers(
+        string keywordId,
+        [FromQuery] int page = 1,
+        [FromQuery] int pageSize = 20,
+        CancellationToken cancellationToken = default)
+    {
+        page = Math.Max(page, 1);
+        pageSize = Math.Clamp(pageSize, 1, 100);
+
+        var query = _context.Papers
+            .AsNoTracking()
+            .Where(p => p.Keywords.Any(k => k.KeywordId == keywordId));
+
+        var total = await query.CountAsync(cancellationToken);
+        var items = await query
+            .OrderByDescending(p => p.CitationCount)
+            .ThenByDescending(p => p.PublicationYear)
+            .Skip((page - 1) * pageSize)
+            .Take(pageSize)
+            .Select(p => new
+            {
+                p.PaperId,
+                p.Title,
+                p.Abstract,
+                p.Doi,
+                p.PublicationYear,
+                p.CitationCount,
+                p.DocType,
+                Journal = p.Journal != null
+                    ? new { p.Journal.JournalId, p.Journal.Name }
+                    : null,
+                Authors = p.Authors.Take(5)
+                    .Select(a => new { a.AuthorId, a.Name })
+                    .ToList()
+            })
+            .ToListAsync(cancellationToken);
+
+        return Ok(new
+        {
+            items,
+            total,
+            page,
+            pageSize,
+            pageCount = (int)Math.Ceiling(total / (double)pageSize)
+        });
     }
 }

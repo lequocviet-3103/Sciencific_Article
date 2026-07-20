@@ -54,7 +54,13 @@ public class PapersController : ControllerBase
         {
             query = query.Where(p =>
                 (p.Title != null && EF.Functions.ILike(p.Title, $"%{q}%")) ||
-                (p.Abstract != null && EF.Functions.ILike(p.Abstract, $"%{q}%")));
+                (p.Abstract != null && EF.Functions.ILike(p.Abstract, $"%{q}%")) ||
+                p.Topics.Any(t =>
+                    EF.Functions.ILike(t.Name, $"%{q}%") ||
+                    (t.Field != null && EF.Functions.ILike(t.Field, $"%{q}%")) ||
+                    (t.Subfield != null && EF.Functions.ILike(t.Subfield, $"%{q}%")) ||
+                    (t.Domain != null && EF.Functions.ILike(t.Domain, $"%{q}%"))) ||
+                p.Keywords.Any(k => EF.Functions.ILike(k.Name, $"%{q}%")));
         }
 
         if (!string.IsNullOrWhiteSpace(authorId))
@@ -113,6 +119,7 @@ public class PapersController : ControllerBase
                 p.Doi,
                 p.PublicationYear,
                 p.CitationCount,
+                p.Language,
                 p.DocType,
                 Journal = p.Journal != null ? new { p.Journal.JournalId, p.Journal.Name } : null,
                 Authors = p.Authors.Take(5).Select(a => new { a.AuthorId, a.Name }).ToList()
@@ -212,7 +219,9 @@ public class PapersController : ControllerBase
         if (!string.IsNullOrWhiteSpace(q))
             query = query.Where(p =>
                 (p.Title != null && EF.Functions.ILike(p.Title, $"%{q}%")) ||
-                (p.Abstract != null && EF.Functions.ILike(p.Abstract, $"%{q}%")));
+                (p.Abstract != null && EF.Functions.ILike(p.Abstract, $"%{q}%")) ||
+                p.Topics.Any(t => EF.Functions.ILike(t.Name, $"%{q}%")) ||
+                p.Keywords.Any(k => EF.Functions.ILike(k.Name, $"%{q}%")));
 
         if (!string.IsNullOrWhiteSpace(authorId))
             query = query.Where(p => p.Authors.Any(a => a.AuthorId == authorId));
@@ -285,6 +294,7 @@ public class PapersController : ControllerBase
             paper.Doi,
             paper.PublicationYear,
             paper.CitationCount,
+            paper.Language,
             paper.DocType,
             Journal = paper.Journal != null ? new
             {

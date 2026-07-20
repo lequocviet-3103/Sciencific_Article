@@ -275,6 +275,9 @@ public partial class AppDbContext : DbContext
             entity.Property(e => e.DocType)
                 .HasMaxLength(50)
                 .HasColumnName("doc_type");
+            entity.Property(e => e.Language)
+                .HasMaxLength(20)
+                .HasColumnName("language");
             entity.Property(e => e.Title).HasColumnName("title");
 
             entity.HasOne(d => d.Journal).WithMany(p => p.Papers)

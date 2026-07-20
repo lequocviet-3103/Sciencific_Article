@@ -1,7 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:provider/provider.dart';
 import '../models/role.dart';
 import '../models/user.dart';
+import '../providers/auth_provider.dart';
+import '../providers/notification_provider.dart';
 import '../services/analysis_service.dart';
 import '../services/auth_service.dart';
 import '../services/backend_paper_service.dart';
@@ -23,6 +26,7 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
       const _AdminDashboardTab(),
       const _AdminUsersTab(),
       const _SyncLogsTab(),
+      const _BroadcastNotificationsTab(),
       const ProfileScreen(),
     ];
 
@@ -46,6 +50,11 @@ class _AdminHomeScreenState extends State<AdminHomeScreen> {
             icon: Icon(Icons.sync_outlined),
             selectedIcon: Icon(Icons.sync),
             label: 'Sync',
+          ),
+          NavigationDestination(
+            icon: Icon(Icons.campaign_outlined),
+            selectedIcon: Icon(Icons.campaign),
+            label: 'Broadcast',
           ),
           NavigationDestination(
             icon: Icon(Icons.person_outline),
@@ -537,6 +546,164 @@ class _AdminUsersTabState extends State<_AdminUsersTab> {
 }
 
 // ── Sync Logs Tab ──────────────────────────────────────────────────────────────
+
+class _BroadcastNotificationsTab extends StatefulWidget {
+  const _BroadcastNotificationsTab();
+
+  @override
+  State<_BroadcastNotificationsTab> createState() =>
+      _BroadcastNotificationsTabState();
+}
+
+class _BroadcastNotificationsTabState
+    extends State<_BroadcastNotificationsTab> {
+  final _formKey = GlobalKey<FormState>();
+  final _titleController = TextEditingController();
+  final _bodyController = TextEditingController();
+
+  @override
+  void dispose() {
+    _titleController.dispose();
+    _bodyController.dispose();
+    super.dispose();
+  }
+
+  Future<void> _send() async {
+    if (!_formKey.currentState!.validate()) return;
+    final auth = context.read<AuthProvider>();
+    if (auth.user == null) return;
+
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        title: const Text('Send to all users?'),
+        content: Text(
+          'This notification will be pushed to every subscribed device and saved in every active user account.\n\n${_titleController.text.trim()}',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(dialogContext, false),
+            child: const Text('Cancel'),
+          ),
+          FilledButton(
+            onPressed: () => Navigator.pop(dialogContext, true),
+            child: const Text('Send broadcast'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+
+    try {
+      final response = await context.read<NotificationProvider>().broadcast(
+        userId: auth.user!.userId,
+        title: _titleController.text.trim(),
+        body: _bodyController.text.trim(),
+      );
+      if (!mounted) return;
+      final recipients = response['recipientCount'] ?? 0;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Broadcast sent to $recipients user accounts.')),
+      );
+      _titleController.clear();
+      _bodyController.clear();
+    } catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text('Broadcast failed: $error')));
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final sending = context.watch<NotificationProvider>().isSending;
+
+    return Scaffold(
+      appBar: AppBar(title: const Text('Broadcast Notification')),
+      body: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 720),
+          child: ListView(
+            padding: const EdgeInsets.all(20),
+            children: [
+              Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(20),
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Icon(
+                          Icons.campaign_rounded,
+                          size: 52,
+                          color: colors.primary,
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          'Send to all users',
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.headlineSmall,
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Android devices receive the push through the all_users FCM topic. The notification is also stored in the database for every active account.',
+                          textAlign: TextAlign.center,
+                          style: TextStyle(color: colors.onSurfaceVariant),
+                        ),
+                        const SizedBox(height: 22),
+                        TextFormField(
+                          controller: _titleController,
+                          maxLength: 100,
+                          decoration: const InputDecoration(
+                            labelText: 'Notification title',
+                          ),
+                          validator: (value) =>
+                              value == null || value.trim().isEmpty
+                              ? 'Title is required'
+                              : null,
+                        ),
+                        const SizedBox(height: 12),
+                        TextFormField(
+                          controller: _bodyController,
+                          minLines: 4,
+                          maxLines: 8,
+                          maxLength: 1000,
+                          decoration: const InputDecoration(
+                            labelText: 'Message',
+                          ),
+                          validator: (value) =>
+                              value == null || value.trim().isEmpty
+                              ? 'Message is required'
+                              : null,
+                        ),
+                        const SizedBox(height: 18),
+                        FilledButton.icon(
+                          onPressed: sending ? null : _send,
+                          icon: sending
+                              ? const SizedBox.square(
+                                  dimension: 18,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                              : const Icon(Icons.send_rounded),
+                          label: const Text('Send to all users'),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
 
 class _SyncLogsTab extends StatefulWidget {
   const _SyncLogsTab();

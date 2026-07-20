@@ -27,12 +27,15 @@ public class OpenAlexClient : IOpenAlexClient
         string? filter = null,
         string? cursor = null,
         int perPage = 25,
+        string? sort = null,
         CancellationToken cancellationToken = default)
     {
         var queryParams = new Dictionary<string, string>
         {
             ["per_page"] = perPage.ToString(),
-            ["sort"] = "publication_year:desc"
+            ["sort"] = string.IsNullOrWhiteSpace(sort)
+                ? "publication_year:desc"
+                : sort
         };
 
         if (!string.IsNullOrWhiteSpace(search))
@@ -44,7 +47,7 @@ public class OpenAlexClient : IOpenAlexClient
 
         //queryParams["filter"] = "authors_count:>0,publication_year:>2018,type:journal-article|proceedings-article";
         queryParams["select"] = "id,doi,title,publication_year,cited_by_count,type," +
-            "primary_location,locations,authorships,concepts,abstract_inverted_index";
+            "primary_location,locations,authorships,language,topics,primary_topic,abstract_inverted_index";
 
         var url = "https://api.openalex.org/works?" + string.Join("&",
             queryParams.Select(kv => $"{kv.Key}={Uri.EscapeDataString(kv.Value)}"));
@@ -122,7 +125,10 @@ public class OpenAlexClient : IOpenAlexClient
             Title = e.TryGetProperty("title", out var title) ? title.GetString() ?? "" : "",
             PublicationYear = e.TryGetProperty("publication_year", out var yr) ? yr.GetInt32() : null,
             CitedByCount = e.TryGetProperty("cited_by_count", out var cc) ? cc.GetInt32() : 0,
-            Type = e.TryGetProperty("type", out var tp) ? tp.GetString() : null
+            Type = e.TryGetProperty("type", out var tp) ? tp.GetString() : null,
+            Language = e.TryGetProperty("language", out var lang) && lang.ValueKind == JsonValueKind.String
+                ? lang.GetString()
+                : null
         };
 
         if (e.TryGetProperty("primary_location", out var pl) && pl.ValueKind != System.Text.Json.JsonValueKind.Null)
@@ -133,6 +139,10 @@ public class OpenAlexClient : IOpenAlexClient
             work.Authorships = auths.EnumerateArray().Select(ParseAuthorship).ToList();
         if (e.TryGetProperty("concepts", out var concepts) && concepts.ValueKind == System.Text.Json.JsonValueKind.Array)
             work.Concepts = concepts.EnumerateArray().Select(ParseConcept).ToList();
+        if (e.TryGetProperty("topics", out var topics) && topics.ValueKind == JsonValueKind.Array)
+            work.Topics = topics.EnumerateArray().Select(ParseConcept).ToList();
+        if (e.TryGetProperty("primary_topic", out var primaryTopic) && primaryTopic.ValueKind == JsonValueKind.Object)
+            work.PrimaryTopic = ParseConcept(primaryTopic);
         if (e.TryGetProperty("abstract_inverted_index", out var abs) && abs.ValueKind == System.Text.Json.JsonValueKind.Object)
             work.AbstractInvertedIndex = ParseAbstract(abs);
 
@@ -214,7 +224,7 @@ public class OpenAlexClient : IOpenAlexClient
                 ? dn.GetString()
                 : null,
 
-            Level = e.TryGetProperty("level", out var lv)
+            Level = e.TryGetProperty("level", out var lv) && lv.ValueKind == JsonValueKind.Number
                 ? lv.GetInt32().ToString()
                 : null,
 
@@ -229,6 +239,12 @@ public class OpenAlexClient : IOpenAlexClient
                      dm.TryGetProperty("display_name", out var dd)
                         ? dd.GetString()
                         : null,
+
+            Subfield = e.TryGetProperty("subfield", out var sf) &&
+                       sf.ValueKind == JsonValueKind.Object &&
+                       sf.TryGetProperty("display_name", out var sfd)
+                           ? sfd.GetString()
+                           : null,
 
             Score = e.TryGetProperty("score", out var sc)
                 ? sc.GetDouble()

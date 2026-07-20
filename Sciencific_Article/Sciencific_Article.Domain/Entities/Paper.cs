@@ -25,6 +25,8 @@ public partial class Paper
 
     public string? DocType { get; set; }
 
+    public string? Language { get; set; }
+
     public DateTime? CreatedAt { get; set; }
 
     public virtual ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();

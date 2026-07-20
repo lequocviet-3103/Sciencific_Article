@@ -1,9 +1,11 @@
 import 'package:flutter/foundation.dart';
 import '../services/storage_service.dart';
+import '../services/analytics_service_flutter.dart';
+import '../services/remote_config_service.dart';
 
 class ReportProvider extends ChangeNotifier {
   ReportProvider({StorageService? service})
-      : _service = service ?? StorageService();
+    : _service = service ?? StorageService();
 
   final StorageService _service;
   List<ReportModel> _reports = [];
@@ -37,6 +39,9 @@ class ReportProvider extends ChangeNotifier {
     String? query,
     String? topicId,
   }) async {
+    if (!RemoteConfigService.instance.enableExport) {
+      throw StateError('PDF export is disabled by Remote Config.');
+    }
     try {
       final result = await _service.generateReport(
         userId: userId,
@@ -55,6 +60,10 @@ class ReportProvider extends ChangeNotifier {
               : DateTime.now(),
         );
         _reports.insert(0, newReport);
+        final topic = query?.trim().isNotEmpty == true
+            ? query!.trim()
+            : (topicId?.trim().isNotEmpty == true ? topicId!.trim() : 'All');
+        await AnalyticsService.instance.logExportPdf(topic);
         notifyListeners();
       }
     } catch (e) {

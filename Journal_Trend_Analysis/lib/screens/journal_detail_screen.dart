@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart' hide AuthProvider;
 import '../config/app_config.dart';
 import '../models/publication.dart';
 import '../services/analysis_service.dart';
+import '../services/analytics_service_flutter.dart';
 import '../widgets/empty_view.dart';
 import '../widgets/modern_app_bar.dart';
 import 'publication_detail_screen.dart';
@@ -39,6 +40,11 @@ class _JournalDetailScreenState extends State<JournalDetailScreen> {
   void initState() {
     super.initState();
     _scrollController.addListener(_onScroll);
+    AnalyticsService.instance.logViewJournal(
+      widget.journalName?.trim().isNotEmpty == true
+          ? widget.journalName!.trim()
+          : widget.journalId,
+    );
     _load();
   }
 
@@ -84,11 +90,12 @@ class _JournalDetailScreenState extends State<JournalDetailScreen> {
         if (idToken != null) 'Authorization': 'Bearer $idToken',
       };
 
-      final uri =
-          Uri.parse('${AppConfig.apiBaseUrl}/api/journals/${widget.journalId}/papers')
-              .replace(queryParameters: {'page': _page.toString(), 'pageSize': '20'});
-      final response =
-          await http.get(uri, headers: headers).timeout(AppConfig.httpTimeout);
+      final uri = Uri.parse(
+        '${AppConfig.apiBaseUrl}/api/journals/${widget.journalId}/papers',
+      ).replace(queryParameters: {'page': _page.toString(), 'pageSize': '20'});
+      final response = await http
+          .get(uri, headers: headers)
+          .timeout(AppConfig.httpTimeout);
 
       if (response.statusCode == 200) {
         final body = jsonDecode(response.body) as Map<String, dynamic>;
@@ -126,7 +133,9 @@ class _JournalDetailScreenState extends State<JournalDetailScreen> {
     if (_error != null) {
       return Scaffold(
         appBar: ModernAppBar(title: displayName),
-        body: Center(child: Text(_error!, style: TextStyle(color: colorScheme.error))),
+        body: Center(
+          child: Text(_error!, style: TextStyle(color: colorScheme.error)),
+        ),
       );
     }
 
@@ -135,70 +144,64 @@ class _JournalDetailScreenState extends State<JournalDetailScreen> {
       body: CustomScrollView(
         controller: _scrollController,
         slivers: [
-          // Journal info card
           SliverToBoxAdapter(
             child: Container(
-              margin: const EdgeInsets.all(16),
-              padding: const EdgeInsets.all(20),
+              margin: const EdgeInsets.fromLTRB(20, 20, 20, 16),
+              padding: const EdgeInsets.all(24),
               decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(20),
-                gradient: LinearGradient(
-                  colors: [
-                    colorScheme.primaryContainer,
-                    colorScheme.secondaryContainer,
-                  ],
-                  begin: Alignment.topLeft,
-                  end: Alignment.bottomRight,
-                ),
+                borderRadius: BorderRadius.circular(24),
+                color: colorScheme.surface,
+                border: Border.all(color: colorScheme.outline.withAlpha(25)),
               ),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Row(
-                    children: [
-                      Container(
-                        width: 48,
-                        height: 48,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(12),
-                          color: colorScheme.primary.withAlpha(30),
-                        ),
-                        child: Icon(Icons.menu_book_rounded,
-                            color: colorScheme.primary, size: 26),
-                      ),
-                      const SizedBox(width: 14),
-                      Expanded(
-                        child: Text(
-                          displayName,
-                          style: TextStyle(
-                            fontSize: 17,
-                            fontWeight: FontWeight.bold,
-                            color: colorScheme.onPrimaryContainer,
-                          ),
-                        ),
-                      ),
-                    ],
+                  Text(
+                    displayName,
+                    style: const TextStyle(
+                      fontSize: 24,
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
-                  const SizedBox(height: 14),
-                  _InfoRow(
-                    icon: Icons.business,
-                    label: 'Publisher',
-                    value: _journal?.publisher ?? 'Unknown',
-                    colorScheme: colorScheme,
+                  const SizedBox(height: 12),
+                  Text(
+                    _journal?.publisher == null
+                        ? 'Analysis of publications inside this journal'
+                        : '${_journal!.publisher} · ${_journal?.issn ?? 'ISSN not recorded'}',
+                    style: TextStyle(color: colorScheme.outline, height: 1.4),
                   ),
-                  const SizedBox(height: 6),
-                  _InfoRow(
-                    icon: Icons.tag,
-                    label: 'ISSN',
-                    value: _journal?.issn ?? 'N/A',
-                    colorScheme: colorScheme,
+                ],
+              ),
+            ),
+          ),
+
+          SliverToBoxAdapter(
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(20, 18, 20, 28),
+              child: Row(
+                children: [
+                  Expanded(
+                    child: _JournalStat(
+                      icon: Icons.library_books_outlined,
+                      label: 'Publications',
+                      value: '${_journal?.paperCount ?? _total}',
+                    ),
                   ),
-                  const SizedBox(height: 6),
-                  _InfoRow(
-                    icon: Icons.article_outlined,
-                    label: 'Papers',
-                    value: '$_total in database',
-                    colorScheme: colorScheme,
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _JournalStat(
+                      icon: Icons.format_quote,
+                      label: 'Total Citations',
+                      value: '${_journal?.totalCitations ?? 0}',
+                    ),
+                  ),
+                  const SizedBox(width: 10),
+                  Expanded(
+                    child: _JournalStat(
+                      icon: Icons.auto_graph,
+                      label: 'Avg Citations',
+                      value: (_journal?.avgCitations ?? 0).toStringAsFixed(1),
+                    ),
                   ),
                 ],
               ),
@@ -209,7 +212,7 @@ class _JournalDetailScreenState extends State<JournalDetailScreen> {
             child: Padding(
               padding: const EdgeInsets.fromLTRB(20, 4, 20, 8),
               child: Text(
-                'Papers in this Journal',
+                'Related Publications ($_total)',
                 style: TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
@@ -238,7 +241,8 @@ class _JournalDetailScreenState extends State<JournalDetailScreen> {
                   final p = _papers[index];
                   return _JournalPaperTile(paper: p);
                 },
-                childCount: _papers.length + (_loadingPapers || _hasMore ? 1 : 0),
+                childCount:
+                    _papers.length + (_loadingPapers || _hasMore ? 1 : 0),
               ),
             ),
         ],
@@ -247,45 +251,58 @@ class _JournalDetailScreenState extends State<JournalDetailScreen> {
   }
 }
 
-class _InfoRow extends StatelessWidget {
-  const _InfoRow({
+class _JournalStat extends StatelessWidget {
+  const _JournalStat({
     required this.icon,
     required this.label,
     required this.value,
-    required this.colorScheme,
   });
-
   final IconData icon;
   final String label;
   final String value;
-  final ColorScheme colorScheme;
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Icon(icon, size: 15, color: colorScheme.onPrimaryContainer.withAlpha(160)),
-        const SizedBox(width: 8),
-        Text(
-          '$label: ',
-          style: TextStyle(
-            fontSize: 13,
-            fontWeight: FontWeight.w600,
-            color: colorScheme.onPrimaryContainer.withAlpha(180),
+    final cs = Theme.of(context).colorScheme;
+    return Container(
+      height: 130,
+      padding: const EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: cs.primaryContainer,
+        borderRadius: BorderRadius.circular(20),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Icon(icon, size: 20, color: cs.primary),
+              const SizedBox(width: 6),
+              Expanded(
+                child: Text(
+                  label,
+                  maxLines: 1,
+                  overflow: TextOverflow.ellipsis,
+                  style: TextStyle(
+                    color: cs.primary,
+                    fontSize: 11,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+            ],
           ),
-        ),
-        Expanded(
-          child: Text(
+          const Spacer(),
+          Text(
             value,
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
             style: TextStyle(
-              fontSize: 13,
-              color: colorScheme.onPrimaryContainer,
+              color: cs.primary,
+              fontSize: 22,
+              fontWeight: FontWeight.bold,
             ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 }
@@ -300,7 +317,9 @@ class _JournalPaperTile extends StatelessWidget {
     return GestureDetector(
       onTap: () => Navigator.push(
         context,
-        MaterialPageRoute(builder: (_) => PublicationDetailScreen(publication: paper)),
+        MaterialPageRoute(
+          builder: (_) => PublicationDetailScreen(publication: paper),
+        ),
       ),
       child: Container(
         margin: const EdgeInsets.fromLTRB(16, 0, 16, 10),
@@ -327,19 +346,31 @@ class _JournalPaperTile extends StatelessWidget {
             Row(
               children: [
                 if (paper.year != null) ...[
-                  Icon(Icons.calendar_today, size: 12,
-                      color: colorScheme.onSurface.withAlpha(120)),
+                  Icon(
+                    Icons.calendar_today,
+                    size: 12,
+                    color: colorScheme.onSurface.withAlpha(120),
+                  ),
                   const SizedBox(width: 4),
-                  Text('${paper.year}',
-                      style: TextStyle(
-                          fontSize: 12, color: colorScheme.onSurface.withAlpha(150))),
+                  Text(
+                    '${paper.year}',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: colorScheme.onSurface.withAlpha(150),
+                    ),
+                  ),
                   const SizedBox(width: 12),
                 ],
-                Icon(Icons.format_quote, size: 12,
-                    color: colorScheme.primary.withAlpha(180)),
+                Icon(
+                  Icons.format_quote,
+                  size: 12,
+                  color: colorScheme.primary.withAlpha(180),
+                ),
                 const SizedBox(width: 4),
-                Text('${paper.citedByCount} citations',
-                    style: TextStyle(fontSize: 12, color: colorScheme.primary)),
+                Text(
+                  '${paper.citedByCount} citations',
+                  style: TextStyle(fontSize: 12, color: colorScheme.primary),
+                ),
               ],
             ),
           ],

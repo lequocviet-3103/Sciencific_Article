@@ -6,6 +6,7 @@ import '../models/publication.dart';
 import '../models/topic.dart';
 import '../providers/bookmark_provider.dart';
 import '../providers/recent_provider.dart';
+import '../providers/remote_config_provider.dart';
 import '../providers/search_provider.dart';
 import '../providers/theme_provider.dart';
 import '../providers/topics_provider.dart';
@@ -433,9 +434,29 @@ class _TopicsScreenState extends State<TopicsScreen> {
           var cursor = index;
           if (showOverview) {
             if (cursor == 0) {
-              return const Padding(
-                padding: EdgeInsets.only(bottom: 4),
-                child: _DbHomeSection(),
+              final latestTopic = context
+                  .watch<RemoteConfigProvider>()
+                  .latestTopic;
+              return Padding(
+                padding: const EdgeInsets.only(bottom: 4),
+                child: Column(
+                  children: [
+                    _TrendingTopicCard(
+                      topic: latestTopic,
+                      onTap: () {
+                        context.read<SearchProvider>().clear();
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) =>
+                                SearchScreen(initialQuery: latestTopic),
+                          ),
+                        );
+                      },
+                    ),
+                    const _DbHomeSection(),
+                  ],
+                ),
               );
             }
             cursor -= 1;
@@ -468,6 +489,69 @@ class _TopicsScreenState extends State<TopicsScreen> {
             onTopicTap: _onTopicSelected,
           );
         },
+      ),
+    );
+  }
+}
+
+class _TrendingTopicCard extends StatelessWidget {
+  const _TrendingTopicCard({required this.topic, required this.onTap});
+
+  final String topic;
+  final VoidCallback onTap;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 14),
+      child: Material(
+        color: colors.primaryContainer.withAlpha(150),
+        borderRadius: BorderRadius.circular(18),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(18),
+          onTap: onTap,
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Row(
+              children: [
+                CircleAvatar(
+                  backgroundColor: colors.primary,
+                  foregroundColor: colors.onPrimary,
+                  child: const Icon(Icons.local_fire_department_rounded),
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Trending Topic',
+                        style: TextStyle(
+                          color: colors.onPrimaryContainer.withAlpha(170),
+                          fontSize: 12,
+                          fontWeight: FontWeight.w600,
+                        ),
+                      ),
+                      const SizedBox(height: 2),
+                      Text(
+                        topic,
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                        style: TextStyle(
+                          color: colors.onPrimaryContainer,
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(Icons.arrow_forward_rounded, color: colors.primary),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

@@ -72,6 +72,7 @@ class Publication {
       type: (docType != null && docType.isNotEmpty)
           ? _formatDocType(docType)
           : null,
+      language: json['language']?.toString(),
       topics: researchAreas
           .map((e) => Topic.fromBackendJson(_asBackendTopic(e)))
           .toList(),

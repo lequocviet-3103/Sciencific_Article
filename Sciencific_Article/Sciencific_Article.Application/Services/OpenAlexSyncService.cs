@@ -17,6 +17,17 @@ public class OpenAlexSyncService : IOpenAlexSyncService
     public const string NewPapersTopic = "new_papers";
     private const int DefaultSyncCount = 50;
     private const int MaxManualSyncCount = 1000;
+    private static readonly string[] PopularTopics =
+    {
+        "Artificial Intelligence",
+        "Software Engineering",
+        "Data Science",
+        "Cybersecurity",
+        "Internet of Things",
+        "Blockchain",
+        "Machine Learning",
+        "Cloud Computing"
+    };
     private static readonly SemaphoreSlim SyncGate = new(1, 1);
 
     private readonly IUnitOfWork _unitOfWork;
@@ -68,6 +79,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 filter: "authors_count:>0",
                 maxPages: maxPages,
                 maxNewPapers: requestedCount,
+                sort: "publication_year:desc",
                 cancellationToken: cancellationToken);
 
             var result = new SyncWorksResult(
@@ -196,8 +208,161 @@ public class OpenAlexSyncService : IOpenAlexSyncService
             filter: null,
             maxPages: maxPages,
             maxNewPapers: int.MaxValue,
+            sort: "cited_by_count:desc",
             cancellationToken: cancellationToken);
         return result.InsertedCount;
+    }
+
+    public async Task<int> SyncPopularTopicsAsync(
+        int papersPerTopic = 10,
+        CancellationToken cancellationToken = default)
+    {
+        papersPerTopic = Math.Clamp(papersPerTopic, 1, 50);
+
+        if (!await SyncGate.WaitAsync(0, cancellationToken))
+            throw new InvalidOperationException("Another OpenAlex sync is already running.");
+
+        try
+        {
+            await RefreshExistingPaperMetadataCoreAsync(1000, cancellationToken);
+
+            var inserted = 0;
+            foreach (var topic in PopularTopics)
+            {
+                var existingCount = await CountPopularTopicMatchesAsync(topic, cancellationToken);
+                if (existingCount >= papersPerTopic) continue;
+
+                var result = await IngestWorksAsync(
+                    search: topic,
+                    filter: "authors_count:>0,cited_by_count:>0",
+                    maxPages: 3,
+                    maxNewPapers: papersPerTopic - existingCount,
+                    sort: "cited_by_count:desc",
+                    cancellationToken: cancellationToken);
+                await LinkPapersToSeedTopicAsync(
+                    topic,
+                    result.ProcessedPaperIds,
+                    cancellationToken);
+                inserted += result.InsertedCount;
+            }
+
+            await RecomputeTopicWorksCountsAsync(cancellationToken);
+
+            _unitOfWork.Add(new SyncLog
+            {
+                SyncLogId = Guid.NewGuid().ToString(),
+                SourceApi = "OpenAlex Popular Topics",
+                Status = "Success",
+                RecordsInserted = inserted,
+                SyncTime = DateTime.Now
+            });
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+            return inserted;
+        }
+        finally
+        {
+            SyncGate.Release();
+        }
+    }
+
+    private Task<int> CountPopularTopicMatchesAsync(
+        string topic,
+        CancellationToken cancellationToken)
+    {
+        var term = topic.ToLowerInvariant();
+        return _unitOfWork.Papers.CountAsync(p =>
+            p.Title.ToLower().Contains(term) ||
+            (p.Abstract != null && p.Abstract.ToLower().Contains(term)) ||
+            p.Topics.Any(t => t.Name.ToLower().Contains(term)) ||
+            p.Keywords.Any(k => k.Name.ToLower().Contains(term)),
+            cancellationToken);
+    }
+
+    private async Task LinkPapersToSeedTopicAsync(
+        string topicName,
+        IReadOnlyCollection<string> paperIds,
+        CancellationToken cancellationToken)
+    {
+        var ids = paperIds.Distinct(StringComparer.OrdinalIgnoreCase).ToList();
+        if (ids.Count == 0) return;
+
+        var normalizedName = topicName.ToLowerInvariant();
+        var topic = await _unitOfWork.ResearchTopics
+            .FirstOrDefaultAsync(t => t.Name.ToLower() == normalizedName, cancellationToken);
+        if (topic == null)
+        {
+            topic = new ResearchTopic
+            {
+                TopicId = Guid.NewGuid().ToString(),
+                Name = topicName,
+                Field = "Computer Science",
+                Domain = "Science",
+                WorksCount = 0,
+                CreatedAt = DateTime.Now,
+                UpdatedAt = DateTime.Now
+            };
+            _unitOfWork.Add(topic);
+        }
+
+        var linkedIds = await _unitOfWork.Context.Set<PaperTopic>()
+            .Where(pt => pt.TopicId == topic.TopicId && ids.Contains(pt.PaperId))
+            .Select(pt => pt.PaperId)
+            .ToListAsync(cancellationToken);
+        var linked = linkedIds.ToHashSet(StringComparer.OrdinalIgnoreCase);
+
+        foreach (var paperId in ids.Where(id => !linked.Contains(id)))
+        {
+            _unitOfWork.Add(new PaperTopic
+            {
+                PaperId = paperId,
+                TopicId = topic.TopicId
+            });
+        }
+
+        await _unitOfWork.SaveChangesAsync(cancellationToken);
+    }
+
+    private async Task<int> RefreshExistingPaperMetadataCoreAsync(
+        int maxPapers,
+        CancellationToken cancellationToken)
+    {
+        var papers = await _unitOfWork.Papers
+            .Where(p => p.ExternalId != null && p.ExternalId != "")
+            .OrderBy(p => p.PaperId)
+            .Take(maxPapers)
+            .ToListAsync(cancellationToken);
+
+        var refreshed = 0;
+        foreach (var batch in papers.Chunk(50))
+        {
+            var localByOpenAlexId = batch
+                .Select(p => new { Paper = p, Id = ExtractOpenAlexId(p.ExternalId) })
+                .Where(x => !string.IsNullOrWhiteSpace(x.Id))
+                .GroupBy(x => x.Id!, StringComparer.OrdinalIgnoreCase)
+                .ToDictionary(g => g.Key, g => g.First().Paper, StringComparer.OrdinalIgnoreCase);
+
+            if (localByOpenAlexId.Count == 0) continue;
+
+            var filter = $"openalex_id:{string.Join('|', localByOpenAlexId.Keys)}";
+            var response = await _openAlexClient.GetWorksAsync(
+                filter: filter,
+                perPage: 100,
+                cancellationToken: cancellationToken);
+
+            foreach (var work in response.Results)
+            {
+                var openAlexId = ExtractOpenAlexId(work.Id);
+                if (openAlexId == null || !localByOpenAlexId.TryGetValue(openAlexId, out var paper))
+                    continue;
+
+                RefreshPaperMetadata(paper, work, openAlexId);
+                refreshed++;
+            }
+
+            await _unitOfWork.SaveChangesAsync(cancellationToken);
+        }
+
+        return refreshed;
     }
 
     /// Same idea as EnsureWorksSyncedForQueryAsync but for the Topics table,
@@ -269,6 +434,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
         string? filter,
         int maxPages,
         int maxNewPapers,
+        string? sort,
         CancellationToken cancellationToken)
     {
         var cursor = "*";
@@ -278,18 +444,17 @@ public class OpenAlexSyncService : IOpenAlexSyncService
         var skippedDuplicates = 0;
         var sourceExhausted = false;
         var newPaperTitles = new List<string>();
+        var processedPaperIds = new List<string>();
         var journals = new Dictionary<string, Journal>(StringComparer.OrdinalIgnoreCase);
         var keywordsDict = new Dictionary<string, Keyword>(StringComparer.OrdinalIgnoreCase);
         var authorsDict = new Dictionary<string, Author>(StringComparer.OrdinalIgnoreCase);
-        var knownDoiKeys = (await _unitOfWork.Papers
-                .AsNoTracking()
+        var existingPapersByDoi = (await _unitOfWork.Papers
                 .Where(p => p.Doi != null && p.Doi != "")
-                .Select(p => p.Doi!)
                 .ToListAsync(cancellationToken))
-            .Select(NormalizeDoi)
-            .Where(doi => doi != null)
-            .Cast<string>()
-            .ToHashSet(StringComparer.OrdinalIgnoreCase);
+            .Select(p => new { Paper = p, Doi = NormalizeDoi(p.Doi) })
+            .Where(x => x.Doi != null)
+            .GroupBy(x => x.Doi!, StringComparer.OrdinalIgnoreCase)
+            .ToDictionary(g => g.Key, g => g.First().Paper, StringComparer.OrdinalIgnoreCase);
 
         while (page < maxPages && inserted < maxNewPapers)
         {
@@ -302,6 +467,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 // Omitting it only returns the first page and no next cursor.
                 cursor: cursor,
                 perPage: 100,
+                sort: sort,
                 cancellationToken: cancellationToken);
 
             if (response.Results.Count == 0)
@@ -319,13 +485,12 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 .ToList();
 
             var existingPapers = incomingIds.Count == 0
-                ? new HashSet<string>(StringComparer.OrdinalIgnoreCase)
+                ? new Dictionary<string, Paper>(StringComparer.OrdinalIgnoreCase)
                 : (await _unitOfWork.Papers
-                    .AsNoTracking()
                     .Where(p => p.ExternalId != null && incomingIds.Contains(p.ExternalId))
-                    .Select(p => p.ExternalId!)
                     .ToListAsync(cancellationToken))
-                    .ToHashSet(StringComparer.OrdinalIgnoreCase);
+                    .GroupBy(p => p.ExternalId!, StringComparer.OrdinalIgnoreCase)
+                    .ToDictionary(g => g.Key, g => g.First(), StringComparer.OrdinalIgnoreCase);
 
             var journalNames = response.Results
                 .Select(w => w.PrimaryLocation?.Source?.DisplayName
@@ -371,7 +536,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                     .ToDictionary(a => a.ExternalAuthorId!, a => a, StringComparer.OrdinalIgnoreCase);
 
             var incomingKeywords = response.Results
-                .SelectMany(w => w.Concepts ?? Enumerable.Empty<OpenAlexConcept>())
+                .SelectMany(GetWorkTopics)
                 .Where(c => c.Score > 0.3 && !string.IsNullOrWhiteSpace(c.DisplayName))
                 .Select(c => c.DisplayName!)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
@@ -386,8 +551,8 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                     .ToDictionary(k => k.Name, k => k, StringComparer.OrdinalIgnoreCase);
 
             var incomingTopicNames = response.Results
-                .SelectMany(w => w.Concepts ?? Enumerable.Empty<OpenAlexConcept>())
-                .Where(c => c.Level == "1" && !string.IsNullOrWhiteSpace(c.DisplayName))
+                .SelectMany(GetWorkTopics)
+                .Where(c => !string.IsNullOrWhiteSpace(c.DisplayName))
                 .Select(c => c.DisplayName!)
                 .Distinct(StringComparer.OrdinalIgnoreCase)
                 .ToList();
@@ -424,9 +589,14 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 // OpenAlex ids are the primary identity. DOI is a second guard
                 // for legacy rows or records imported before ExternalId existed.
                 var doiKey = NormalizeDoi(work.Doi);
-                if (existingPapers.Contains(openAlexId) ||
-                    (doiKey != null && knownDoiKeys.Contains(doiKey)))
+                existingPapers.TryGetValue(openAlexId, out var existingPaper);
+                if (existingPaper == null && doiKey != null)
+                    existingPapersByDoi.TryGetValue(doiKey, out existingPaper);
+
+                if (existingPaper != null)
                 {
+                    RefreshPaperMetadata(existingPaper, work, openAlexId);
+                    processedPaperIds.Add(existingPaper.PaperId);
                     skippedDuplicates++;
                     continue;
                 }
@@ -465,6 +635,7 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                     Doi = work.Doi,
                     PublicationYear = work.PublicationYear,
                     CitationCount = work.CitedByCount ?? 0,
+                    Language = NormalizeLanguage(work.Language),
                     JournalId = journal?.JournalId,
                     ExternalId = openAlexId,
                     SourceApi = "OpenAlex",
@@ -522,9 +693,10 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                     });
                 }
 
-                // Keywords from Concepts
+                // OpenAlex topics power both keyword suggestions and the
+                // topic relationship used by DB-backed searches.
                 var seenKeywordNames = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-                foreach (var concept in (work.Concepts ?? Enumerable.Empty<OpenAlexConcept>())
+                foreach (var concept in GetWorkTopics(work)
                     .Where(c => c.Score > 0.3)
                     .OrderByDescending(c => c.Score)
                     .Take(5))
@@ -558,9 +730,11 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                         KeywordId = keyword.KeywordId
                     });
 
-                    // Track L1 topic and link this paper to it so topic-scoped
+                    // Link every high-confidence OpenAlex topic. `concepts`
+                    // and its level-1 convention are deprecated by OpenAlex;
+                    // filtering on them was why most popular topics had no rows.
                     // search/filtering actually has data to query against.
-                    if (concept.Level == "1" && !string.IsNullOrWhiteSpace(concept.DisplayName))
+                    if (!string.IsNullOrWhiteSpace(concept.DisplayName))
                     {
                         if (!seenTopicNames.Add(concept.DisplayName)) continue;
 
@@ -611,7 +785,8 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                                     Name = concept.DisplayName,
                                     Field = concept.Field ?? "Computer Science",
                                     Domain = concept.Domain ?? "Science",
-                                    OpenAlexId = concept.Id,
+                                    Subfield = concept.Subfield,
+                                    OpenAlexId = ExtractOpenAlexId(concept.Id),
                                     WorksCount = 1,
                                     CreatedAt = DateTime.Now,
                                     UpdatedAt = DateTime.Now
@@ -625,8 +800,9 @@ public class OpenAlexSyncService : IOpenAlexSyncService
                 }
 
                 inserted++;
-                existingPapers.Add(openAlexId);
-                if (doiKey != null) knownDoiKeys.Add(doiKey);
+                processedPaperIds.Add(paper.PaperId);
+                existingPapers[openAlexId] = paper;
+                if (doiKey != null) existingPapersByDoi[doiKey] = paper;
                 newPaperTitles.Add(paper.Title);
             }
 
@@ -663,7 +839,8 @@ public class OpenAlexSyncService : IOpenAlexSyncService
             inserted,
             skippedDuplicates,
             scanned,
-            sourceExhausted);
+            sourceExhausted,
+            processedPaperIds);
     }
 
     private async Task RecomputeTopicWorksCountsAsync(CancellationToken cancellationToken)
@@ -788,7 +965,42 @@ public class OpenAlexSyncService : IOpenAlexSyncService
         int InsertedCount,
         int SkippedDuplicates,
         int ScannedCount,
-        bool SourceExhausted);
+        bool SourceExhausted,
+        IReadOnlyCollection<string> ProcessedPaperIds);
+
+    private static IEnumerable<OpenAlexConcept> GetWorkTopics(OpenAlexWork work)
+    {
+        if (work.Topics.Count > 0)
+            return work.Topics;
+        if (work.PrimaryTopic != null)
+            return new[] { work.PrimaryTopic };
+        return work.Concepts;
+    }
+
+    private static void RefreshPaperMetadata(
+        Paper paper,
+        OpenAlexWork work,
+        string openAlexId)
+    {
+        paper.CitationCount = work.CitedByCount ?? 0;
+        paper.Language = NormalizeLanguage(work.Language);
+        paper.ExternalId ??= openAlexId;
+        paper.SourceApi ??= "OpenAlex";
+
+        if (string.IsNullOrWhiteSpace(paper.DocType))
+            paper.DocType = work.Type;
+        if (!paper.PublicationYear.HasValue)
+            paper.PublicationYear = work.PublicationYear;
+        if (string.IsNullOrWhiteSpace(paper.Abstract))
+            paper.Abstract = ReconstructAbstract(work.AbstractInvertedIndex);
+    }
+
+    private static string? NormalizeLanguage(string? language)
+    {
+        if (string.IsNullOrWhiteSpace(language)) return null;
+        var value = language.Trim().ToLowerInvariant();
+        return value.Length <= 20 ? value : value[..20];
+    }
 
     private static string? NormalizeDoi(string? doi)
     {

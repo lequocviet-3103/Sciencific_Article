@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'compare_trend_screen.dart';
 import 'db_dashboard_screen.dart';
 import 'emerging_topics_screen.dart';
+import 'journals_analysis_screen.dart';
+import 'keywords_analysis_screen.dart';
 import 'profile_screen.dart';
 import 'search_screen.dart';
 import 'topics_screen.dart';
@@ -107,6 +109,20 @@ class _AnalyticsTab extends StatelessWidget {
         subtitle: 'Topics with the highest recent growth',
         color: Colors.orange.shade700,
         builder: (_) => const EmergingTopicsScreen(),
+      ),
+      _AnalyticsItem(
+        icon: Icons.menu_book_outlined,
+        title: 'Journals Analysis',
+        subtitle: 'Journal contribution, citations and related publications',
+        color: Colors.teal.shade600,
+        builder: (_) => const JournalsAnalysisScreen(),
+      ),
+      _AnalyticsItem(
+        icon: Icons.key_outlined,
+        title: 'Keywords Analysis',
+        subtitle: 'Keyword frequency, score and related publications',
+        color: Colors.deepPurple.shade500,
+        builder: (_) => const KeywordsAnalysisScreen(),
       ),
     ];
 

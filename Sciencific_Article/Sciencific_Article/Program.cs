@@ -115,6 +115,13 @@ var app = builder.Build();
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
+
+    // The existing Supabase database predates EF migration history. Keep
+    // this additive compatibility change idempotent so both that database
+    // and newly migrated databases can store OpenAlex language metadata.
+    db.Database.ExecuteSqlRaw(
+        "ALTER TABLE papers ADD COLUMN IF NOT EXISTS language character varying(20)");
+
     if (!db.Roles.Any())
     {
         db.Roles.AddRange(

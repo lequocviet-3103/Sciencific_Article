@@ -23,9 +23,9 @@ class TopicsProvider extends ChangeNotifier {
   String _query = '';
   String get query => _query;
 
-  /// Static fallback used when the API call fails so the home screen is
-  /// never empty. Mirrors the suggestions that previously lived in
-  /// SearchScreen.
+  /// Static suggestions are reserved for explicit offline/topic-picker UI.
+  /// Home shows API data only so fake cards cannot be confused with rows
+  /// that really exist in the database.
   static const _fallbackTopics = <Topic>[
     Topic(
       id: 'fallback-ai',
@@ -123,16 +123,16 @@ class TopicsProvider extends ChangeNotifier {
 
     try {
       final results = await _service.fetchFeaturedTopics();
-      _topics = results.isNotEmpty ? results : _fallbackTopics;
+      _topics = results;
       _status = TopicsStatus.success;
     } on ApiError catch (e) {
-      _topics = _fallbackTopics;
+      _topics = [];
       _errorMessage = e.message;
-      _status = TopicsStatus.success;
+      _status = TopicsStatus.error;
     } catch (e) {
-      _topics = _fallbackTopics;
+      _topics = [];
       _errorMessage = 'Unexpected error: $e';
-      _status = TopicsStatus.success;
+      _status = TopicsStatus.error;
     }
     notifyListeners();
   }

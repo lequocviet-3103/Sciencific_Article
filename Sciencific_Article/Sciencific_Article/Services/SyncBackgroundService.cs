@@ -24,6 +24,7 @@ public class SyncBackgroundService : BackgroundService
                 using var scope = _serviceProvider.CreateScope();
                 var syncService = scope.ServiceProvider.GetRequiredService<IOpenAlexSyncService>();
                 await syncService.SyncWorksAsync(stoppingToken);
+                await syncService.SyncPopularTopicsAsync(5, stoppingToken);
             }
             catch (Exception)
             {

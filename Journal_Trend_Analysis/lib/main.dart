@@ -1,3 +1,7 @@
+import 'dart:ui';
+
+import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -9,10 +13,12 @@ import 'providers/dashboard_provider.dart';
 import 'providers/notification_provider.dart';
 import 'providers/profile_provider.dart';
 import 'providers/recent_provider.dart';
+import 'providers/remote_config_provider.dart';
 import 'providers/report_provider.dart';
 import 'providers/search_provider.dart';
 import 'providers/theme_provider.dart';
 import 'providers/topics_provider.dart';
+import 'services/notification_service.dart';
 import 'screens/admin_home_screen.dart';
 import 'screens/bookmarks_screen.dart';
 import 'screens/database_papers_screen.dart';
@@ -28,10 +34,16 @@ import 'screens/researcher_home_screen.dart';
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  FlutterError.onError = FirebaseCrashlytics.instance.recordFlutterFatalError;
+  PlatformDispatcher.instance.onError = (error, stackTrace) {
+    FirebaseCrashlytics.instance.recordError(error, stackTrace, fatal: true);
+    return true;
+  };
+  await FirebaseCrashlytics.instance.setCrashlyticsCollectionEnabled(true);
   SystemChrome.setSystemUIOverlayStyle(
-    const SystemUiOverlayStyle(
-      statusBarColor: Colors.transparent,
-    ),
+    const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
   runApp(const JournalTrendApp());
 }
@@ -45,13 +57,22 @@ class JournalTrendApp extends StatelessWidget {
       providers: [
         ChangeNotifierProvider(create: (_) => ThemeProvider()),
         ChangeNotifierProvider(create: (_) => AuthProvider()..load()),
+        ChangeNotifierProvider(
+          lazy: false,
+          create: (_) => RemoteConfigProvider()..initialize(),
+        ),
         ChangeNotifierProvider(create: (_) => TopicsProvider()),
         ChangeNotifierProvider(create: (_) => SearchProvider()),
         ChangeNotifierProvider(create: (_) => DashboardProvider()),
         ChangeNotifierProvider(create: (_) => RecentProvider()),
         ChangeNotifierProvider(create: (_) => ProfileProvider()..load()),
-        ChangeNotifierProvider(create: (_) => BookmarkProvider()..loadBookmarks()),
-        ChangeNotifierProvider(create: (_) => NotificationProvider()),
+        ChangeNotifierProvider(
+          create: (_) => BookmarkProvider()..loadBookmarks(),
+        ),
+        ChangeNotifierProvider(
+          lazy: false,
+          create: (_) => NotificationProvider()..initPush(),
+        ),
         ChangeNotifierProvider(create: (_) => ReportProvider()),
       ],
       child: Consumer<ThemeProvider>(
@@ -59,8 +80,11 @@ class JournalTrendApp extends StatelessWidget {
           return Consumer2<SearchProvider, DashboardProvider>(
             builder: (context, search, dashboard, _) {
               search.attachDashboardHook(
-                (pubs, query, total) =>
-                    dashboard.recompute(pubs, query: query, apiTotalCount: total),
+                (pubs, query, total) => dashboard.recompute(
+                  pubs,
+                  query: query,
+                  apiTotalCount: total,
+                ),
               );
               search.attachProfileHook((_) {
                 context.read<ProfileProvider>().recordSearch();
@@ -111,9 +135,7 @@ class JournalTrendApp extends StatelessWidget {
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color: Colors.white,
         surfaceTintColor: Colors.transparent,
       ),
@@ -132,13 +154,14 @@ class JournalTrendApp extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: seed, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         hintStyle: const TextStyle(color: Color(0xFF9E9E9E)),
       ),
       chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -160,19 +183,13 @@ class JournalTrendApp extends StatelessWidget {
         modalBarrierColor: Colors.black26,
       ),
       dialogTheme: DialogThemeData(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      listTileTheme: const ListTileThemeData(
-        contentPadding: EdgeInsets.zero,
-      ),
+      listTileTheme: const ListTileThemeData(contentPadding: EdgeInsets.zero),
     );
   }
 
@@ -197,9 +214,7 @@ class JournalTrendApp extends StatelessWidget {
       ),
       cardTheme: CardThemeData(
         elevation: 0,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(16),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
         color: const Color(0xFF1A1A2E),
         surfaceTintColor: Colors.transparent,
       ),
@@ -218,13 +233,14 @@ class JournalTrendApp extends StatelessWidget {
           borderRadius: BorderRadius.circular(16),
           borderSide: const BorderSide(color: seed, width: 2),
         ),
-        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
+        contentPadding: const EdgeInsets.symmetric(
+          horizontal: 16,
+          vertical: 14,
+        ),
         hintStyle: const TextStyle(color: Color(0xFF6E6E8A)),
       ),
       chipTheme: ChipThemeData(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       filledButtonTheme: FilledButtonThemeData(
         style: FilledButton.styleFrom(
@@ -246,19 +262,13 @@ class JournalTrendApp extends StatelessWidget {
         modalBarrierColor: Colors.black38,
       ),
       dialogTheme: DialogThemeData(
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(20),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
       ),
       snackBarTheme: SnackBarThemeData(
         behavior: SnackBarBehavior.floating,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(12),
-        ),
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       ),
-      listTileTheme: const ListTileThemeData(
-        contentPadding: EdgeInsets.zero,
-      ),
+      listTileTheme: const ListTileThemeData(contentPadding: EdgeInsets.zero),
     );
   }
 }
@@ -268,11 +278,14 @@ class _RootScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final remoteConfig = context.watch<RemoteConfigProvider>();
+    if (remoteConfig.maintenanceMode) {
+      return const _MaintenanceScreen();
+    }
+
     final auth = context.watch<AuthProvider>();
     if (auth.isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (auth.isAuthenticated) {
@@ -287,5 +300,43 @@ class _RootScreen extends StatelessWidget {
     }
 
     return const LoginScreen();
+  }
+}
+
+class _MaintenanceScreen extends StatelessWidget {
+  const _MaintenanceScreen();
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: SafeArea(
+        child: Center(
+          child: Padding(
+            padding: const EdgeInsets.all(32),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Icon(
+                  Icons.engineering_rounded,
+                  size: 72,
+                  color: Theme.of(context).colorScheme.primary,
+                ),
+                const SizedBox(height: 20),
+                Text(
+                  'ResearchHub is under maintenance',
+                  textAlign: TextAlign.center,
+                  style: Theme.of(context).textTheme.headlineSmall,
+                ),
+                const SizedBox(height: 10),
+                const Text(
+                  'Please try again shortly.',
+                  textAlign: TextAlign.center,
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
   }
 }
